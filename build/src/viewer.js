@@ -679,7 +679,7 @@ export function initViewer(opts) {
     seg([-w / 2, y0, z], [-w / 2, hgt - tick, z]);
     seg([w / 2, y0, z], [w / 2, hgt - tick, z]);
     // height, drawn to the side
-    const x = w / 2 + off;
+    const x = w / 2 + off * 0.85;
     seg([x, 0, 0], [x, hgt, 0]);
     seg([x - tick, 0, 0], [x + tick, 0, 0]);
     seg([x - tick, hgt, 0], [x + tick, hgt, 0]);
@@ -814,7 +814,9 @@ export function initViewer(opts) {
   function applyFit() {
     const vFov = MathUtils.degToRad(camera.fov);
     const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
-    const pad = camera.aspect < 0.8 ? 1.16 : 1.10;
+    // Enough air that the height label, which sits outside the silhouette,
+    // still lands inside the frame at the default framing.
+    const pad = camera.aspect < 0.8 ? 1.42 : 1.16;
     const d = Math.max(vHalf / Math.sin(vFov / 2), hRad / Math.sin(hFov / 2)) * pad;
     const changed = Math.abs(d - fitDist) > 1e-4;
     const wasDefault = Math.abs(controls.goal.radius - fitDist) < 1e-3;

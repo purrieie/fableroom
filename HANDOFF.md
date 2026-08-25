@@ -39,12 +39,14 @@ change" and it's a cache.
   *backdrop*, not the table — exposure, key light and environment are locked so
   the walnut keeps one true colour. A product that changes colour under a slider
   reads as a rendering bug, not as lighting.
-- **Studio bar** (bottom, centred): Pause · Studio · Size · Chairs · Grain ·
+- **Studio bar** (bottom, centred): Pause · Studio · Size · Scale · Grain ·
   Details.
   - *Studio* — studio lighting, on by default.
   - *Size* — dimension overlay, billboards to face the camera.
-  - *Chairs* — four Keaton chairs around the table, correctly scaled with a gap.
+  - *Scale* — four Keaton chairs around the table, correctly scaled with a gap.
     One carries its own dimensions. Tapping a chair links to its product page.
+    Called *Scale*, not *Chairs* — the chairs are a size reference, not a variant
+    to buy. The button id is still `#scaleBtn`.
   - *Grain* — texture close-up.
   - *Details* — five hotspots on the table; tap for a note about that detail.
 - **3D / Photos toggle** — 3D shows only the model, Photos restores the original
@@ -114,7 +116,27 @@ explicitly asks for reduction — and when he does, show rendered comparisons at
 several quality levels and let him pick. If a path genuinely can't take the full
 mesh (iOS AR Quick Look), say so rather than quietly shipping a reduced copy.
 
-## 5. Scale
+## 5. The right gutter is contested
+
+Three things want the right-hand side of the hero at mid-height: the zoom / reset
+/ fullscreen column (`.hero__tools`, 42px), the height dimension label, and the
+chair tag. On a 390px phone there is no camera framing that fits a dimension
+label between the table and a 42px button column — the table would have to shrink
+to about half the frame. So:
+
+- The default framing pulls back a little (`pad` 1.42 portrait, 1.16 landscape,
+  in `viewer.js`), which is what stops the labels being cut off at the edge.
+- `.hero__tools` fades out under 768px while the hero has `is-dims`. The Size
+  overlay is a transient inspection mode and pinch-zoom still works, so losing
+  the buttons for its duration is cheap. Above 768px there's room and they stay.
+- Both the dimension labels and the chair tag are clamped into the hero as a
+  final safety net. The chair tag's pointer slides via a `--arrow` custom
+  property so it keeps aiming at the chair after being nudged.
+
+If you change `pad`, re-check the labels at 320px — that's the width that breaks
+first.
+
+## 6. Scale
 
 `M_PER_UNIT = 1.20` in `viewer.js` — the table is 120 cm across, which fixes the
 scale for the chairs and the dimension overlay.
@@ -124,7 +146,7 @@ The scan itself measures 79.4 cm — photogrammetry drifts a few percent. Width 
 read from the bounding box and comes out right. If the scan is ever re-exported
 to true scale, drop the hard-coded string in `viewer.js:694`.
 
-## 6. AR
+## 7. AR
 
 Three tiers, tried in order (`ar.js`):
 
@@ -152,7 +174,7 @@ machine. The USDZ was validated against the format spec and the WebXR flow
 against a mock session, but the final hop onto a physical iPhone or ARCore phone
 is unproven. Say so when handing this over.
 
-## 7. Testing
+## 8. Testing
 
 Don't judge this page through an in-app browser pane — it returns stale and blank
 frames after scripted scrolling, and you'll spend an hour debugging a layout that
@@ -166,7 +188,7 @@ node test/tilttest.mjs       # two-finger gestures
 node test/perf2.mjs          # time-to-interactive under throttling
 ```
 
-## 8. Traps that cost time
+## 9. Traps that cost time
 
 These all caused visible bugs once. Leave them alone.
 
@@ -187,8 +209,24 @@ These all caused visible bugs once. Leave them alone.
   past 100% — the loader uses a clamped `modelBytes` figure instead.
 - **`.dimlabel` CSS has to exist in both templates.** It once lived only in
   `template-lab.html`, so index rendered dimension labels in the top-left corner.
+- **The hour rail needs `touch-action:none`.** The hero is `pan-y` so vertical
+  swipes scroll the page. Without an explicit override the rail inherits that and
+  the page scrolls away underneath your thumb while you're setting the hour. The
+  cost is that a vertical swipe starting on the 44px rail no longer scrolls.
+- **Measure an element only once it's visible.** `.chairtag` is `display:none`
+  until `.on` lands, so measuring it first returns 0, the `|| fallback` fires and
+  that wrong width caches forever — the tag's arrow then points at nothing.
+  Toggle the class, *then* measure.
+- **`opacity:0` does not remove a control from the tab order.** The tools column
+  fades under `is-dims`; it also needs `visibility:hidden`, or four invisible
+  buttons stay keyboard-focusable and Enter still fires them (one of them being
+  fullscreen). Every other hide path in the page uses `display:none`, which is
+  why this only bit the new rule.
+- **Don't read `offsetWidth` in the per-frame loop.** The label and tag clamps
+  need element widths; both cache them (`_w`) and invalidate on text change.
+  Reading it every frame forces synchronous layout on every animation frame.
 
-## 9. Not done
+## 10. Not done
 
 - AR on real hardware (§6).
 - The `product-3d-hero` skill at `~/.claude/skills/` is ~60% built — it
