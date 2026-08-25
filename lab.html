@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#4A1A1A">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%234A1A1A'/%3E%3Cellipse cx='16' cy='12' rx='11' ry='3.4' fill='%23B77E45'/%3E%3Cpath d='M9 14h14l-2 4H11z' fill='%23A06C36'/%3E%3Cpath d='M10.5 19h11l-2 4h-7z' fill='%238E5C2B'/%3E%3Cpath d='M12 24h8l-1.4 3.6h-5.2z' fill='%237A4D22'/%3E%3C/svg%3E">
 <meta name="format-detection" content="telephone=no">
-<title>Belgrave Wooden Dining Table | 3D — FABLEROOM</title>
+<title>Belgrave Wooden Dining Table | 3D Lab — FABLEROOM</title>
 <meta name="description" content="A round mango wood dining table with a fluted pedestal base and a refined walnut finish. Explore it in interactive 3D.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -184,6 +184,23 @@ body.mode-2d .heroWrap{display:none}
   body.mode-3d .pdp{grid-template-columns:minmax(0,1fr);max-width:760px}
 }
 
+.studio__row--tod{gap:12px}
+.tod{flex:1;min-width:110px;-webkit-appearance:none;appearance:none;height:3px;border-radius:3px;
+  background:linear-gradient(90deg,#5C6B8A,#E8C79A,#FFF3DF,#E8C79A,#3A4560);outline:none}
+.tod::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;
+  background:#fff;border:1.5px solid rgba(44,44,44,.25);box-shadow:0 1px 4px rgba(44,30,15,.28);cursor:pointer}
+.tod::-moz-range-thumb{width:17px;height:17px;border-radius:50%;background:#fff;
+  border:1.5px solid rgba(44,44,44,.25);cursor:pointer}
+.tod__read{flex:0 0 auto;font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);min-width:56px;text-align:right}
+.studio__acts--views{flex-wrap:wrap}
+.dimlabel{position:absolute;transform:translate(-50%,-50%);z-index:5;pointer-events:none;
+  background:rgba(255,255,255,.92);border:1px solid rgba(44,44,44,.12);border-radius:100px;
+  padding:3px 9px;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--ink);
+  white-space:nowrap;opacity:0;transition:opacity .2s}
+.dimlabel.on{opacity:1}
+.bdbtn.is-loading{opacity:.5;pointer-events:none}
+
 /* ------------------------- viewer mode toggle (3D / photos) ------------------ */
 .vmode{display:inline-flex;margin:0 0 14px;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);border:1px solid rgba(44,44,44,.09);
@@ -212,24 +229,24 @@ body.mode-2d .heroWrap{display:none}
 .studio__row::-webkit-scrollbar{display:none}
 .studio__lab{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
   color:var(--ink-3);flex:0 0 auto;padding-right:2px}
-.lightbtn{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;border:0;cursor:pointer;
+.bdbtn{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;border:0;cursor:pointer;
   background:none;border-radius:100px;padding:5px 8px 5px 4px;
   font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   color:var(--ink-2);transition:background .2s,color .2s}
-.lightbtn i{width:15px;height:15px;border-radius:50%;flex:0 0 auto;
+.bdbtn i{width:15px;height:15px;border-radius:50%;flex:0 0 auto;
   border:1.5px solid rgba(44,44,44,.16);transition:box-shadow .2s}
 @media(max-width:430px){ .studio__lab{display:none} }
 @media(max-width:380px){
-  .lightbtn{gap:4px;padding:5px 6px 5px 3px;font-size:9.5px;letter-spacing:.03em}
-  .lightbtn i{width:13px;height:13px}
+  .bdbtn{gap:4px;padding:5px 6px 5px 3px;font-size:9.5px;letter-spacing:.03em}
+  .bdbtn i{width:13px;height:13px}
   .studio{padding:10px 10px 8px}
 }
 @media(min-width:520px){
-  .lightbtn{gap:7px;padding:5px 11px 5px 5px;font-size:11px;letter-spacing:.11em}
-  .lightbtn i{width:17px;height:17px}
+  .bdbtn{gap:7px;padding:5px 11px 5px 5px;font-size:11px;letter-spacing:.11em}
+  .bdbtn i{width:17px;height:17px}
 }
-.lightbtn[aria-pressed="true"]{background:rgba(44,44,44,.07);color:var(--ink)}
-.lightbtn[aria-pressed="true"] i{box-shadow:0 0 0 2px rgba(255,255,255,.9),0 0 0 3.5px var(--ink)}
+.bdbtn[aria-pressed="true"]{background:rgba(44,44,44,.07);color:var(--ink)}
+.bdbtn[aria-pressed="true"] i{box-shadow:0 0 0 2px rgba(255,255,255,.9),0 0 0 3.5px var(--ink)}
 
 .studio__sep{height:1px;background:rgba(44,44,44,.10);margin:10px 0 8px}
 .studio__acts{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
@@ -729,6 +746,7 @@ details[open]>summary .plus::after{transform:rotate(90deg);opacity:0}
   </div>
 
   <div class="hs" id="hotspots" aria-hidden="false"></div>
+  <div class="hs" id="dimLayer" aria-hidden="true"></div>
 
   <div class="hscard" id="hsCard" role="dialog" aria-live="polite">
     <button class="hscard__x" id="hsClose" aria-label="Close detail">
@@ -742,11 +760,26 @@ details[open]>summary .plus::after{transform:rotate(90deg);opacity:0}
 
   <div class="studio" id="studio">
     <div class="studio__row">
-      <span class="studio__lab">Light</span>
-      <button class="lightbtn" data-light="studio" aria-pressed="true"><i style="background:#F2EBE0"></i>Studio</button>
-      <button class="lightbtn" data-light="daylight" aria-pressed="false"><i style="background:#BBD5EE"></i>Daylight</button>
-      <button class="lightbtn" data-light="candle" aria-pressed="false"><i style="background:#D8913F"></i>Candle</button>
-      <button class="lightbtn" data-light="night" aria-pressed="false"><i style="background:#2C3A63"></i>Night</button>
+      <span class="studio__lab">Room</span>
+      <button class="bdbtn" data-bd="studio" aria-pressed="true"><i style="background:#F2EBE0"></i>Studio</button>
+      <button class="bdbtn" data-bd="room" aria-pressed="false"><i style="background:#C0A98C"></i>Room</button>
+      <button class="bdbtn" data-bd="hall" aria-pressed="false"><i style="background:#B9915E"></i>Hall</button>
+      <button class="bdbtn" data-bd="garden" aria-pressed="false"><i style="background:#7E9B5C"></i>Garden</button>
+      <button class="bdbtn" data-bd="study" aria-pressed="false"><i style="background:#9E8C7A"></i>Study</button>
+    </div>
+    <div class="studio__sep"></div>
+    <div class="studio__row studio__row--tod">
+      <span class="studio__lab">Hour</span>
+      <input type="range" id="todRange" class="tod" min="0" max="100" value="50" aria-label="Time of day">
+      <span class="tod__read" id="todRead">Midday</span>
+    </div>
+    <div class="studio__sep"></div>
+    <div class="studio__acts studio__acts--views">
+      <button class="actbtn" id="dimBtn"><svg viewBox="0 0 24 24"><path d="M3 8h18M3 8v8M21 8v8M7 11v2M12 11v2M17 11v2"/></svg><span>Size</span></button>
+      <button class="actbtn" id="scaleBtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.4"/><path d="M12 7.5v7M8 10h8M9.5 21 12 14.5 14.5 21"/></svg><span>Scale</span></button>
+      <button class="actbtn" id="seatBtn"><svg viewBox="0 0 24 24"><path d="M6 18v-6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6M6 14h12M8 18v2M16 18v2"/></svg><span>Seated</span></button>
+      <button class="actbtn" id="underBtn"><svg viewBox="0 0 24 24"><path d="M3 9h18M6 9v3M18 9v3M9 3v6M15 3v6M12 12v9M9 21h6"/></svg><span>Underside</span></button>
+      <button class="actbtn" id="shareBtn"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="m8.3 10.8 7.4-4.3M8.3 13.2l7.4 4.3"/></svg><span>Share view</span></button>
     </div>
     <div class="studio__sep"></div>
     <div class="studio__acts">
@@ -5047,21 +5080,54 @@ three/examples/jsm/libs/fflate.module.js:
     var studio = $('#studio'), hsLayer = $('#hotspots'), card = $('#hsCard');
     if (!studio || !hsLayer) return;
 
-    /* ---- lighting ---- */
-    var bgStops = null;
+    /* ---- backdrops ---- */
     function paintBackdrop(stops){
       hero.style.background = 'radial-gradient(112% 74% at 50% 8%,' +
         stops[0] + ' 0%,' + stops[1] + ' 42%,' + stops[2] + ' 78%,' + stops[3] + ' 100%)';
     }
     hero.style.transition = 'background .55s ease';
 
-    $$('.lightbtn').forEach(function(btn){
+    $$('.bdbtn').forEach(function(btn){
       btn.addEventListener('click', function(){
-        var name = btn.dataset.light;
-        $$('.lightbtn').forEach(function(b){ b.setAttribute('aria-pressed', String(b === btn)); });
-        viewer.setLighting(name);
+        var name = btn.dataset.bd;
+        $$('.bdbtn').forEach(function(b){ b.setAttribute('aria-pressed', String(b === btn)); });
+        if (name === 'studio'){
+          viewer.setBackdrop(null);
+          paintBackdrop(viewer.lightingPreset().bg);
+          return;
+        }
+        btn.classList.add('is-loading');
+        // Panoramas are fetched on demand — most visitors never leave Studio.
+        viewer.setBackdrop(name, 'env/' + name + '.jpg', function(err){
+          btn.classList.remove('is-loading');
+          if (err) toastLab('That backdrop could not load');
+        });
       });
     });
+
+    function toastLab(msg){
+      var t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg; t.classList.add('on');
+      setTimeout(function(){ t.classList.remove('on'); }, 2200);
+    }
+
+    /* ---- time of day ---- */
+    var tod = $('#todRange'), todRead = $('#todRead');
+    function hourLabel(v){
+      var h = 6 + v * 15;                       // the slider spans 06:00 to 21:00
+      var hh = Math.floor(h), mm = Math.round((h - hh) * 60 / 15) * 15;
+      if (mm === 60){ hh += 1; mm = 0; }
+      var ampm = hh >= 12 ? 'pm' : 'am';
+      var d = hh % 12; if (d === 0) d = 12;
+      return d + (mm ? ':' + String(mm).padStart(2,'0') : '') + ampm;
+    }
+    tod.addEventListener('input', function(){
+      var v = +tod.value / 100;
+      viewer.setTimeOfDay(v);
+      todRead.textContent = hourLabel(v);
+    });
+    todRead.textContent = hourLabel(0.5);
 
     /* ---- spin ---- */
     var spinBtn = $('#spinBtn'), spinIcon = $('#spinIcon'), spinLabel = $('#spinLabel');
@@ -5164,8 +5230,93 @@ three/examples/jsm/libs/fflate.module.js:
     b2.addEventListener('click', function(){ setMode(false); });
     setMode(true);
 
-    /* ---- backdrop follows the light ---- */
-    viewer.onLighting(function(name, L){ paintBackdrop(L.bg); });
+    /* ---- size, scale, eye height, underside, share ---- */
+    var dimLayer = $('#dimLayer'), dimEls = {};
+    ['dim-w','dim-h'].forEach(function(id){
+      var el = document.createElement('div');
+      el.className = 'dimlabel';
+      dimLayer.appendChild(el);
+      dimEls[id] = el;
+    });
+
+    var dimBtn = $('#dimBtn');
+    dimBtn.addEventListener('click', function(){
+      var on = !viewer.dimensionsOn();
+      viewer.setDimensions(on);
+      dimBtn.classList.toggle('on', on);
+      if (!on) Object.keys(dimEls).forEach(function(k){ dimEls[k].classList.remove('on'); });
+    });
+
+    var scaleBtn = $('#scaleBtn');
+    scaleBtn.addEventListener('click', function(){
+      var on = !viewer.companionsOn();
+      viewer.setCompanions(on);
+      scaleBtn.classList.toggle('on', on);
+    });
+
+    var seatBtn = $('#seatBtn'), seated = false;
+    seatBtn.addEventListener('click', function(){
+      seated = !seated;
+      viewer.setEye(seated ? 'seated' : 'standing');
+      seatBtn.classList.toggle('on', seated);
+      seatBtn.querySelector('span').textContent = seated ? 'Standing' : 'Seated';
+      setSpin(false);
+    });
+
+    var underBtn = $('#underBtn'), under = false;
+    underBtn.addEventListener('click', function(){
+      under = !under;
+      underBtn.classList.toggle('on', under);
+      setSpin(false);
+      closeCard();
+      if (under) viewer.underside(); else viewer.exitUnderside();
+    });
+
+    $('#shareBtn').addEventListener('click', function(){
+      var st = viewer.getState();
+      var q = Object.keys(st).map(function(k){ return k + '=' + st[k]; }).join('&');
+      var url = location.origin + location.pathname + '#' + q;
+      var done = function(){ toastLab('View link copied'); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done, done);
+      } else {
+        var t = document.createElement('textarea');
+        t.value = url; t.style.position='fixed'; t.style.opacity='0';
+        document.body.appendChild(t); t.select();
+        try { document.execCommand('copy'); } catch(e){}
+        document.body.removeChild(t); done();
+      }
+    });
+
+    /* ---- restore a shared view ---- */
+    (function(){
+      if (!location.hash || location.hash.length < 3) return;
+      var st = {};
+      location.hash.slice(1).split('&').forEach(function(kv){
+        var p = kv.split('='); if (p.length === 2) st[p[0]] = p[1];
+      });
+      if (st.b && st.b !== 'studio'){
+        var btn = document.querySelector('.bdbtn[data-bd="' + st.b + '"]');
+        if (btn) btn.click();
+      }
+      if (st.h != null){ tod.value = Math.round(+st.h * 100); tod.dispatchEvent(new Event('input')); }
+      if (+st.dim === 1) dimBtn.click();
+      if (+st.sc === 1) scaleBtn.click();
+      setTimeout(function(){ viewer.applyState(st); setSpin(false); }, 400);
+    })();
+
+    /* ---- keep dimension labels on their ticks ---- */
+    viewer.onFrame(function(){
+      var labels = viewer.dimensionLabels();
+      for (var i = 0; i < labels.length; i++) {
+        var el = dimEls[labels[i].id];
+        if (!el) continue;
+        el.textContent = labels[i].text;
+        el.style.transform = 'translate(' + labels[i].x + 'px,' + labels[i].y + 'px) translate(-50%,-50%)';
+        el.classList.toggle('on', labels[i].visible);
+      }
+    });
+
     paintBackdrop(viewer.lightingPreset().bg);
   })();
 
