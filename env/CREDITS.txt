@@ -1,9 +1,0 @@
-Backdrop panoramas from Poly Haven (polyhaven.com), released under CC0.
-Tone-mapped from the 1k HDRs to 2048x1024 JPEG for the web.
-
-  room.jpg    <- wooden_lounge
-  hall.jpg    <- entrance_hall
-  garden.jpg  <- garden_nook
-  study.jpg   <- reading_room
-
-CC0 places no attribution requirement, but Poly Haven is worth crediting.
