@@ -1,0 +1,17 @@
+{
+  "name": "fableroom-belgrave-3d",
+  "private": true,
+  "description": "Build tooling for the Belgrave 3D product page",
+  "scripts": {
+    "bundle": "esbuild src/viewer.js --bundle --format=iife --minify --target=es2019 --outfile=dist/viewer.min.js",
+    "page": "./venv/bin/python build.py",
+    "lab": "./venv/bin/python build_lab.py"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "^4.4.2",
+    "esbuild": "^0.25.0",
+    "puppeteer-core": "^24.0.0",
+    "sharp": "^0.34.0",
+    "three": "^0.180.0"
+  }
+}

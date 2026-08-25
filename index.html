@@ -195,8 +195,8 @@ body.mode-2d .heroWrap{display:none}
 .hourrail{position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:6;
   display:flex;flex-direction:column;align-items:center;gap:9px;
   background:rgba(255,255,255,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border:1px solid rgba(44,44,44,.08);border-radius:100px;padding:10px 6px;
-  box-shadow:0 4px 18px rgba(44,30,15,.10)}
+  border:1px solid rgba(44,44,44,.08);border-radius:26px;padding:10px 8px 8px;
+  min-width:52px;box-shadow:0 4px 18px rgba(44,30,15,.10)}
 .hero.is-immersive .hourrail,.hero.is-unsupported .hourrail,
 .hero.is-photos .hourrail{display:none}
 .hourrail__sun{width:14px;height:14px;stroke:var(--ink-3);fill:none;stroke-width:1.7;stroke-linecap:round}
@@ -205,14 +205,14 @@ body.mode-2d .heroWrap{display:none}
 .hourrail .tod{-webkit-appearance:none;appearance:none;position:absolute;
   left:50%;top:50%;width:132px;height:4px;border-radius:3px;outline:none;padding:0;margin:0;
   transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center;
-  background:linear-gradient(90deg,#6B7C9E,#E8C79A,#FFF6E6,#E8C79A,#6E5A78)}
+  background:linear-gradient(90deg,#6B7C9E,#E8C79A,#FFF6E6,#E8C79A,#4E5F86)}
 @media(min-width:900px){.hourrail .tod{width:176px}}
 .hourrail .tod::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;
   background:#fff;border:1.5px solid rgba(44,44,44,.25);box-shadow:0 1px 4px rgba(44,30,15,.28);cursor:pointer}
 .hourrail .tod::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#fff;
   border:1.5px solid rgba(44,44,44,.25);cursor:pointer}
-.hourrail__read{font-size:8.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-  color:var(--ink-3);writing-mode:vertical-rl;transform:rotate(180deg)}
+.hourrail__read{font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+  color:var(--ink-3);white-space:nowrap;text-align:center}
 
 /* Chair label — one only, and it links straight to the product. */
 .chairtag{position:absolute;z-index:6;display:none;flex-direction:column;gap:1px;
@@ -237,18 +237,18 @@ body.mode-2d .heroWrap{display:none}
 .vmode button[aria-pressed="true"]{background:var(--ink);color:#fff}
 
 /* ------------------------------- studio panel -------------------------------- */
-.studio{position:absolute;left:56px;right:12px;bottom:12px;z-index:6;
+.studio{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;z-index:6;
+  width:fit-content;max-width:calc(100% - 20px);
   background:rgba(255,255,255,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   border:1px solid rgba(44,44,44,.08);border-radius:14px;padding:7px 10px 6px;
   box-shadow:0 6px 22px rgba(44,30,15,.10);
   transition:opacity .3s ease,transform .3s ease}
-@media(min-width:760px){.studio{left:50%;right:auto;transform:translateX(-50%);max-width:540px;min-width:460px}}
+@media(min-width:760px){.studio{max-width:540px}}
 .hero.is-immersive .studio,.hero.is-unsupported .studio{display:none}
 .hero.is-photos .studio,.hero.is-photos .hero__tools,.hero.is-photos .hero__hint,
 .hero.is-photos .hs,.hero.is-photos .hero__ar,.hero.is-photos .hero__tag{display:none}
 .hero.is-immersive .vmode,.hero.is-unsupported .vmode{display:none}
-.studio.is-hidden{opacity:0;transform:translateY(10px);pointer-events:none}
-@media(min-width:760px){.studio.is-hidden{transform:translateX(-50%) translateY(10px)}}
+.studio.is-hidden{opacity:0;transform:translateX(-50%) translateY(10px);pointer-events:none}
 
 .studio__row{display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;
   -webkit-overflow-scrolling:touch}
@@ -275,7 +275,7 @@ body.mode-2d .heroWrap{display:none}
 .lightbtn[aria-pressed="true"] i{box-shadow:0 0 0 2px rgba(255,255,255,.9),0 0 0 3.5px var(--ink)}
 
 .studio__sep{height:1px;background:rgba(44,44,44,.10);margin:10px 0 8px}
-.studio__acts{display:flex;align-items:center;justify-content:space-between;gap:2px;
+.studio__acts{display:flex;align-items:center;justify-content:center;gap:2px;
   overflow-x:auto;scrollbar-width:none}
 .studio__acts::-webkit-scrollbar{display:none}
 .actbtn{display:inline-flex;flex-direction:column;align-items:center;gap:3px;border:0;
@@ -5114,7 +5114,7 @@ three/examples/jsm/libs/fflate.module.js:
       ['#FDFAF4','#F7EFE1','#EDE0CB','#E2D2B8'],
       ['#FDFBF8','#F6F0E8','#EDE4D8','#E7DCCC'],
       ['#FEF7EC','#FAE7CC','#F0D2A8','#E3BE8B'],
-      ['#F4EEF2','#E8DCE4','#D2C2D2','#B9A9C0']
+      ['#E6ECF6','#D2DDEE','#B2C2DC','#94A8C8']
     ];
     function mixHex(a, b, t){
       var pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
@@ -5891,7 +5891,7 @@ three/examples/jsm/libs/fflate.module.js:
     <div class="ft__sel"><span>United Kingdom (GBP £)</span><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8"><path d="m6 9 6 6 6-6"/></svg></div>
     <div class="ft__legal">
       <span style="display:block;font-size:11px;color:#9A958E;letter-spacing:.08em;margin-bottom:8px">
-        3D PROTOTYPE &middot; BUILD 26aug-b68451e
+        3D PROTOTYPE &middot; BUILD 26aug-f1a0f06
       </span>
       &copy; 2026 <a class="u" href="#">FABLEROOM</a>.<br>
       FableRoom Limited is a registered company in England &amp; Wales (No. 16249321). Registered office: 85 Great Portland Street, First Floor, London, W1W 7LT.
