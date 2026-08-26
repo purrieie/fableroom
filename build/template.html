@@ -248,6 +248,10 @@ body.mode-2d #hero{display:none}
 /* In Photos there is no canvas to ride, so it returns to the flow under the title. */
 @media(min-width:900px){.vmode{right:calc(var(--pad) + 12px)}}
 body.mode-2d .vmode{position:static;margin:0 0 14px}
+@media(max-width:899px){
+  #gal{position:relative}
+  #gal > .vmode{position:absolute;right:12px;bottom:34px;z-index:5;margin:0}
+}
 body.is-locked .vmode{display:none}
 .vmode button[aria-pressed="true"]{background:var(--ink);color:#fff}
 
@@ -1187,6 +1191,19 @@ details[open]>summary .plus::after{transform:rotate(90deg);opacity:0}
        3D is the model on its own; Photos is the page as it normally ships,
        with the photograph grid back in place and the hero gone entirely. */
     var b3 = $('#mode3d'), b2 = $('#mode2d');
+    var vmodeEl = document.querySelector('.vmode');
+    var vmodeHome = vmodeEl.parentNode, vmodeAnchor = vmodeEl.nextSibling;
+    function placeToggle(threeD){
+      // Reparent rather than just repositioning with CSS: the gallery is a
+      // sibling of heroWrap, not a descendant, so this is the only way to
+      // float the same control over it. Queried live, not cached at setup -
+      // this script runs before #gal exists further down the document.
+      var galEl = document.getElementById('gal');
+      var wantGallery = !threeD && galEl && window.innerWidth < 900;
+      var inGallery = vmodeEl.parentNode === galEl;
+      if (wantGallery && !inGallery) galEl.appendChild(vmodeEl);
+      else if (!wantGallery && inGallery) vmodeHome.insertBefore(vmodeEl, vmodeAnchor);
+    }
     function setMode(threeD){
       document.body.classList.toggle('mode-3d', threeD);
       document.body.classList.toggle('mode-2d', !threeD);
@@ -1196,10 +1213,14 @@ details[open]>summary .plus::after{transform:rotate(90deg);opacity:0}
       viewer.setPaused(!threeD);
       if (!threeD) closeCard();
       if (window.__sizeHero) setTimeout(window.__sizeHero, 60);
+      placeToggle(threeD);
     }
     b3.addEventListener('click', function(){ setMode(true); });
     b2.addEventListener('click', function(){ setMode(false); });
     setMode(true);
+    window.addEventListener('resize', function(){
+      if (!document.body.classList.contains('mode-3d')) placeToggle(false);
+    });
 
     /* ---- backdrop follows the light ---- */
     viewer.onLighting(function(name, L){ paintBackdrop(L.bg); });
@@ -1225,7 +1246,7 @@ details[open]>summary .plus::after{transform:rotate(90deg);opacity:0}
 <!-- ============================== gallery ============================== -->
 <div class="pdp">
 <div class="pdpcol" id="gallery">
-  <div class="gal">
+  <div class="gal" id="gal">
     <div class="gal__strip" id="galStrip">__GALLERY_SLIDES__</div>
     <div class="gal__dots" id="galDots"></div>
   </div>

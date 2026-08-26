@@ -47,7 +47,15 @@ change" and it's a cache.
 - **3D / Photos toggle** — bottom-**right** of the canvas, opposite the bar,
   where a thumb already is. It lives in `.heroWrap`, *not* inside `.hero`:
   Photos mode hides the hero, and a control that switches you back must not
-  vanish with it. In Photos it returns to normal flow under the title.
+  vanish with it.
+  In Photos mode, under 900px, the same control is reparented onto the photo
+  gallery (`#gal`) so it keeps floating bottom-right over whichever image is
+  showing — the gallery is a sibling of `.heroWrap`, not a descendant, so CSS
+  alone cannot put it there; `setMode()` moves the DOM node itself and moves it
+  back on return to 3D. At 900px+ the gallery is a tall multi-row grid rather
+  than a single photo box, so there is nothing sane to float over there — it
+  stays in normal flow under the title instead. A resize listener re-runs the
+  placement if the viewport crosses that breakpoint while already in Photos.
   - *Studio* — studio lighting, on by default.
   - *Size* — dimension overlay, billboards to face the camera.
   - *Scale* — four Keaton chairs around the table, correctly scaled with a gap.
