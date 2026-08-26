@@ -352,10 +352,6 @@ body.is-locked .vmode{display:none}
 .hscard__no{font-size:8.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-d,#A06C36)}
 .hscard h4{font-family:var(--serif);font-size:15px;font-weight:500;margin:3px 0 5px;line-height:1.2}
 .hscard p{margin:0;font-size:11.5px;line-height:1.5;color:var(--ink-2)}
-.hscard dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:8px 0 0;
-  padding-top:11px;border-top:1px solid var(--line,#E6E2DB);font-size:12px}
-.hscard dt{color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;font-size:9px;align-self:center}
-.hscard dd{margin:0;color:var(--ink)}
 .hscard__x{position:absolute;top:6px;right:6px;width:24px;height:24px;border:0;background:none;
   cursor:pointer;display:grid;place-items:center;border-radius:50%;color:var(--ink-3)}
 .hscard__x svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
@@ -813,7 +809,6 @@ details[open]>summary .plus::after{transform:rotate(90deg);opacity:0}
     <div class="hscard__no" id="hsNo">Detail 01</div>
     <h4 id="hsTitle"></h4>
     <p id="hsBody"></p>
-    <dl id="hsSpecs"></dl>
   </div>
 
   <button class="spintog" id="spinBtn" aria-pressed="true" aria-label="Pause rotation">
@@ -5104,27 +5099,22 @@ three/examples/jsm/libs/fflate.module.js:
     { id: 'top', at: [0.17, 0.663, 0.10], normal: [0, 1, 0], bias: 0.18, no: 'Detail 01',
       title: 'The Mango Wood Top',
       body: 'A single slab of solid mango wood, hand-sanded flat and finished in American walnut. No two tops carry the same figure.',
-      specs: [['Material', 'Solid mango wood'], ['Finish', 'American walnut'], ['Diameter', '120 cm']],
       view: { theta: 0.45, phi: 42, dist: 0.72, ty: 0.60 } },
     { id: 'edge', at: [0.0, 0.640, 0.495], normal: [0, 0.25, 1], bias: 0.22, no: 'Detail 02',
       title: 'The Softened Edge',
       body: 'The rim is eased rather than cut square, so it catches light all the way round and softens a large surface.',
-      specs: [['Profile', 'Eased round-over'], ['Thickness', '~4 cm'], ['Seats', '4 people']],
       view: { theta: 0.1, phi: 78, dist: 0.55, ty: 0.60 } },
     { id: 'flute', at: [0.0, 0.500, 0.315], normal: [0, 0.15, 1], bias: 0.25, no: 'Detail 03',
       title: 'The Fluted Tiers',
       body: 'Three stacked tiers, cut with vertical flutes and stepped outward as they rise. The ridges are what give the base its shadow play.',
-      specs: [['Technique', 'Hand-cut fluting'], ['Tiers', 'Three, stepped'], ['Detail', 'Vertical ridge']],
       view: { theta: 0.35, phi: 82, dist: 0.44, ty: 0.46 } },
     { id: 'mid', at: [0.0, 0.330, 0.335], normal: [0, 0.1, 1], bias: 0.25, no: 'Detail 04',
       title: 'The Pedestal Form',
       body: 'One central column instead of four legs: chairs tuck in anywhere, and legroom is the same at every seat.',
-      specs: [['Form', 'Central pedestal'], ['Benefit', 'Unobstructed legroom'], ['Height', '76 cm']],
       view: { theta: 0.9, phi: 80, dist: 0.62, ty: 0.36 } },
     { id: 'foot', at: [0.0, 0.055, 0.275], normal: [0, 0.1, 1], bias: 0.25, no: 'Detail 05',
       title: 'The Footing',
       body: 'The base flares widest at the floor, putting the weight out at the perimeter. That is what stops it rocking.',
-      specs: [['Weight', '42.5 kg'], ['Assembly', 'Minimal'], ['Origin', 'India']],
       view: { theta: 0.2, phi: 88, dist: 0.58, ty: 0.16 } }
   ];
 
@@ -5219,9 +5209,6 @@ three/examples/jsm/libs/fflate.module.js:
       $('#hsNo').textContent = h.no;
       $('#hsTitle').textContent = h.title;
       $('#hsBody').textContent = h.body;
-      $('#hsSpecs').innerHTML = h.specs.map(function(sp){
-        return '<dt>' + sp[0] + '</dt><dd>' + sp[1] + '</dd>';
-      }).join('');
       card.classList.add('on');
       Object.keys(dots).forEach(function(k){ dots[k].classList.toggle('is-active', k === id); });
       setSpin(false);
@@ -5740,7 +5727,7 @@ three/examples/jsm/libs/fflate.module.js:
     <div class="ft__sel"><span>United Kingdom (GBP £)</span><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8"><path d="m6 9 6 6 6-6"/></svg></div>
     <div class="ft__legal">
       <span style="display:block;font-size:11px;color:#9A958E;letter-spacing:.08em;margin-bottom:8px">
-        3D PROTOTYPE &middot; BUILD 26aug-051d69b
+        3D PROTOTYPE &middot; BUILD 26aug-543273d
       </span>
       &copy; 2026 <a class="u" href="#">FABLEROOM</a>.<br>
       FableRoom Limited is a registered company in England &amp; Wales (No. 16249321). Registered office: 85 Great Portland Street, First Floor, London, W1W 7LT.
