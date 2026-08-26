@@ -41,21 +41,9 @@ change" and it's a cache.
 - **Play/pause** — top-left of the canvas, chromeless. The glyph reads on its
   own and a pill around it would only take frame away from the model.
 - **Studio bar** — bottom-**left** of the canvas: Studio · Size · Scale · Grain ·
-  Details. In fullscreen it stays visible and re-centres - the 3D/Photos toggle
+  Details. In fullscreen it stays visible and re-centres — the 3D/Photos toggle
   is hidden there, so nothing is claiming the right corner and the bar has no
   reason to hug the left.
-- **3D / Photos toggle** — bottom-**right** of the canvas, opposite the bar,
-  where a thumb already is. It lives in `.heroWrap`, *not* inside `.hero`:
-  Photos mode hides the hero, and a control that switches you back must not
-  vanish with it.
-  In Photos mode, under 900px, the same control is reparented onto the photo
-  gallery (`#gal`) so it keeps floating bottom-right over whichever image is
-  showing — the gallery is a sibling of `.heroWrap`, not a descendant, so CSS
-  alone cannot put it there; `setMode()` moves the DOM node itself and moves it
-  back on return to 3D. At 900px+ the gallery is a tall multi-row grid rather
-  than a single photo box, so there is nothing sane to float over there — it
-  stays in normal flow under the title instead. A resize listener re-runs the
-  placement if the viewport crosses that breakpoint while already in Photos.
   - *Studio* — studio lighting, on by default.
   - *Size* — dimension overlay, billboards to face the camera.
   - *Scale* — four Keaton chairs around the table, correctly scaled with a gap.
@@ -65,18 +53,29 @@ change" and it's a cache.
   - *Grain* — texture close-up.
   - *Details* — five hotspots on the table; tap for a note about that detail.
     The note panel is deliberately translucent (`rgba(255,255,255,.68)` over a
-    10px backdrop blur) so the detail you just tapped stays visible behind it.
-    Body copy is written to fit **three lines maximum** at 11.5px — verified at
-    320px, which is the width that breaks first. If you lengthen a `body`
-    string, re-check it there. There is no spec list under the body text — it
-    was removed at NJ's request; the card is the title and three lines,
-    nothing else.
-    If you change that alpha, keep body text above 4.5:1 contrast in the worst
-    case — night backdrop, zoomed into the dark pedestal. It measures 6.75:1
-    today, and the blur is what buys the headroom, not the alpha.
-- **3D / Photos toggle** — 3D shows only the model, Photos restores the original
-  page gallery. Body-level `mode-3d` / `mode-2d` classes; neither duplicates the
-  other's content.
+    10px backdrop blur, near-solid `@supports` fallback) so the detail you just
+    tapped stays visible behind it — keep body text above 4.5:1 contrast in the
+    worst case (night backdrop, zoomed into the dark pedestal; measures 6.75:1
+    today) if you change that alpha; the blur is what buys the headroom, not
+    the alpha itself. Body copy is written to fit **three lines maximum** at
+    11.5px — verified at 320px, which is the width that breaks first. There is
+    no spec list under the body text — removed at NJ's request; the card is
+    the title and three lines, nothing else.
+- **3D / Photos toggle** — bottom-**right** of the canvas, opposite the bar,
+  where a thumb already is. 3D shows only the model, Photos restores the
+  original page gallery; body-level `mode-3d` / `mode-2d` classes, neither
+  duplicates the other's content. The control itself lives in `.heroWrap`, not
+  inside `.hero`: Photos mode hides the hero, and a control that switches you
+  back must not vanish with it.
+
+  Under 900px, switching to Photos also **reparents** the toggle onto the
+  gallery (`#gal`) so it keeps floating bottom-right over whichever image is
+  showing — the gallery is a sibling of `.heroWrap`, not a descendant, so CSS
+  alone can't put it there; `setMode()` moves the DOM node itself and moves it
+  back on return to 3D. At 900px+ the gallery is a tall multi-row grid rather
+  than a single photo box, so there's nothing sane to float over — it stays in
+  normal flow under the title instead. A resize listener re-runs the placement
+  if the viewport crosses that breakpoint while already in Photos.
 
 ## 3. Rebuilding
 
@@ -243,6 +242,12 @@ These all caused visible bugs once. Leave them alone.
   cannot be scrolled back to. It uses `flex-start`.
 - **The 3D/Photos toggle must not live inside `.hero`.** Photos mode hides the
   hero, which would take the only way back with it.
+- **Query a later-in-document element lazily, not at setup.** The toggle's
+  reparenting logic originally cached `#gal` in a variable when the script
+  block ran — which is before the gallery markup further down the page has
+  been parsed, so the reference was permanently `null` and the reparenting
+  silently never fired. Fixed by calling `document.getElementById` inside the
+  function that needs it, not outside it.
 - **Don't read `offsetWidth` in the per-frame loop.** The label and tag clamps
   need element widths; both cache them (`_w`) and invalidate on text change.
   Reading it every frame forces synchronous layout on every animation frame.
