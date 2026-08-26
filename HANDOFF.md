@@ -60,7 +60,9 @@ change" and it's a cache.
     10px backdrop blur) so the detail you just tapped stays visible behind it.
     Body copy is written to fit **three lines maximum** at 11.5px — verified at
     320px, which is the width that breaks first. If you lengthen a `body`
-    string, re-check it there.
+    string, re-check it there. There is no spec list under the body text — it
+    was removed at NJ's request; the card is the title and three lines,
+    nothing else.
     If you change that alpha, keep body text above 4.5:1 contrast in the worst
     case — night backdrop, zoomed into the dark pedestal. It measures 6.75:1
     today, and the blur is what buys the headroom, not the alpha.
