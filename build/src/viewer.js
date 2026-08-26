@@ -1,7 +1,7 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Group, Box3, Vector3, Vector2, Spherical,
   ACESFilmicToneMapping, PMREMGenerator, DirectionalLight, AmbientLight, MathUtils,
-  Mesh, PlaneGeometry, MeshBasicMaterial, CanvasTexture, PCFSoftShadowMap,
+  Mesh, PlaneGeometry, MeshBasicMaterial, CanvasTexture,
   SRGBColorSpace, DoubleSide, EquirectangularReflectionMapping, TextureLoader,
   BufferGeometry, LineBasicMaterial, LineSegments, Float32BufferAttribute,
   CylinderGeometry, MeshStandardMaterial, Color, Shape, ExtrudeGeometry
@@ -310,57 +310,6 @@ function envCanvas(preset) {
   return c;
 }
 
-/* --------------------------- enhanced quality ------------------------------
-   A second, heavier pass at the same table: the scan's own 8192px base colour
-   instead of the resampled one, and a rig built to match FableRoom's product
-   photography rather than to look pleasant in the abstract.
-
-   The numbers below are not taste. Each render was masked to the wood and
-   compared against img/p01 in CIELAB: this lands mean L 36.3 against the
-   photo's 36.2, and a luminance spread of 58.6 against 61.5. Change one and
-   re-measure, or the match drifts.
-
-   The part that matters most is the shadow. Without self-shadowing the flutes
-   average into a brown mass and the spread sits around 50; the grooves have to
-   go properly dark. A single caster does that but leaves a hard diagonal edge
-   the photograph does not have, so the key is split across a small dome whose
-   penumbrae overlap into something closer to contact shading. Every caster is
-   static, so the maps are rendered once on entry and then reused - it costs one
-   extra pass when you turn it on, not one per frame. */
-export const PHOTO = {
-  exposure: 0.88, envIntensity: 1.15, matIntensity: 1.15,
-  key: { color: 0xffffff, intensity: 4.6, pos: [0.6, 5.0, 2.6] },
-  dome: 5, spread: 0.5, shadowMap: 1024,
-  env: { base: '#c8c3b8', horizon: '#d4cfc4', floor: '#e0dbd0',
-         boxes: [[0.30, 0.16, 0.20, 0.20, 1.0], [0.72, 0.24, 0.13, 0.15, 0.55]] }
-};
-
-function photoEnvCanvas(p) {
-  const W = 1024, H = 512;
-  const c = document.createElement('canvas'); c.width = W; c.height = H;
-  const g = c.getContext('2d');
-  g.fillStyle = p.base; g.fillRect(0, 0, W, H);
-  const floor = g.createLinearGradient(0, H * 0.52, 0, H);
-  floor.addColorStop(0, p.horizon); floor.addColorStop(1, p.floor);
-  g.fillStyle = floor; g.fillRect(0, H * 0.52, W, H * 0.48);
-  // Soft boxes with a spill beyond the edge, so a polished top catches a sweep
-  // of highlight rather than a hard disc.
-  (p.boxes || []).forEach(([u, v, rw, rh, val]) => {
-    const x = u * W, y = v * H, w = rw * W, h = rh * H;
-    const gr = g.createRadialGradient(x, y, 0, x, y, Math.max(w, h));
-    gr.addColorStop(0, `rgba(255,255,255,${val})`);
-    gr.addColorStop(0.55, `rgba(255,255,255,${val * 0.55})`);
-    gr.addColorStop(1, 'rgba(255,255,255,0)');
-    g.save(); g.beginPath(); g.ellipse(x, y, w, h, 0, 0, Math.PI * 2); g.clip();
-    g.fillStyle = gr; g.fillRect(x - w, y - h, w * 2, h * 2); g.restore();
-    const sp = g.createRadialGradient(x, y, 0, x, y, Math.max(w, h) * 1.9);
-    sp.addColorStop(0, `rgba(255,255,255,${val * 0.30})`);
-    sp.addColorStop(1, 'rgba(255,255,255,0)');
-    g.fillStyle = sp; g.fillRect(0, 0, W, H);
-  });
-  return c;
-}
-
 /* ------------------------------- main viewer ------------------------------- */
 export function initViewer(opts) {
   const host = document.getElementById(opts.hostId);
@@ -425,9 +374,6 @@ export function initViewer(opts) {
     const L = LIGHTING[name];
     if (!L) return;
     lighting = name;
-    // Enhanced owns exposure, environment and the key while it is on; remember
-    // the choice and let it take effect when we drop back.
-    if (enhanced) { for (const cb of lightCbs) cb(name, L); return; }
     envTexture = envFor(name);
     scene.environment = envTexture;
     scene.environmentIntensity = L.envIntensity;
@@ -452,8 +398,6 @@ export function initViewer(opts) {
   const controls = new ProductOrbit(camera, canvas);
 
   let blob = null, model = null, ready = false;
-  let hqModel = null, hqStatus = 'idle', hqPromise = null, enhanced = false;
-  let domeLights = null, photoEnvTex = null;
   applyLighting('studio');
   let hRad = 0.5, vHalf = 0.6, fitDist = 2.15, modelTargetY = 0.3;
 
@@ -632,9 +576,6 @@ export function initViewer(opts) {
   let timeOfDay = 0.5;
   function applyTimeOfDay(t) {
     timeOfDay = Math.min(1, Math.max(0, t));
-    // In enhanced the rig is matched to the photography, so the hour moves the
-    // surround only - the wood must not shift colour under the slider.
-    if (enhanced) { if (onAmbience) onAmbience(timeOfDay); return; }
     const arc = Math.sin(Math.PI * timeOfDay);          // 0 at the ends, 1 at noon
     const warmth = 1 - arc;
     // The sun tracks across and drops at either end; this moves the highlights
@@ -940,156 +881,6 @@ export function initViewer(opts) {
   addEventListener('resize', resize, { passive: true });
   addEventListener('orientationchange', () => setTimeout(resize, 250));
 
-  /* ---------------------- enhanced quality ---------------------------------
-     The heavy model is fetched in the background and parked in the scene
-     invisible, sharing the standard model's transform. Switching is then a
-     visibility flip, which keeps hotspots, dimensions and the chair anchor
-     working untouched - they are all driven off the shared bounding size. */
-
-  function enhanceSupported() {
-    try {
-      const gl = renderer.getContext();
-      // 8192 base colour is the whole point; without it there is nothing to gain.
-      if (gl.getParameter(gl.MAX_TEXTURE_SIZE) < 8192) return false;
-      const dm = navigator.deviceMemory;      // Chromium only; absent elsewhere
-      if (dm && dm <= 2) return false;
-      return true;
-    } catch (e) { return false; }
-  }
-
-  function buildDome() {
-    if (domeLights) return domeLights;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = PCFSoftShadowMap;
-    renderer.shadowMap.autoUpdate = false;      // static rig: render once, reuse
-    const kp = new Vector3(PHOTO.key.pos[0], PHOTO.key.pos[1], PHOTO.key.pos[2]);
-    const up = Math.abs(kp.clone().normalize().y) > 0.9
-      ? new Vector3(1, 0, 0) : new Vector3(0, 1, 0);
-    const t1 = new Vector3().crossVectors(kp, up).normalize();
-    const t2 = new Vector3().crossVectors(kp, t1).normalize();
-    domeLights = [];
-    for (let i = 0; i < PHOTO.dome; i++) {
-      const ang = (i / PHOTO.dome) * Math.PI * 2;
-      const r = i === 0 ? 0 : PHOTO.spread;
-      const l = new DirectionalLight(PHOTO.key.color, PHOTO.key.intensity / PHOTO.dome);
-      l.position.copy(kp.clone()
-        .addScaledVector(t1, Math.cos(ang) * r * kp.length())
-        .addScaledVector(t2, Math.sin(ang) * r * kp.length()));
-      l.castShadow = true;
-      l.shadow.mapSize.set(PHOTO.shadowMap, PHOTO.shadowMap);
-      l.shadow.radius = 3;
-      l.shadow.bias = -0.0009;
-      l.shadow.normalBias = 0.015;
-      const c = l.shadow.camera;
-      c.near = 0.1; c.far = 14;
-      c.left = -1.1; c.right = 1.1; c.top = 1.1; c.bottom = -1.1;
-      c.updateProjectionMatrix();
-      l.visible = false;
-      scene.add(l);
-      domeLights.push(l);
-    }
-    return domeLights;
-  }
-
-  function dressForPhoto(obj) {
-    const mx = renderer.capabilities.getMaxAnisotropy();
-    obj.traverse((o) => {
-      if (!o.isMesh || !o.material) return;
-      o.frustumCulled = false;
-      o.material.side = DoubleSide;
-      o.material.envMapIntensity = PHOTO.matIntensity;
-      ['map', 'roughnessMap', 'metalnessMap'].forEach((k) => {
-        if (o.material[k]) { o.material[k].anisotropy = mx; o.material[k].needsUpdate = true; }
-      });
-    });
-  }
-
-  function preloadEnhanced(url, bytes, onProgress) {
-    if (hqPromise) return hqPromise;
-    if (!enhanceSupported()) {
-      hqStatus = 'unsupported';
-      return (hqPromise = Promise.reject(new Error('unsupported')));
-    }
-    hqStatus = 'loading';
-    hqPromise = fetch(url, { credentials: 'omit' })
-      .then((res) => {
-        if (!res.ok) throw new Error('http ' + res.status);
-        // Pages serves .glb gzipped, so content-length is the compressed size
-        // while we count decompressed bytes. Use the known size when given.
-        const total = bytes || Number(res.headers.get('content-length')) || 0;
-        if (!res.body || !total) return res.arrayBuffer();
-        const reader = res.body.getReader();
-        const chunks = []; let got = 0;
-        const pump = () => reader.read().then(({ done, value }) => {
-          if (done) {
-            const out = new Uint8Array(got);
-            let at = 0;
-            for (const c of chunks) { out.set(c, at); at += c.length; }
-            return out.buffer;
-          }
-          chunks.push(value); got += value.length;
-          if (onProgress) onProgress(Math.min(1, got / total));
-          return pump();
-        });
-        return pump();
-      })
-      .then((buf) => new Promise((res, rej) => {
-        if (onProgress) onProgress(1);
-        loader.parse(buf, '', (gltf) => res(gltf), rej);
-      }))
-      .then((gltf) => {
-        hqModel = gltf.scene;
-        if (model) {                       // share the standard model's framing
-          hqModel.scale.copy(model.scale);
-          hqModel.position.copy(model.position);
-          hqModel.quaternion.copy(model.quaternion);
-        }
-        dressForPhoto(hqModel);
-        hqModel.visible = false;
-        root.add(hqModel);
-        hqStatus = 'ready';
-        return hqModel;
-      })
-      .catch((e) => { hqStatus = 'failed'; throw e; });
-    return hqPromise;
-  }
-
-  function setEnhanced(on) {
-    on = !!on;
-    if (on && hqStatus !== 'ready') return false;
-    if (on === enhanced) return true;
-    enhanced = on;
-    if (on) {
-      buildDome();
-      if (!photoEnvTex) {
-        const t = new CanvasTexture(photoEnvCanvas(PHOTO.env));
-        t.mapping = EquirectangularReflectionMapping;
-        t.colorSpace = SRGBColorSpace;
-        photoEnvTex = pmrem.fromEquirectangular(t).texture;
-        t.dispose();
-      }
-      scene.environment = photoEnvTex;
-      scene.environmentIntensity = PHOTO.envIntensity;
-      renderer.toneMappingExposure = PHOTO.exposure;
-      key.visible = false; fill.visible = false;
-      domeLights.forEach((l) => { l.visible = true; });
-      renderer.shadowMap.enabled = true;
-      if (model) model.visible = false;
-      hqModel.visible = true;
-      // One shadow pass now; the rig and the model are both static after this.
-      renderer.shadowMap.needsUpdate = true;
-    } else {
-      if (domeLights) domeLights.forEach((l) => { l.visible = false; });
-      renderer.shadowMap.enabled = false;
-      key.visible = true; fill.visible = true;
-      if (hqModel) hqModel.visible = false;
-      if (model) model.visible = true;
-      applyLighting(lighting);        // restores exposure, env and the key
-      applyTimeOfDay(timeOfDay);
-    }
-    return true;
-  }
-
   return {
     controls,
     zoomIn: () => controls.zoomBy(1.28),
@@ -1102,12 +893,7 @@ export function initViewer(opts) {
       setTimeout(resize, 320);
     },
     isReady: () => ready,
-    getModel: () => (enhanced && hqModel ? hqModel : model),
-    enhanceSupported,
-    preloadEnhanced,
-    setEnhanced,
-    isEnhanced: () => enhanced,
-    enhancedState: () => hqStatus,
+    getModel: () => model,
     setLighting: applyLighting,
     lighting: () => lighting,
 
