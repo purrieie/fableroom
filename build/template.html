@@ -272,6 +272,9 @@ body.is-locked .vmode{display:none}
 @media(min-width:560px){.studio{max-width:calc(100% - 24px - 140px)}}
 @media(min-width:760px){.studio{max-width:560px}}
 .hero.is-unsupported .studio{display:none}
+.hero.is-immersive .studio{left:50%;transform:translateX(-50%);
+  max-width:calc(100% - 24px)}
+.hero.is-immersive .studio.is-hidden{transform:translateX(-50%) translateY(10px)}
 .hero.is-photos .studio,.hero.is-photos .hero__tools,.hero.is-photos .hero__hint,
 .hero.is-photos .hs,.hero.is-photos .hero__ar,.hero.is-photos .hero__tag{display:none}
 .hero.is-unsupported .vmode{display:none}

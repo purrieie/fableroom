@@ -41,7 +41,9 @@ change" and it's a cache.
 - **Play/pause** — top-left of the canvas, chromeless. The glyph reads on its
   own and a pill around it would only take frame away from the model.
 - **Studio bar** — bottom-**left** of the canvas: Studio · Size · Scale · Grain ·
-  Details. It stays visible in fullscreen.
+  Details. In fullscreen it stays visible and re-centres - the 3D/Photos toggle
+  is hidden there, so nothing is claiming the right corner and the bar has no
+  reason to hug the left.
 - **3D / Photos toggle** — bottom-**right** of the canvas, opposite the bar,
   where a thumb already is. It lives in `.heroWrap`, *not* inside `.hero`:
   Photos mode hides the hero, and a control that switches you back must not

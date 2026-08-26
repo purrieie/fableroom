@@ -272,6 +272,9 @@ body.is-locked .vmode{display:none}
 @media(min-width:560px){.studio{max-width:calc(100% - 24px - 140px)}}
 @media(min-width:760px){.studio{max-width:560px}}
 .hero.is-unsupported .studio{display:none}
+.hero.is-immersive .studio{left:50%;transform:translateX(-50%);
+  max-width:calc(100% - 24px)}
+.hero.is-immersive .studio.is-hidden{transform:translateX(-50%) translateY(10px)}
 .hero.is-photos .studio,.hero.is-photos .hero__tools,.hero.is-photos .hero__hint,
 .hero.is-photos .hs,.hero.is-photos .hero__ar,.hero.is-photos .hero__tag{display:none}
 .hero.is-unsupported .vmode{display:none}
@@ -5737,7 +5740,7 @@ three/examples/jsm/libs/fflate.module.js:
     <div class="ft__sel"><span>United Kingdom (GBP £)</span><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8"><path d="m6 9 6 6 6-6"/></svg></div>
     <div class="ft__legal">
       <span style="display:block;font-size:11px;color:#9A958E;letter-spacing:.08em;margin-bottom:8px">
-        3D PROTOTYPE &middot; BUILD 26aug-85c81fb
+        3D PROTOTYPE &middot; BUILD 26aug-051d69b
       </span>
       &copy; 2026 <a class="u" href="#">FABLEROOM</a>.<br>
       FableRoom Limited is a registered company in England &amp; Wales (No. 16249321). Registered office: 85 Great Portland Street, First Floor, London, W1W 7LT.
