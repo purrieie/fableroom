@@ -312,11 +312,19 @@ body.mode-2d .heroWrap{display:none}
 .hsdot.is-active::after{border-color:#7C4E1E;opacity:1}
 
 .hscard{position:absolute;left:14px;right:14px;top:58px;z-index:7;
-  background:#fff;border:1px solid var(--line,#E6E2DB);border-radius:14px;padding:16px 18px 15px;
-  box-shadow:0 16px 40px rgba(44,30,15,.16);
+  /* Translucent so the detail you just tapped is still visible behind the
+     note. The blur is what keeps 13.5px body copy readable over a moving,
+     high-contrast model; without backdrop-filter support we fall back to a
+     near-solid panel rather than ship unreadable text. */
+  background:rgba(255,255,255,.68);backdrop-filter:blur(10px) saturate(130%);
+  -webkit-backdrop-filter:blur(10px) saturate(130%);
+  border:1px solid rgba(255,255,255,.55);border-radius:14px;padding:16px 18px 15px;
+  box-shadow:0 16px 40px rgba(44,30,15,.20);
   opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .25s,transform .25s}
 @media(min-width:760px){.hscard{left:auto;right:16px;width:330px}}
 .hscard.on{opacity:1;transform:none;pointer-events:auto}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .hscard{background:rgba(255,255,255,.94);border-color:var(--line,#E6E2DB)}}
 .hscard__no{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-d,#A06C36)}
 .hscard h4{font-family:var(--serif);font-size:19px;font-weight:500;margin:5px 0 7px;line-height:1.25}
 .hscard p{margin:0;font-size:13.5px;line-height:1.6;color:var(--ink-2)}
@@ -5925,7 +5933,7 @@ three/examples/jsm/libs/fflate.module.js:
     <div class="ft__sel"><span>United Kingdom (GBP £)</span><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8"><path d="m6 9 6 6 6-6"/></svg></div>
     <div class="ft__legal">
       <span style="display:block;font-size:11px;color:#9A958E;letter-spacing:.08em;margin-bottom:8px">
-        3D PROTOTYPE &middot; BUILD 26aug-f1b53c6
+        3D PROTOTYPE &middot; BUILD 26aug-5228bb0
       </span>
       &copy; 2026 <a class="u" href="#">FABLEROOM</a>.<br>
       FableRoom Limited is a registered company in England &amp; Wales (No. 16249321). Registered office: 85 Great Portland Street, First Floor, London, W1W 7LT.

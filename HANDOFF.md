@@ -49,6 +49,11 @@ change" and it's a cache.
     to buy. The button id is still `#scaleBtn`.
   - *Grain* — texture close-up.
   - *Details* — five hotspots on the table; tap for a note about that detail.
+    The note panel is deliberately translucent (`rgba(255,255,255,.68)` over a
+    10px backdrop blur) so the detail you just tapped stays visible behind it.
+    If you change that alpha, keep body text above 4.5:1 contrast in the worst
+    case — night backdrop, zoomed into the dark pedestal. It measures 6.75:1
+    today, and the blur is what buys the headroom, not the alpha.
 - **3D / Photos toggle** — 3D shows only the model, Photos restores the original
   page gallery. Body-level `mode-3d` / `mode-2d` classes; neither duplicates the
   other's content.
