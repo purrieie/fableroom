@@ -18,7 +18,8 @@ file that opens anywhere.
 | `index.html` | 2.70 MB | The pitch page. Self-contained — CSS, JS, all imagery base64'd. |
 | `lab.html` | 2.73 MB | Scratch build for trying features before they go into index. |
 | `model.glb` | 10.81 MB | The table. Fetched at runtime, not inlined. |
-| `chair.glb` | 1.65 MB | Keaton dining chair. Lazy — only loads when someone taps **Chairs**. |
+| `model-hq.glb` | 13.58 MB | The Lustre model — same mesh, the scan's untouched 8192 base colour. Preloaded in the background. |
+| `chair.glb` | 1.65 MB | Keaton dining chair. Lazy — only loads when someone taps **Scale**. |
 
 `index.html` is self-contained apart from the two `.glb` files, which sit beside
 it. That split is deliberate: inlining a 10 MB model as base64 would push the
@@ -34,26 +35,20 @@ change" and it's a cache.
 - **Orbit / pinch-zoom / two-finger tilt.** Custom controls, not OrbitControls.
   Vertical swipe scrolls the page; horizontal spins the model. Two fingers tilt
   and zoom — on a phone that's the only way to look down at the tabletop.
-- **View in your space** — AR. Three-tier fallback, see §6.
 - **Hour rail** (left edge). Moves the light from 6am to 9pm. It tints the
   *backdrop*, not the table — exposure, key light and environment are locked so
   the walnut keeps one true colour. A product that changes colour under a slider
   reads as a rendering bug, not as lighting.
-- **Studio bar** (bottom, centred): Pause · Studio · Size · Scale · Grain ·
-  Details.
+- **Play/pause** — top-left of the canvas, chromeless. It used to sit in the
+  bottom bar; the glyph is legible enough on its own and the bar was crowded.
+- **Studio bar** (bottom, centred): Studio · Size · Scale · Lustre.
   - *Studio* — studio lighting, on by default.
   - *Size* — dimension overlay, billboards to face the camera.
   - *Scale* — four Keaton chairs around the table, correctly scaled with a gap.
     One carries its own dimensions. Tapping a chair links to its product page.
     Called *Scale*, not *Chairs* — the chairs are a size reference, not a variant
     to buy. The button id is still `#scaleBtn`.
-  - *Grain* — texture close-up.
-  - *Details* — five hotspots on the table; tap for a note about that detail.
-    The note panel is deliberately translucent (`rgba(255,255,255,.68)` over a
-    10px backdrop blur) so the detail you just tapped stays visible behind it.
-    If you change that alpha, keep body text above 4.5:1 contrast in the worst
-    case — night backdrop, zoomed into the dark pedestal. It measures 6.75:1
-    today, and the blur is what buys the headroom, not the alpha.
+  - *Lustre* — the full-quality view, see §7.
 - **3D / Photos toggle** — 3D shows only the model, Photos restores the original
   page gallery. Body-level `mode-3d` / `mode-2d` classes; neither duplicates the
   other's content.
@@ -151,33 +146,97 @@ The scan itself measures 79.4 cm — photogrammetry drifts a few percent. Width 
 read from the bounding box and comes out right. If the scan is ever re-exported
 to true scale, drop the hard-coded string in `viewer.js:694`.
 
-## 7. AR
+## 7. Lustre — the full-quality view
 
-Three tiers, tried in order (`ar.js`):
+Tapping **Lustre** swaps in `model-hq.glb` and relights the scene to match
+FableRoom's own product photography. It is the same mesh, every triangle; what
+changes is the base colour (the scan's untouched 8192px map instead of the
+resampled, slightly brightened 4096 one) and the rig.
 
-1. **iOS** → AR Quick Look. Needs an `<a rel="ar">` wrapping a *visible* `<img>`.
-   USDZ is generated in-browser and handed over as a blob URL.
-2. **Android with ARCore** → WebXR `immersive-ar` + hit-test + dom-overlay.
-   If the user refuses once, `localStorage['ar:webxr-refused']` remembers and we
-   skip straight to tier 3 next time.
-3. **Anything else** → camera passthrough via `getUserMedia`. Not real tracking,
-   but it works on every phone with a camera, which was the requirement.
+### The rig is measured, not eyeballed
 
-Two traps worth knowing:
+`PHOTO` in `viewer.js` holds the numbers. Each candidate render was masked to
+the wood and compared against `img/p01` in CIELAB. Current match:
 
-- **User activation.** `requestSession()` must be called *before* the model
-  loads, not after. WebKit also drops activation after ~1 s of async work, which
-  is why the USDZ is prepared ahead of the tap rather than on it.
-- **USDZ size.** three's `USDZExporter` writes geometry as *text*, and USDZ has
-  to be stored uncompressed. Size tracks vertex count almost linearly — the AR
-  model has to stay small. Also set
-  `material.map.userData.mimeType = 'image/jpeg'` or the exporter writes PNG and
-  roughly triples the texture bytes.
+| | photo | Lustre |
+|---|---|---|
+| mean L | 36.2 | 36.3 |
+| a | 9.4 | 9.7 |
+| b | 9.8 | 12.1 |
+| luminance spread (p90−p10) | 61.5 | 58.6 |
 
-**Untested:** AR has never been run on real hardware end-to-end from this
-machine. The USDZ was validated against the format spec and the WebXR flow
-against a mock session, but the final hop onto a physical iPhone or ARCore phone
-is unproven. Say so when handing this over.
+If you change a value, re-measure — `build/test/woodstat.py` does exactly this
+comparison, and `build/lightlab.html` is the harness for sweeping candidates.
+
+### Why there are five lights
+
+The single biggest tell between a render and the photograph was **contrast in
+the flutes**. Without self-shadowing they average into a brown mass and the
+spread sits around 50 against the photo's 61.5 — the grooves have to go properly
+dark. The base scan has no baked AO to lean on: the MR map's red channel is flat
+white (mean 254/255), so occlusion has to be lit, not sampled.
+
+One shadow-casting light fixes the contrast but leaves a hard diagonal edge
+across the tiers that the photograph does not have. So the key is split across a
+small dome of five dimmer casters whose penumbrae overlap, which reads as
+contact shading rather than a cast shadow.
+
+**This costs nothing per frame.** Both the rig and the model are static, so
+`renderer.shadowMap.autoUpdate` is off and the maps are rendered once on entry.
+Measured 60 fps standard, 61 fps with Lustre on. If you ever animate one of
+those lights you will pay five full geometry passes every frame — don't.
+
+### Preloading
+
+The heavy file starts downloading as soon as the everyday model is interactive,
+plus an 800 ms beat so it isn't competing for the first model's connections. The
+button stays hidden until the file has actually arrived, so it never promises
+something the user then waits for.
+
+Measured on a throttled phone profile: Fast 4G — first paint 448 ms, 3D
+interactive 9.7 s, Lustre ready 20 s. Slow 4G — 27 s and 55 s. The preload does
+not delay the standard model.
+
+It is skipped entirely when `saveData` is set or the connection reports 2g, and
+when `MAX_TEXTURE_SIZE < 8192` or `deviceMemory <= 2`.
+
+### The memory cost, honestly
+
+An 8192 base colour is ~358 MB of GPU memory with mipmaps, against ~90 MB for
+the 4096 one. Both models stay resident so toggling is instant, which puts the
+page around 560 MB of texture memory with Lustre on. That is fine on the devices
+that pass the gate above and was stable in testing with no context loss, but it
+is the first thing to suspect if a low-end phone dies on this page. The cheap
+fix if it ever bites is `model-hq` at 4096 (`build/build_hq.py 4096 4096`),
+which is 11.7 MB and ~90 MB of GPU — measurably softer only past the zoom most
+people reach.
+
+### Is 8192 worth it?
+
+Measured, at the viewer's closest zoom, 8192 carries **27% more
+high-frequency detail** than 4096 (Laplacian variance), and 4% at normal
+framing. Mean absolute pixel difference is small either way. It costs 1.9 MB of
+transfer, which is why it is in; the GPU memory above is the real price.
+
+Geometry precision, by contrast, does **not** matter here — f32, 12-bit and
+10-bit normals render the flutes identically at every zoom. `model-hq.glb` uses
+gltf-transform's default meshopt quantization for that reason. Don't spend
+bytes there.
+
+## 7a. AR — removed for now
+
+"View in your space" was pulled at NJ's request on 2026-08-26 to be picked up
+separately. The button, the `arnote`, the `xrOverlay` and `initAR()` are gone
+from `template.html`; `build/src/ar.js` and `build/src/camera-ar.js` are still
+in the repo and still bundled by `viewer.js`, so restoring it is a matter of
+putting the markup and the init call back. It was never verified on real
+hardware — see the git history around commit `f1a0f06` for the three-tier
+fallback design (iOS Quick Look → WebXR → camera passthrough) and its traps.
+
+Grain and Details were removed at the same time as not earning their space. The
+hotspot data, the detail card and the texture close-up are gone from the
+template; `setHotspots` / `hotspotPositions` remain in `viewer.js` and are still
+used by `lab.html`.
 
 ## 8. Testing
 
@@ -227,6 +286,13 @@ These all caused visible bugs once. Leave them alone.
   buttons stay keyboard-focusable and Enter still fires them (one of them being
   fullscreen). Every other hide path in the page uses `display:none`, which is
   why this only bit the new rule.
+- **Don't animate the Lustre dome.** Its five shadow maps are rendered once
+  because nothing in that rig moves. Move a light, or animate the model, and you
+  pay five full geometry passes per frame on a 2M-triangle mesh.
+- **The hour slider must not relight the model in Lustre.** `applyTimeOfDay`
+  and `applyLighting` both early-return while enhanced is on, so the rig stays
+  matched to the photography; the hour still tints the backdrop through
+  `onAmbience`.
 - **Don't read `offsetWidth` in the per-frame loop.** The label and tag clamps
   need element widths; both cache them (`_w`) and invalidate on text change.
   Reading it every frame forces synchronous layout on every animation frame.
