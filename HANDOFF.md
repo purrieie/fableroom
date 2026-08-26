@@ -34,13 +34,18 @@ change" and it's a cache.
 - **Orbit / pinch-zoom / two-finger tilt.** Custom controls, not OrbitControls.
   Vertical swipe scrolls the page; horizontal spins the model. Two fingers tilt
   and zoom — on a phone that's the only way to look down at the tabletop.
-- **View in your space** — AR. Three-tier fallback, see §6.
 - **Hour rail** (left edge). Moves the light from 6am to 9pm. It tints the
   *backdrop*, not the table — exposure, key light and environment are locked so
   the walnut keeps one true colour. A product that changes colour under a slider
   reads as a rendering bug, not as lighting.
-- **Studio bar** (bottom, centred): Pause · Studio · Size · Scale · Grain ·
-  Details.
+- **Play/pause** — top-left of the canvas, chromeless. The glyph reads on its
+  own and a pill around it would only take frame away from the model.
+- **Studio bar** — bottom-**left** of the canvas: Studio · Size · Scale · Grain ·
+  Details. It stays visible in fullscreen.
+- **3D / Photos toggle** — bottom-**right** of the canvas, opposite the bar,
+  where a thumb already is. It lives in `.heroWrap`, *not* inside `.hero`:
+  Photos mode hides the hero, and a control that switches you back must not
+  vanish with it. In Photos it returns to normal flow under the title.
   - *Studio* — studio lighting, on by default.
   - *Size* — dimension overlay, billboards to face the camera.
   - *Scale* — four Keaton chairs around the table, correctly scaled with a gap.
@@ -51,6 +56,9 @@ change" and it's a cache.
   - *Details* — five hotspots on the table; tap for a note about that detail.
     The note panel is deliberately translucent (`rgba(255,255,255,.68)` over a
     10px backdrop blur) so the detail you just tapped stays visible behind it.
+    Body copy is written to fit **three lines maximum** at 11.5px — verified at
+    320px, which is the width that breaks first. If you lengthen a `body`
+    string, re-check it there.
     If you change that alpha, keep body text above 4.5:1 contrast in the worst
     case — night backdrop, zoomed into the dark pedestal. It measures 6.75:1
     today, and the blur is what buys the headroom, not the alpha.
@@ -151,33 +159,19 @@ The scan itself measures 79.4 cm — photogrammetry drifts a few percent. Width 
 read from the bounding box and comes out right. If the scan is ever re-exported
 to true scale, drop the hard-coded string in `viewer.js:694`.
 
-## 7. AR
+## 7. AR — removed
 
-Three tiers, tried in order (`ar.js`):
+"View in your space" was pulled on 2026-08-26 to be picked up separately. The
+button, the `arnote`, the `xrOverlay` and `initAR()` are gone from
+`template.html`. `build/src/ar.js` and `build/src/camera-ar.js` are still in the
+repo and still bundled by `viewer.js`, so restoring it means putting the markup
+and the init call back — see commit `93217e2` for the last version that had it.
 
-1. **iOS** → AR Quick Look. Needs an `<a rel="ar">` wrapping a *visible* `<img>`.
-   USDZ is generated in-browser and handed over as a blob URL.
-2. **Android with ARCore** → WebXR `immersive-ar` + hit-test + dom-overlay.
-   If the user refuses once, `localStorage['ar:webxr-refused']` remembers and we
-   skip straight to tier 3 next time.
-3. **Anything else** → camera passthrough via `getUserMedia`. Not real tracking,
-   but it works on every phone with a camera, which was the requirement.
-
-Two traps worth knowing:
-
-- **User activation.** `requestSession()` must be called *before* the model
-  loads, not after. WebKit also drops activation after ~1 s of async work, which
-  is why the USDZ is prepared ahead of the tap rather than on it.
-- **USDZ size.** three's `USDZExporter` writes geometry as *text*, and USDZ has
-  to be stored uncompressed. Size tracks vertex count almost linearly — the AR
-  model has to stay small. Also set
-  `material.map.userData.mimeType = 'image/jpeg'` or the exporter writes PNG and
-  roughly triples the texture bytes.
-
-**Untested:** AR has never been run on real hardware end-to-end from this
-machine. The USDZ was validated against the format spec and the WebXR flow
-against a mock session, but the final hop onto a physical iPhone or ARCore phone
-is unproven. Say so when handing this over.
+It was never verified on real hardware. The design was three-tier: iOS AR Quick
+Look → Android WebXR → camera passthrough for everything else. Two traps worth
+keeping if it comes back: `requestSession()` has to be called *before* the model
+loads or you lose the user activation, and three's `USDZExporter` writes geometry
+as text into an uncompressed container, so the AR model has to stay small.
 
 ## 8. Testing
 
@@ -227,6 +221,16 @@ These all caused visible bugs once. Leave them alone.
   buttons stay keyboard-focusable and Enter still fires them (one of them being
   fullscreen). Every other hide path in the page uses `display:none`, which is
   why this only bit the new rule.
+- **`build/*.html` in `.gitignore` silently untracked the templates.** It was
+  meant to ignore build output. For several commits `build/template.html` — the
+  main source file — was never committed, so a `git revert` could not restore
+  it and it had to be reconstructed. The ignore list now names the output files
+  explicitly. Check `git ls-files build/` after touching it.
+- **`justify-content:center` on an overflowing flex row hides its first item.**
+  The action bar scrolls at 320px; centred, the leading button is clipped and
+  cannot be scrolled back to. It uses `flex-start`.
+- **The 3D/Photos toggle must not live inside `.hero`.** Photos mode hides the
+  hero, which would take the only way back with it.
 - **Don't read `offsetWidth` in the per-frame loop.** The label and tag clamps
   need element widths; both cache them (`_w`) and invalidate on text change.
   Reading it every frame forces synchronous layout on every animation frame.

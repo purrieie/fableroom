@@ -4,4 +4,7 @@ build/dist/
 build/img/
 build/shots/
 build/product.json
-build/*.html
+# Build OUTPUT only — the templates are source and must stay tracked.
+build/belgrave-3d.html
+build/belgrave-lab.html
+build/old-index.html
