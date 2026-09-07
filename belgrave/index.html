@@ -276,10 +276,15 @@ h1,h2,h3,h4{margin:0;font-family:var(--ff-d);font-weight:400;letter-spacing:.005
   border:1px solid rgba(44,44,44,.08);box-shadow:0 2px 9px rgba(44,30,15,.13)}
 .hourrail>svg{width:14px;height:14px;stroke:var(--ink-3);fill:none;stroke-width:1.5;
   stroke-linecap:round}
-.hourrail .slot{height:92px;width:44px;display:grid;place-items:center}
-/* 44px of draggable height once rotated; the painted track stays thin. */
-.hourrail input{width:92px;height:44px;transform:rotate(90deg);
-  accent-color:var(--bronze);margin:0}
+.hourrail .slot{position:relative;height:92px;width:44px}
+/* The input's layout box is 92x44 and only *looks* vertical once rotated, so
+   it is wider than the 44px slot. Grid centring cannot be used for that: an
+   overflowing grid item falls back to start alignment (safe overflow), which
+   parked the whole slider 24px - exactly (92-44)/2 - right of centre.
+   Centring it explicitly in the same transform is deterministic instead. */
+.hourrail input{position:absolute;left:50%;top:50%;width:92px;height:44px;
+  margin:0;transform:translate(-50%,-50%) rotate(90deg);
+  transform-origin:center;accent-color:var(--bronze)}
 .hourread{font-size:10px;letter-spacing:.04em;color:var(--ink-3);white-space:nowrap}
 
 .barpanel{position:absolute;left:8px;bottom:8px;z-index:6;
