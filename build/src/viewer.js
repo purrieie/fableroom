@@ -39,6 +39,17 @@ class ProductOrbit {
     this._startPt = null;
     this._dragging = false;
     this.onFirstInput = null;
+    // Pinch zooms toward the point between your fingers, not always toward
+    // the object's centre — this is a small ADDITIVE offset to the camera's
+    // look-at point, layered on top of `target` rather than replacing it, so
+    // orbiting, reset, and every hotspot's flyTo all keep working against the
+    // real centre untouched. It grows while you pinch in and eases back to
+    // zero the moment you let go — "zoom toward where you point" without
+    // leaving the view permanently off-centre once you release.
+    this.targetOffset = new Vector3(0, 0, 0);
+    this._targetOffsetGoal = new Vector3(0, 0, 0);
+    this._pinchAnchorDir = null;    // world-space direction for the current pinch's midpoint
+    this._pinchStartRadius = null;
     this._bind();
     this.apply();
   }
@@ -88,6 +99,8 @@ class ProductOrbit {
         // rather than accumulated per-event ratios, so nothing drifts or steps.
         this._pinch = { span: Math.max(span, 1), smooth: span, radius: this.goal.radius };
         this._startPt = this._pinchMid(e);
+        this._pinchStartRadius = this.goal.radius;
+        this._pinchAnchorDir = this._screenToTargetOffset(this._startPt.x, this._startPt.y);
         e.preventDefault();
       }
       this._mark();
@@ -133,11 +146,26 @@ class ProductOrbit {
         this._orbitBy((mid.x - this._startPt.x) * 0.45, (mid.y - this._startPt.y) * 1.35);
         this._startPt = mid;
         this._mark();
+
+        // Zooming in only, and only up to a fraction of the way there — this
+        // is a lean towards the pinch point, not a full re-centre on it,
+        // which would swing the model further than a pinch should.
+        if (this._pinchAnchorDir && this._pinchStartRadius) {
+          const zoomedIn = MathUtils.clamp(1 - this.goal.radius / this._pinchStartRadius, 0, 1);
+          this._targetOffsetGoal.copy(this._pinchAnchorDir).multiplyScalar(zoomedIn * 0.6);
+        }
       }
     }, { passive: false });
 
     const endTouch = (e) => {
-      if (e.touches.length < 2) this._pinch = null;
+      if (e.touches.length < 2) {
+        this._pinch = null;
+        // Ease back to centred the moment the pinch ends — update() blends
+        // targetOffset toward this goal every frame, same damping as
+        // everything else, so this is a smooth settle, not a jump cut.
+        this._targetOffsetGoal.set(0, 0, 0);
+        this._pinchAnchorDir = null;
+      }
       // Lifting one finger mid-pinch hands the gesture to the other, so re-anchor
       // instead of jumping by the leftover delta.
       if (e.touches.length === 1) {
@@ -174,6 +202,23 @@ class ProductOrbit {
   _dolly(scale) {
     this.goal.radius = MathUtils.clamp(this.goal.radius / scale, this.minR, this.maxR);
   }
+  // The world-space point (relative to target) that a screen coordinate
+  // corresponds to, at the target's own depth — a ray/plane projection using
+  // the camera's current basis, not a raycast against the model. It costs a
+  // handful of vector ops regardless of how many triangles the mesh has,
+  // which matters here: a real raycast against a two-million-triangle scan
+  // is exactly what froze the tab when it was tried for hotspot occlusion.
+  _screenToTargetOffset(sx, sy) {
+    const w = this.dom.clientWidth || 1, h = this.dom.clientHeight || 1;
+    const nx = (sx / w) * 2 - 1, ny = -((sy / h) * 2 - 1);
+    const m = this.camera.matrixWorld.elements;
+    const right = new Vector3(m[0], m[1], m[2]);
+    const up = new Vector3(m[4], m[5], m[6]);
+    const dist = this.sph.radius;
+    const halfH = Math.tan(MathUtils.degToRad(this.camera.fov) / 2) * dist;
+    const halfW = halfH * this.camera.aspect;
+    return right.multiplyScalar(nx * halfW).add(up.multiplyScalar(ny * halfH));
+  }
   zoomBy(f) { this._dolly(f); this._mark(); }
   reset() {
     this.goal.set(this.homeRadius || this.goal.radius, MathUtils.degToRad(74), MathUtils.degToRad(28));
@@ -188,12 +233,14 @@ class ProductOrbit {
     // Interpolate distance geometrically — linear easing makes the last stretch
     // of a zoom crawl, which is the other half of what reads as choppy.
     this.sph.radius *= Math.pow(this.goal.radius / this.sph.radius, k);
+    this.targetOffset.lerp(this._targetOffsetGoal, k);
     this.apply();
   }
   apply() {
-    const p = new Vector3().setFromSpherical(this.sph).add(this.target);
+    const lookAt = this.target.clone().add(this.targetOffset);
+    const p = new Vector3().setFromSpherical(this.sph).add(lookAt);
     this.camera.position.copy(p);
-    this.camera.lookAt(this.target);
+    this.camera.lookAt(lookAt);
   }
   dispose() { /* page-lifetime viewer; nothing to tear down */ }
 }

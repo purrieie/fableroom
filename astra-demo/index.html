@@ -9758,6 +9758,7 @@ setTimeout(openExit,25000);
     realSize: [1.20, 0.76, 1.20]
   });
   if (!viewer) { console.warn('[belgrave-demo] viewer failed to init'); return; }
+  window.__belgraveViewerRef = viewer;
 
   viewer.onFirstInput(function(){ layer.classList.add('is-touched'); });
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -9848,7 +9849,13 @@ setTimeout(openExit,25000);
     activeId=null; card.classList.remove('on');
     Object.keys(dots).forEach(function(k){ dots[k].classList.remove('is-active'); });
   }
-  $('#g3dCardClose').addEventListener('click', closeCard);
+  $('#g3dCardClose').addEventListener('click', function(){
+    closeCard();
+    // Only the explicit X — closeCard() is also called when Details gets
+    // toggled off and when leaving 3D for Photos, and neither of those
+    // should also yank the camera back to the home view.
+    viewer.home();
+  });
   var detailsBtn=$('#g3dDetailsBtn'), detailsLabel=$('#g3dDetailsLabel');
   detailsBtn.addEventListener('click', function(){
     detailsOn=!detailsOn;
