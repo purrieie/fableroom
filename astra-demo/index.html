@@ -6307,7 +6307,6 @@ footer{background:#EDECE9;color:#433122}
   pointer-events:none;opacity:0;transition:opacity .5s ease .3s;z-index:3}
 .g-3d-layer.is-ready .g3d-hint{opacity:1}
 .g-3d-layer.is-touched .g3d-hint{opacity:0;transition-delay:0s}
-.g-3d-layer.is-touched .g3d-hint{opacity:0;transition-delay:0s}
 .g3d-hint svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .g3d-tools{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:7px;z-index:3}
 .g3d-tool{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.9);
@@ -6386,6 +6385,77 @@ footer{background:#EDECE9;color:#433122}
   font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);transition:background .2s,color .2s;
   white-space:nowrap}
 .g3d-toggle button[aria-pressed="true"]{background:var(--ink);color:#fff}
+
+/* ---- review pass, 07 Sep --------------------------------------------- */
+.g3d-toggle button{display:inline-flex;align-items:center;gap:6px}
+.g3d-toggle button svg{width:12px;height:12px;stroke:currentColor;fill:none;
+  stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+
+/* The 3D option is the one nobody discovers, because Photos is the state
+   the merchant will ship as default. A short attention pulse runs only
+   while you are actually in Photos mode, then stops - three beats, not a
+   permanent blinking control. */
+@keyframes g3dPulse{
+  0%{box-shadow:0 0 0 0 rgba(183,126,69,.5)}
+  70%{box-shadow:0 0 0 9px rgba(183,126,69,0)}
+  100%{box-shadow:0 0 0 0 rgba(183,126,69,0)}}
+.gallery:not(.mode-3d) .g3d-toggle #g3dMode3d{animation:g3dPulse 2.6s ease-out 3}
+
+/* Reveal sheen: a single light sweep when the model first becomes ready and
+   whenever you switch back into 3D. Purely a CSS overlay - it costs the
+   renderer nothing and cannot stall the first frame. */
+.g3d-sheen{position:absolute;inset:0;pointer-events:none;z-index:4;opacity:0;overflow:hidden}
+.g3d-sheen::after{content:"";position:absolute;top:-60%;bottom:-60%;width:38%;left:-45%;
+  background:linear-gradient(100deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.8) 50%,rgba(255,255,255,0) 100%);
+  transform:rotate(9deg);filter:blur(6px)}
+.g3d-sheen.run{animation:g3dSheenFade 1.35s ease-out forwards}
+.g3d-sheen.run::after{animation:g3dSweep 1.15s cubic-bezier(.22,.61,.36,1) forwards}
+@keyframes g3dSweep{from{left:-45%}to{left:112%}}
+@keyframes g3dSheenFade{0%,72%{opacity:1}100%{opacity:0}}
+/* Settle the model in on reveal rather than hard-cutting it. */
+.g-3d-layer canvas{transform:scale(1.015);transition:opacity .7s ease,transform 1.1s cubic-bezier(.2,.7,.3,1)}
+.g-3d-layer.is-ready canvas{transform:scale(1)}
+@media(prefers-reduced-motion:reduce){
+  .g3d-sheen{display:none}
+  .gallery:not(.mode-3d) .g3d-toggle #g3dMode3d{animation:none}
+  .g-3d-layer canvas{transform:none;transition:opacity .7s ease}}
+
+/* HD upgrade: top-left, the one free corner (hint is top-centre, toggle
+   top-right on desktop, zoom tools right-middle, studio bar bottom-left). */
+.g3d-hd{position:absolute;left:10px;top:10px;z-index:8;display:none;align-items:center;gap:6px;
+  border:1px solid rgba(44,44,44,.10);border-radius:100px;padding:6px 12px;cursor:pointer;
+  background:rgba(255,255,255,.90);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+  font-family:var(--ff-b),sans-serif;font-weight:700;font-size:9.5px;line-height:1;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+  box-shadow:0 2px 9px rgba(44,30,15,.14);transition:color .2s,background .2s,border-color .2s}
+.g-3d-layer.is-ready .g3d-hd{display:inline-flex}
+.g3d-hd:hover{color:var(--ink)}
+.g3d-hd[disabled]{cursor:default;opacity:.78}
+.g3d-hd.done{color:var(--bronze);border-color:rgba(183,126,69,.34);cursor:default}
+.g3d-hd svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* On phones the HD pill takes the top-left corner, which is where the
+   centred hint text's left edge reaches on a 358px-wide canvas. Drop the
+   hint to a second row rather than shrinking either one. */
+@media(max-width:899px){.g3d-hint{top:46px}}
+
+@media(min-width:900px){
+  /* Was aspect-ratio:3/4 -> 878px tall under a 154px header, so the bottom
+     of the canvas (and everything anchored to it) fell past a 900px fold.
+     The renderer sizes to the element, so capping height just gives a
+     shorter, wider viewport - the model stays framed. */
+  .g-3d-layer{aspect-ratio:auto;height:clamp(430px,calc(100vh - 210px),760px)}
+  /* Bottom-anchoring was never going to work on desktop: in Photos mode the
+     real page's gallery is a 2648px mosaic, so a bottom-right toggle sat
+     ~1860px down the page. Top-right is inside the first fold in BOTH
+     modes, since both share this same positioned box. */
+  .g3d-toggle{top:14px;right:14px;bottom:auto;padding:3px;
+    background:rgba(255,255,255,.94);border-color:rgba(44,44,44,.14);
+    box-shadow:0 4px 18px rgba(44,30,15,.20)}
+  .g3d-toggle button{padding:8px 16px;font-size:11px;letter-spacing:.09em}
+  .g3d-hd{left:14px;top:14px;padding:8px 14px;font-size:10.5px}
+}
 </style>
 </head>
 <body>
@@ -6461,8 +6531,14 @@ footer{background:#EDECE9;color:#433122}
              #gMain, so it can share #gMain's own box sizing (aspect-ratio:3/4,
              border-radius, position:relative already set) instead of imposing
              a new layout convention on this page. -->
-        <div class="g-3d-layer" id="g3dLayer">
+        <div class="g-3d-layer" id="g3dLayer"
+             data-hd-url="model.glb" data-hd-bytes="10814800">
           <canvas aria-hidden="true"></canvas>
+          <div class="g3d-sheen" id="g3dSheen" aria-hidden="true"></div>
+          <button class="g3d-hd" id="g3dHd" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 20 7.6v8.8L12 20.8 4 16.4V7.6Z"/><path d="M4 7.6 12 12l8-4.4M12 12v8.8"/></svg>
+            <span id="g3dHdLabel">Load HD</span>
+          </button>
           <div class="g3d-ph"><img alt="" width="600" height="800"></div>
           <div class="g3d-load"><div class="g3d-track"><div class="g3d-bar" id="g3dBar"></div></div>
             <div class="g3d-status" id="g3dStatus">Loading model</div></div>
@@ -6502,7 +6578,7 @@ footer{background:#EDECE9;color:#433122}
           </div>
         </div>
         <div class="g3d-toggle" role="group" aria-label="View mode">
-          <button id="g3dMode3d" aria-pressed="false">3D</button>
+          <button id="g3dMode3d" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 20 7.6v8.8L12 20.8 4 16.4V7.6Z"/><path d="M4 7.6 12 12l8-4.4M12 12v8.8"/></svg>3D</button>
           <button id="g3dMode2d" aria-pressed="true">Photos</button>
         </div>
 
@@ -9935,6 +10011,48 @@ setTimeout(openExit,25000);
      the same #gMain box; the toggle is a third direct child of #gMain, so it
      never needs to move between the two states, it just always sits on top
      of whichever one is showing. */
+  /* Reveal sheen. Re-triggered by removing the class, forcing a reflow, then
+     re-adding it - without the reflow the browser coalesces both mutations
+     and the animation never restarts on a second run. */
+  var sheenEl = document.getElementById('g3dSheen');
+  function sheen(){
+    if (!sheenEl) return;
+    sheenEl.classList.remove('run');
+    void sheenEl.offsetWidth;
+    sheenEl.classList.add('run');
+  }
+  var sheenWait = setInterval(function(){
+    if (!layer.classList.contains('is-ready')) return;
+    clearInterval(sheenWait); sheen();
+  }, 200);
+
+  /* HD upgrade. The heavy file is fetched only on click, so the default page
+     weight is unchanged and the button doubles as a real read on download
+     speed - it reports the measured time, not an estimate. */
+  var hdBtn = document.getElementById('g3dHd'),
+      hdLabel = document.getElementById('g3dHdLabel'),
+      hdUrl = layer.getAttribute('data-hd-url'),
+      hdBytes = +(layer.getAttribute('data-hd-bytes') || 0),
+      hdDone = false;
+  if (hdBtn) hdBtn.addEventListener('click', function(){
+    if (hdDone || hdBtn.disabled) return;
+    hdBtn.disabled = true;
+    hdLabel.textContent = 'Loading 0%';
+    viewer.upgradeModel(hdUrl, hdBytes, function(frac){
+      hdLabel.textContent = 'Loading ' + Math.round(frac * 100) + '%';
+    }).then(function(r){
+      hdDone = true;
+      hdBtn.classList.add('done');
+      hdLabel.textContent = 'HD \u00b7 ' + (hdBytes / 1048576).toFixed(1) +
+        ' MB in ' + (r.ms / 1000).toFixed(1) + 's';
+      sheen();
+    }).catch(function(err){
+      console.warn('HD upgrade failed', err);
+      hdBtn.disabled = false;
+      hdLabel.textContent = 'Load HD';
+    });
+  });
+
   var b3=document.getElementById('g3dMode3d'), b2=document.getElementById('g3dMode2d');
   function setMode(threeD){
     gallery.classList.toggle('mode-3d', threeD);
@@ -9942,6 +10060,7 @@ setTimeout(openExit,25000);
     b2.setAttribute('aria-pressed', String(!threeD));
     viewer.setPaused(!threeD);
     if (!threeD) closeCard();
+    else if (layer.classList.contains('is-ready')) sheen();
   }
   b3.addEventListener('click', function(){ setMode(true); });
   b2.addEventListener('click', function(){ setMode(false); });

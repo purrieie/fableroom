@@ -941,6 +941,71 @@ export function initViewer(opts) {
     },
     isReady: () => ready,
     getModel: () => model,
+
+    // Swap in a heavier, higher-quality build of the same object on demand.
+    // The camera is deliberately preserved across the swap — an HD upgrade
+    // should sharpen the object where the customer already turned it to, not
+    // re-frame the page out from under them. getState()'s distance is stored
+    // as a ratio of fitDist, so it survives frameModel() recomputing the fit
+    // for the new mesh; that is exactly why the round-trip is done through
+    // the existing state API rather than by copying raw spherical values.
+    upgradeModel: (url, bytes, onProgress) => new Promise((resolve, reject) => {
+      if (!url) { reject(new Error('no url')); return; }
+      const l = new GLTFLoader();
+      l.setMeshoptDecoder(MeshoptDecoder);
+      const t0 = performance.now();
+      l.load(url, (gltf) => {
+        const next = gltf.scene;
+        next.traverse((o) => {
+          if (o.isMesh) {
+            o.castShadow = false;
+            o.receiveShadow = false;
+            o.frustumCulled = false;
+            const m = o.material;
+            if (m) {
+              m.envMapIntensity = LIGHTING[lighting].matIntensity;
+              m.side = DoubleSide;
+              if (m.map) m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+            }
+          }
+        });
+        const keep = {
+          t: +controls.goal.theta.toFixed(3),
+          p: +MathUtils.radToDeg(controls.goal.phi).toFixed(1),
+          d: +(controls.goal.radius / (fitDist || 1)).toFixed(3)
+        };
+        if (model) {
+          root.remove(model);
+          // Free the old mesh's GPU memory explicitly. Dropping the JS
+          // reference alone does not release buffers or textures, and the
+          // whole point of this feature is that both models are large.
+          model.traverse((o) => {
+            if (!o.isMesh) return;
+            if (o.geometry) o.geometry.dispose();
+            const mats = Array.isArray(o.material) ? o.material : [o.material];
+            mats.forEach((m) => {
+              if (!m) return;
+              ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap', 'alphaMap']
+                .forEach((k) => { if (m[k] && m[k].dispose) m[k].dispose(); });
+              m.dispose();
+            });
+          });
+        }
+        model = next;
+        root.add(model);
+        frameModel(model);
+        w = 0; h = 0; resize();
+        flyTo({ theta: keep.t, phi: keep.p, dist: keep.d }, 10);
+        try { renderer.render(scene, camera); } catch (e) {}
+        resolve({ ms: Math.round(performance.now() - t0) });
+      }, (ev) => {
+        if (!onProgress || !ev || !ev.loaded) return;
+        let total = bytes || 0;
+        if (!total && ev.total && ev.total >= ev.loaded) total = ev.total;
+        onProgress(total ? Math.min(1, ev.loaded / total) : 0, ev.loaded);
+      }, reject);
+    }),
+
     setLighting: applyLighting,
     lighting: () => lighting,
 
