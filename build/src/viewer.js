@@ -365,8 +365,16 @@ export function initViewer(opts) {
   const barEl = document.getElementById(opts.barId);
 
   let renderer;
+  // A flagship phone and a budget Android both report `pointer: coarse`, so
+  // that check on its own still hands the cheap device the flagship workload.
+  // Core count and memory are the only tiering signals a browser exposes, and
+  // both are absent on some engines - hence the optimistic defaults, which
+  // keep a browser that reports nothing on the normal path rather than
+  // silently degrading every unknown device.
+  const lowEnd = (navigator.hardwareConcurrency || 8) <= 4
+              || (navigator.deviceMemory || 8) <= 3;
   try {
-    renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer = new WebGLRenderer({ canvas, antialias: !lowEnd, alpha: true, powerPreference: 'high-performance' });
   } catch (err) {
     host.classList.add('is-unsupported');
     return null;
@@ -380,7 +388,7 @@ export function initViewer(opts) {
   // Phones ship DPR 3+; rendering at full density triples the framebuffer for
   // no visible gain on a 6-inch screen, and it is what tips low-end GPUs into
   // dropping the context.
-  const maxDpr = isCoarse ? 1.75 : 2;
+  const maxDpr = lowEnd ? 1.5 : (isCoarse ? 1.75 : 2);
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, maxDpr));
   renderer.toneMapping = ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.95;
