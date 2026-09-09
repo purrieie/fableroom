@@ -2,13 +2,12 @@ import {
   WebGLRenderer, Scene, PerspectiveCamera, Group, Box3, Vector3, Vector2, Spherical,
   ACESFilmicToneMapping, PMREMGenerator, DirectionalLight, AmbientLight, MathUtils,
   Mesh, PlaneGeometry, MeshBasicMaterial, CanvasTexture,
-  SRGBColorSpace, DoubleSide, EquirectangularReflectionMapping, TextureLoader,
+  SRGBColorSpace, DoubleSide, EquirectangularReflectionMapping,
   BufferGeometry, LineBasicMaterial, LineSegments, Float32BufferAttribute,
   CylinderGeometry, MeshStandardMaterial, Color, Shape, ExtrudeGeometry
 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
-import { createAR } from './ar.js';
 
 /* ---------------------------------------------------------------------------
    Orbit controls tuned for a product page.
@@ -289,13 +288,6 @@ function groundBlob(radius) {
    backdrop the page should sit behind it — changed together, because a warm
    candle light over a cold grey page reads as a bug rather than a mood.
 --------------------------------------------------------------------------- */
-// Where each panorama's most flattering wall sits, so the piece is not left
-// facing a doorway.
-export const BACKDROP_YAW = { room: 2.5, hall: 0.35, garden: 1.2, study: 3.5 };
-
-// Which way the scanned chair looks. Set once, after checking the render.
-export const CHAIR_FACING = Math.PI;
-
 export const LIGHTING = {
   studio: {
     label: 'Studio', swatch: '#F2EBE0',
@@ -479,7 +471,6 @@ export function initViewer(opts) {
     blob.position.y = 0.002;
     scene.add(blob);
 
-    modelSize = new Vector3(size.x * s, size.y * s, size.z * s);
     dimGroup = buildDimensions(new Vector3(size.x * s, size.y * s, size.z * s));
     dimGroup.visible = false;
     root.add(dimGroup);
@@ -571,58 +562,6 @@ export function initViewer(opts) {
   // rather than waiting for an idle slot behind the rest of the document.
   setTimeout(start, 0);
 
-  /* -------------------------- photographic backdrops -------------------------- */
-  // A panorama serves as both the visible surround and the light source, so the
-  // piece picks up the colour of the room it is standing in. Loaded on demand:
-  // most visitors never leave the studio backdrop.
-  const backdropCache = {};
-  const texLoader = new TextureLoader();
-  let backdrop = null;              // null = the plain studio gradient
-
-  function applyBackdrop(name, url, onDone) {
-    if (!name || name === 'studio') {
-      backdrop = null;
-      scene.background = null;
-      applyLighting(lighting);
-      if (onDone) onDone();
-      return;
-    }
-    const use = (envTex) => {
-      backdrop = name;
-      scene.background = envTex;
-      scene.environment = envTex;
-      scene.backgroundIntensity = 1.0;
-      scene.environmentIntensity = 1.0;
-      scene.backgroundRotation.y = BACKDROP_YAW[name] || 0;
-      scene.environmentRotation.y = BACKDROP_YAW[name] || 0;
-      applyTimeOfDay(timeOfDay);
-      // Match the height the panorama was shot from, or the piece looks like it
-      // is hovering rather than standing on that floor.
-      setEye('standing');
-      if (onDone) onDone();
-    };
-    if (backdropCache[name]) return use(backdropCache[name]);
-    texLoader.load(url, (tex) => {
-      tex.mapping = EquirectangularReflectionMapping;
-      tex.colorSpace = SRGBColorSpace;
-      const pm = pmrem.fromEquirectangular(tex).texture;
-      // Keep the sharp original for the background and the blurred convolution
-      // for reflections; using one for both looks wrong either way round.
-      tex.userData.pmrem = pm;
-      backdropCache[name] = tex;
-      backdrop = name;
-      scene.background = tex;
-      scene.environment = pm;
-      scene.backgroundIntensity = 1.0;
-      scene.environmentIntensity = 1.0;
-      scene.backgroundRotation.y = BACKDROP_YAW[name] || 0;
-      scene.environmentRotation.y = BACKDROP_YAW[name] || 0;
-      applyTimeOfDay(timeOfDay);
-      setEye('standing');
-      if (onDone) onDone();
-    }, undefined, () => { if (onDone) onDone(new Error('backdrop failed')); });
-  }
-
   /* --------------------------------- ambience --------------------------------- */
   // The hour changes the light *around* the piece, not the piece itself. The
   // walnut has one true colour and shifting it makes the product look wrong, so
@@ -711,13 +650,13 @@ export function initViewer(opts) {
     return out;
   }
 
-  /* ------------------- dimensions and scale companions ------------------------ */
+  /* ----------------------------- dimensions ---------------------------------- */
   // The scan is normalised so its footprint is one unit across; the real table
   // is 120 cm across, which fixes the scale for everything placed beside it.
   const M_PER_UNIT = 1.20;
   const U = (metres) => metres / M_PER_UNIT;
 
-  let dimGroup = null, dimLabels = [], companionsWere = false, dimsWere = false;
+  let dimGroup = null, dimLabels = [];
   function buildDimensions(size) {
     const g = new Group();
     const w = size.x, hgt = size.y, off = 0.10, tick = 0.035;
@@ -751,63 +690,7 @@ export function initViewer(opts) {
     return g;
   }
 
-  /* ---------------------- the chairs that go with it -------------------------- */
-  // A real scan of the Keaton Cream, already at true size with its base on
-  // y = 0. Loaded only when someone asks to see the set, and instanced four
-  // times so it costs one download rather than four.
-  let companions = null, chairPromise = null, modelSize = null;
-
-  function loadChair(url) {
-    if (chairPromise) return chairPromise;
-    chairPromise = new Promise((resolve, reject) => {
-      const l = new GLTFLoader();
-      l.setMeshoptDecoder(MeshoptDecoder);
-      l.load(url, (g) => {
-        g.scene.traverse((o) => {
-          if (o.isMesh && o.material) {
-            o.material.side = DoubleSide;
-            o.material.envMapIntensity = LIGHTING[lighting].matIntensity;
-            o.frustumCulled = false;
-            if (o.material.map) {
-              o.material.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-            }
-          }
-        });
-        resolve(g.scene);
-      }, undefined, reject);
-    });
-    chairPromise.catch(() => { chairPromise = null; });
-    return chairPromise;
-  }
-
-  function buildCompanions(chairScene, size) {
-    const g = new Group();
-    // Table edge, then a gap you could actually walk past, then the chair.
-    const ring = size.x / 2 + U(0.14) + U(0.60) / 2;
-    for (let i = 0; i < 4; i++) {
-      const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
-      const ch = chairScene.clone(true);
-      ch.position.set(Math.sin(a) * ring, 0, Math.cos(a) * ring);
-      ch.rotation.y = a + CHAIR_FACING;
-      ch.userData.slot = i;
-      g.add(ch);
-    }
-    g.userData.ring = ring;
-    return g;
-  }
-
   /* ------------------------------ camera moves ------------------------------- */
-  // Real eye heights, so "seated" is what you would actually see from a chair.
-  // Seated is not just a lower angle — you are also much closer to the table,
-  // which is most of what makes the two views feel different.
-  const EYE = { standing: { m: 1.60, dist: 1.05 }, seated: { m: 1.18, dist: 0.62 } };
-  function setEye(mode) {
-    const e = EYE[mode] || EYE.standing;
-    const r = fitDist * e.dist;
-    const cos = Math.min(0.97, Math.max(-0.4, (U(e.m) - controls.target.y) / r));
-    flyTo({ phi: MathUtils.radToDeg(Math.acos(cos)), dist: e.dist }, 950);
-  }
-
   let fly = null;
   function flyTo(target, ms) {
     const from = {
@@ -923,11 +806,6 @@ export function initViewer(opts) {
     // Turn the dimension frame to follow the orbit: a width bar fixed to the
     // model's own axes swings edge-on and stops reading as a measurement.
     if (dimGroup && dimGroup.visible) dimGroup.rotation.y = controls.sph.theta;
-    if (companions && companions.visible && companions.userData.figure) {
-      const f = companions.userData.figure;
-      f.rotation.y = Math.atan2(camera.position.x - f.position.x,
-                                camera.position.z - f.position.z);
-    }
     root.updateMatrixWorld();
     for (let i = 0; i < frameCbs.length; i++) frameCbs[i]();
     renderer.render(scene, camera);
@@ -941,12 +819,6 @@ export function initViewer(opts) {
     zoomIn: () => controls.zoomBy(1.28),
     zoomOut: () => controls.zoomBy(1 / 1.28),
     reset: () => controls.reset(),
-    setImmersive: (on) => {
-      controls.freeTouch = on;
-      controls.maxR = fitDist * (on ? 2.1 : 1.75);
-      setTimeout(resize, 60);
-      setTimeout(resize, 320);
-    },
     isReady: () => ready,
     getModel: () => model,
 
@@ -1014,11 +886,7 @@ export function initViewer(opts) {
       }, reject);
     }),
 
-    setLighting: applyLighting,
-    lighting: () => lighting,
 
-    setBackdrop: (name, url, done) => applyBackdrop(name, url, done),
-    backdrop: () => backdrop || 'studio',
 
     setTimeOfDay: applyTimeOfDay,
     timeOfDay: () => timeOfDay,
@@ -1030,63 +898,17 @@ export function initViewer(opts) {
     dimensionLabels: () => (dimGroup && dimGroup.visible)
       ? projectList(dimLabels, dimGroup.matrixWorld) : [],
 
-    setCompanions: (on, url) => {
-      if (!on) {
-        if (companions) companions.visible = false;
-        flyTo({ dist: 1 }, 750);
-        return Promise.resolve();
-      }
-      if (companions) {
-        companions.visible = true;
-        flyTo({ dist: 1.5 }, 750);
-        return Promise.resolve();
-      }
-      return loadChair(url).then((chairScene) => {
-        companions = buildCompanions(chairScene, modelSize);
-        root.add(companions);
-        companions.visible = true;
-        // Four chairs make the subject much wider than the table alone.
-        flyTo({ dist: 1.5 }, 750);
-      });
-    },
-    // Where to hang the chair's label: the front-left seat, at back height.
-    chairAnchor: () => {
-      if (!companions || !companions.visible) return null;
-      const ch = companions.children[0];
-      return [ch.position.x, U(0.60), ch.position.z];
-    },
-    companionsOn: () => !!(companions && companions.visible),
-
-    setEye,
-    underside: () => {
-      controls.maxPhi = MathUtils.degToRad(155);
-      if (blob) blob.visible = false;
-      if (companions) { companionsWere = companions.visible; companions.visible = false; }
-      if (dimGroup) { dimsWere = dimGroup.visible; dimGroup.visible = false; }
-      flyTo({ phi: 134, dist: 1.05, ty: modelTargetY * 0.55 }, 1000);
-    },
-    exitUnderside: () => {
-      controls.maxPhi = MathUtils.degToRad(96);
-      if (blob) blob.visible = true;
-      if (companions) companions.visible = companionsWere;
-      if (dimGroup) dimGroup.visible = dimsWere;
-      flyTo({ phi: 74, dist: 1, ty: modelTargetY }, 900);
-    },
-
     getState: () => ({
       t: +controls.goal.theta.toFixed(3),
       p: +MathUtils.radToDeg(controls.goal.phi).toFixed(1),
       d: +(controls.goal.radius / (fitDist || 1)).toFixed(3),
-      b: backdrop || 'studio',
       h: +timeOfDay.toFixed(2),
-      dim: (dimGroup && dimGroup.visible) ? 1 : 0,
-      sc: (companions && companions.visible) ? 1 : 0
+      dim: (dimGroup && dimGroup.visible) ? 1 : 0
     }),
     applyState: (st) => {
       if (!st) return;
       if (st.h != null) applyTimeOfDay(+st.h);
       if (st.dim != null && dimGroup) dimGroup.visible = +st.dim === 1;
-      if (st.sc != null && companions) companions.visible = +st.sc === 1;
       if (st.t != null || st.p != null || st.d != null) {
         flyTo({ theta: st.t != null ? +st.t : undefined,
                 phi: st.p != null ? +st.p : undefined,
@@ -1115,4 +937,3 @@ export function initViewer(opts) {
 }
 
 window.__initBelgraveViewer = initViewer;
-window.__createBelgraveAR = createAR;
