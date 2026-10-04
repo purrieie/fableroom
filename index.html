@@ -6014,8 +6014,8 @@ var fd=new FormData(f),pu=v('product_page');if(!/^https?:\/\//i.test(pu))pu='htt
 b.disabled=true;b.innerHTML='Sending...';
 fetch('https://api.web3forms.com/submit',{method:'POST',headers:{Accept:'application/json'},body:fd}).then(function(r){return r.json()}).then(function(j){if(j.success){f.style.display='none';document.getElementById('t3k').style.display='block';var c=document.getElementById('t3c');if(c)c.remove();var p=document.getElementById('t3p');if(p)p.remove()}else{throw 0}}).catch(function(){er.innerHTML='Something went wrong. Please try again, or <a href="https://calendly.com/nj-troopod/troopod-demo?utm_source=troo3d&amp;utm_medium=sample_page&amp;utm_content=fableroom" target="_blank" style="color:#7a2cf0">book a call</a>.';er.style.display='block';b.disabled=false;b.innerHTML='Claim my free 3D &rarr;'})});
 </script>
-<script>(function(){setTimeout(function(){var e=document.getElementById('t3c');if(e)e.classList.add('on')},5000);})();</script>
-<script>setTimeout(function(){var e=document.getElementById('t3c');if(e&&parseFloat(getComputedStyle(e).opacity)<.5){e.style.transition='none';e.style.opacity='1';e.classList.add('on')}},6500);</script>
+<script>(function(){setTimeout(function(){var e=document.getElementById('t3c');if(e)e.classList.add('on')},2000);})();</script>
+<script>setTimeout(function(){var e=document.getElementById('t3c');if(e&&parseFloat(getComputedStyle(e).opacity)<.5){e.style.transition='none';e.style.opacity='1';e.classList.add('on')}},3500);</script>
 <style>#t3c{bottom:calc(14px + env(safe-area-inset-bottom,0px))}#t3p{bottom:calc(18px + env(safe-area-inset-bottom,0px))}@media(min-width:900px){#t3c,#t3p{bottom:28px}}</style>
 <!-- troo3d-cta:end -->
 
