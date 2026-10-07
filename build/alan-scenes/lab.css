@@ -28,6 +28,7 @@
    is attached by script on first use, so it costs nothing until chosen. */
 #glc{position:relative;z-index:1}
 .bdrop{position:absolute;inset:0;z-index:0;background-position:50% 0;background-size:cover;
+  transform:scale(1.12);transform-origin:50% 0;
   opacity:0;transition:opacity .6s ease;pointer-events:none}
 .hero__wrap.is-backdrop .bdrop{opacity:1}
 #roomBtn.on{background:var(--ink);color:#fff}
