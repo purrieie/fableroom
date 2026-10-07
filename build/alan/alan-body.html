@@ -1,0 +1,493 @@
+<body>
+
+<div class="announce">FableRoom is now a certified <b>B Corp&trade;</b></div>
+<div class="promo">EXTRA 10% OFF: USE CODE <code>PAYDAY10 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></code></div>
+
+<header class="hdr">
+  <div class="hdr__in">
+    <button class="burger" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    <a class="brand" href="https://fableroom.com">FABLEROOM</a>
+    <nav class="nav">
+      <a href="#">END OF SEASON SALE</a>
+      <a href="#">FURNITURE</a>
+      <a href="#">RUGS</a>
+      <a href="#">HOME TEXTILES</a>
+      <a href="#">LIGHTING<span class="tag">NEW</span></a>
+      <a href="#">AFTER HOURS<span class="tag">NEW</span></a>
+      <a href="#">FASHION &amp; LIFESTYLE<span class="tag">NEW</span></a>
+      <a href="#">TABLEWARE</a>
+      <a href="#">ACCESSORIES</a>
+      <a href="#" class="is-clearance">CLEARANCE</a>
+    </nav>
+    <div class="hdr__icons">
+      <button aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+      <button aria-label="Wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-9.5A3.9 3.9 0 0 1 12 8a3.9 3.9 0 0 1 7 2.5C19 15.5 12 20 12 20Z"/></svg></button>
+      <button class="acct" aria-label="Account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-5.6 7-5.6s7 2 7 5.6"/></svg></button>
+      <button aria-label="Basket"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9.5 8V6.5a2.5 2.5 0 0 1 5 0V8"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<nav class="crumb" aria-label="Breadcrumb">
+  <a href="https://fableroom.com/">Home</a> / <span>Alan Mango Wood Coffee Table</span>
+</nav>
+
+<div class="pdp">
+
+  <!-- ===== MEDIA COLUMN: 3D stage and photo mosaic share one positioned box ===== -->
+  <div class="media is-3d" id="media" data-hd-url="model-hd.glb" data-hd-bytes="655312">
+
+    <section class="hero" id="hero" aria-label="Interactive 3D model of the Alan Mango Wood Coffee Table">
+      <div class="hero__wrap" id="heroWrap">
+        <canvas id="glc"></canvas>
+
+        <div class="ph"><img id="hero2d" src="https://fableroom.com/cdn/shop/files/ACCT00011A_6.png?v=1771476276&amp;width=800" alt="Alan Mango Wood Coffee Table" width="600" height="800"></div>
+
+        <div class="sheen" id="sheen" aria-hidden="true"></div>
+
+        <div class="load">
+          <div class="load__track"><div class="load__bar" id="loadBar"></div></div>
+          <div class="load__txt" id="heroStatus" role="status" aria-live="polite">Loading model</div>
+        </div>
+
+        <button class="hd" id="hdBtn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 20 7.6v8.8L12 20.8 4 16.4V7.6Z"/><path d="M4 7.6 12 12l8-4.4M12 12v8.8"/></svg>
+          <span id="hdLabel">Load HD</span>
+        </button>
+
+        <div class="hint" id="hintText">
+          <svg viewBox="0 0 24 24"><path d="M4 12h16"/><path d="m8 8-4 4 4 4"/><path d="m16 8 4 4-4 4"/></svg>
+          <span>Drag to spin &middot; Pinch to zoom</span>
+        </div>
+
+        <div class="hs" id="hotspots"></div>
+        <div class="hs" id="dimLayer"></div>
+
+        <div class="hscard" id="hsCard" role="dialog" aria-live="polite">
+          <button class="hscard__x" id="hsClose" aria-label="Close detail"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          <div class="hscard__no" id="hsNo">Detail 01</div>
+          <h4 id="hsTitle"></h4>
+          <p id="hsBody"></p>
+        </div>
+
+        <button class="spin" id="spinBtn" aria-pressed="true" aria-label="Pause rotation">
+          <svg id="spinIcon" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg>
+        </button>
+
+        <div class="hourrail">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/></svg>
+          <span class="slot"><input type="range" id="todRange" min="0" max="100" value="50" aria-label="Time of day"></span>
+          <span class="hourread" id="todRead">1:30pm</span>
+        </div>
+
+        <div class="tools">
+          <button class="tool" id="zoomIn" aria-label="Zoom in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button class="tool" id="zoomOut" aria-label="Zoom out"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+          <button class="tool" id="resetView" aria-label="Reset view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4"/><path d="M3 4.5V10h5.5"/></svg></button>
+        </div>
+
+        <div class="barpanel" id="heroBar">
+          <div class="acts">
+            <button class="act on" id="studioBtn" aria-pressed="true">
+              <svg viewBox="0 0 24 24"><path d="M12 4.5a5.5 5.5 0 0 1 3.2 10c-.5.4-.7.9-.7 1.5v.5h-5v-.5c0-.6-.2-1.1-.7-1.5A5.5 5.5 0 0 1 12 4.5Z"/><path d="M10 19h4M10.5 21h3"/></svg><span>Studio</span>
+            </button>
+            <button class="act" id="dimBtn"><svg viewBox="0 0 24 24"><path d="M3 8h18M3 8v8M21 8v8M7 11v2M12 11v2M17 11v2"/></svg><span>Size</span></button>
+            <button class="act on" id="detailsBtn" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M12 3.5 13.9 9l5.6.2-4.4 3.5 1.6 5.4L12 15l-4.7 3.1 1.6-5.4L4.5 9.2 10.1 9 12 3.5Z"/></svg><span id="detailsLabel">Hide</span></button>
+          </div>
+        </div>
+
+        <div class="fallback">This browser can&rsquo;t show the 3D model. Switch to Photos to see the full gallery.</div>
+      </div>
+    </section>
+
+    <!-- Photo mosaic: the live page's own desktop gallery layout -->
+    <div class="shots" id="shots">
+      <div class="shot shot--wide">
+        <span class="saletag">End Of Season Sale</span>
+        <img src="https://fableroom.com/cdn/shop/files/ACCT00011A_7.png?v=1771476276&amp;width=1200" alt="Alan Mango Wood Coffee Table" width="1200" height="1600" fetchpriority="high">
+      </div>
+      <div class="shot"><img src="https://fableroom.com/cdn/shop/files/ACCT00011A_6.png?v=1771476276&amp;width=800" alt="Alan Mango Wood Coffee Table" width="600" height="800" loading="lazy"></div>
+      <div class="shot"><img src="https://fableroom.com/cdn/shop/files/ACCT00011A_5.png?v=1771476276&amp;width=800" alt="Alan Mango Wood Coffee Table" width="600" height="800" loading="lazy"></div>
+      <div class="shot"><img src="https://fableroom.com/cdn/shop/files/ACCT00011A_1.png?v=1771476276&amp;width=800" alt="Alan Mango Wood Coffee Table" width="600" height="800" loading="lazy"></div>
+      <div class="shot"><img src="https://fableroom.com/cdn/shop/files/ACCT00011A_4.png?v=1771476276&amp;width=800" alt="Alan Mango Wood Coffee Table" width="600" height="800" loading="lazy"></div>
+      <div class="shot"><img src="https://fableroom.com/cdn/shop/files/ACCT00011A_2.png?v=1771476276&amp;width=800" alt="Alan Mango Wood Coffee Table" width="600" height="800" loading="lazy"></div>
+      <div class="shot"><img src="https://fableroom.com/cdn/shop/files/ACCT00011A_3.png?v=1771476276&amp;width=800" alt="Alan Mango Wood Coffee Table" width="600" height="800" loading="lazy"></div>
+    </div>
+
+    <div class="vmode" role="group" aria-label="View mode">
+      <button id="mode3d" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 20 7.6v8.8L12 20.8 4 16.4V7.6Z"/><path d="M4 7.6 12 12l8-4.4M12 12v8.8"/></svg>3D</button>
+      <button id="mode2d" aria-pressed="false">Photos</button>
+    </div>
+  </div>
+
+  <!-- ===== BUYBOX — reproduced from the live page, unchanged ===== -->
+  <div class="buy">
+    <span class="pill">7% OFF</span>
+    <h1>Alan Mango Wood Coffee Table</h1>
+    <div class="rate"><span class="stars stars--gold"><i></i><i></i><i></i><i></i><i></i></span><span>5.0</span></div>
+    <span class="loved"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-9.5A3.9 3.9 0 0 1 12 8a3.9 3.9 0 0 1 7 2.5C19 15.5 12 20 12 20Z"/></svg>Loved by 75+ Homes</span>
+    <p class="buy__sub">A mango wood coffee table with metal detailing, combining natural warmth with a clean, industrial edge.</p>
+
+    <div class="price"><s>&pound;227</s><b>&pound;211</b></div>
+
+    <div class="vsave">You save <em>&pound;139</em> vs TIKAMOON <a href="#honesty" aria-label="How is this priced?"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></a></div>
+
+    <div class="feats">
+      <div class="feat"><i><img src="https://fableroom.com/cdn/shop/files/Group_89.svg?v=1741267932" alt="" width="32" height="32"></i><span>Solid Wood</span></div>
+      <div class="feat"><i><img src="https://fableroom.com/cdn/shop/files/Group_88.svg?v=1741267934" alt="" width="32" height="32"></i><span>Metal</span></div>
+      <div class="feat"><i><img src="https://fableroom.com/cdn/shop/files/42.png?v=1749645674" alt="" width="32" height="32"></i><span>Lasting Quality</span></div>
+      <div class="feat"><i><img src="https://fableroom.com/cdn/shop/files/Colour_icons_11.png?v=1747921044" alt="" width="32" height="32"></i><span>Minimal Assembly Required</span></div>
+    </div>
+
+    <div class="colour">
+      <b>Colour:</b> Natural
+      <button class="swatch" aria-label="Natural" aria-pressed="true"></button>
+    </div>
+
+    <div>
+      <div class="offers__head">
+        <span><svg viewBox="0 0 24 24"><path d="M3 9V7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a2.5 2.5 0 0 0 0 6v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a2.5 2.5 0 0 0 0-6Z"/></svg>Active Offers</span>
+        <span class="offers__n">2 Offers</span>
+      </div>
+      <div class="offers">
+        <div class="offer"><b>&pound;50 OFF</b><span>Get &pound;50 off on Cart value above &pound;599</span></div>
+        <div class="offer"><b>&pound;75 OFF</b><span>Get &pound;75 off on Cart value above &pound;749</span></div>
+      </div>
+    </div>
+
+    <div class="express express--grey">
+      <svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>
+      Delivered in 5&ndash;8 weeks
+    </div>
+
+    <div class="atc">
+      <button class="atc__go" id="mainAtc">Add to Basket - &pound;211</button>
+    </div>
+
+    <div class="pay">
+      <div class="pay__row">
+        <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg>
+        <span>Pay in 3 interest-free instalments of <b>&pound;70.33</b></span>
+        <svg class="pay__chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="pay__logos">
+        <img src="https://fableroom.com/cdn/shop/t/198/assets/astra-pay-klarna.png?v=24951521508644787391787569873" alt="Klarna" width="45" height="11">
+        <img src="https://fableroom.com/cdn/shop/t/198/assets/astra-pay-shoppay.png?v=88598271557686568811787569872" alt="Shop Pay" width="46" height="11">
+        <img src="https://fableroom.com/cdn/shop/t/198/assets/astra-pay-paypal.png?v=154708705672920563701787569873" alt="PayPal" width="42" height="11">
+      </div>
+    </div>
+
+    <div class="trust trust--box">
+      <div class="trust__top">
+        <strong class="tp"><span class="tp__star"></span>Trustpilot</strong>
+        <span class="trust__excellent">EXCELLENT</span>
+        <span class="stars"><i></i><i></i><i></i><i></i><i></i></span>
+      </div>
+      <div class="trust__bot"><span>1,426 reviews</span><span>15K+ Happy customers</span></div>
+    </div>
+
+    <div class="assure">
+      <div><img src="https://fableroom.com/cdn/shop/files/image_187_100x.png?v=1763112036" alt="" width="20" height="20">Easy Returns</div>
+      <div><img src="https://fableroom.com/cdn/shop/files/image_188_100x.png?v=1763112039" alt="" width="20" height="20">Secure Payments</div>
+      <div><img src="https://fableroom.com/cdn/shop/files/Vector_1_100x.png?v=1763112043" alt="" width="20" height="20">365-Day Guarantee</div>
+    </div>
+
+    <ul class="bullets">
+      <li>Crafted from solid mango wood with a natural finish</li>
+      <li>Metal legs introduce contrast and an industrial touch</li>
+      <li>Clean-lined silhouette with a sleek, contemporary feel</li>
+      <li>Natural and black tones make it easy to style across interiors</li>
+      <li>Designed to work as a functional yet statement centrepiece</li>
+    </ul>
+
+    <div>
+      <details class="acc"><summary>Details and Dimensions</summary>
+        <div class="acc__body"><dl>
+          <dt>SKU:</dt><dd>ACCT00011A</dd>
+          <dt>Colour:</dt><dd>Natural, Black</dd>
+          <dt>Material:</dt><dd>Mango Wood,Metal</dd>
+          <dt>Style:</dt><dd>Coastal, Contemporary, Eclectic, Industrial, Rustic, Sleek &amp; Chic, Tropical</dd>
+          <dt>Width:</dt><dd>80 cm</dd>
+          <dt>Depth:</dt><dd>80 cm</dd>
+          <dt>Height:</dt><dd>35 cm</dd>
+          <dt>Weight:</dt><dd>11.85 kg</dd>
+          <dt>Packaging Dimensions:</dt><dd>(W) 87cm | (D) 23cm | (H) 87cm</dd>
+          <dt>Packaging Weight:</dt><dd>15.8 kg</dd>
+          <dt>Assembly Required:</dt><dd>Minimal Assembly Required</dd>
+          <dt>Country of Origin:</dt><dd>India</dd>
+        </dl></div>
+      </details>
+      <details class="acc"><summary>Care &amp; Delivery</summary>
+        <div class="acc__body">
+          <h5>Care Guide</h5>
+          <p>Wipe your coffee table regularly with a soft, dry cloth, using a lightly dampened one only when needed. Keep it away from direct sunlight, heat, and moisture to prevent fading or warping. Use coasters or mats under hot or cold items to protect the surface, and avoid dragging objects across it. Check fittings occasionally to ensure everything stays stable and secure.</p>
+          <h5>Buying Guide</h5>
+          <p>Our coffee tables often feature natural materials like wood, stone, marble, or metal, so small variations in grain, colour, and texture are perfectly normal. Lighting and screen settings may also create slight colour differences. These natural characteristics aren&rsquo;t flaws&mdash;they&rsquo;re what make each FableRoom piece feel unique and beautifully crafted.</p>
+          <h5>Shipping</h5>
+          <p>We offer doorstep delivery for your order. Delivery fee of &pound;3.95 applies for orders under &pound;100, &pound;7.95 for orders over &pound;100, or &pound;14.95 for items requiring 2-man delivery. There is an additional &pound;30 surcharge for all Northern Ireland orders.</p>
+          <p>Delivery timelines are listed on each product page.</p>
+          <p>For larger items, our Room of Choice Delivery service brings your piece right to the space you want for just &pound;20.</p>
+          <p>Read more about our shipping policy <a href="#">here</a> .</p>
+          <h5>Returns</h5>
+          <p>Most products can be returned within 14 days of delivery. Collections are free if your item is damaged or faulty. If not, we charge a collection fee. Read more <a href="#">here</a> .</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="bcorp"><b>B</b> FableRoom is now a certified B Corp&trade;</div>
+  </div>
+
+  <!-- Long description — the live page sets it under the gallery, left column -->
+  <p class="desc">The Alan Mango Wood &amp; Metal Coffee Table brings together raw materiality and refined design. Made from solid mango wood, its natural grain adds warmth and texture, while metal detailing introduces a subtle industrial edge. The balanced mix of natural and black tones allows Alan to sit comfortably across contemporary, coastal, rustic, and eclectic spaces. Designed with everyday living in mind, it offers a sleek yet grounded focal point for modern interiors.</p>
+</div>
+
+<!-- ===== Frequently Bought Together ===== -->
+<section class="band band--tight">
+  <div class="wrap">
+    <h2 class="fbt__h">Frequently Bought Together</h2>
+    <div class="fbt__disc"><span>DISCOUNT</span>Buy this bundle and save 5% <i>*</i></div>
+    <div class="fbt">
+      <div class="scroller">
+        <div class="fbt__items">
+          <div class="fbt__it"><div class="fbt__img"><img src="https://cdn.shopify.com/s/files/1/0884/2690/5937/files/ACCT00011A_7_180x.png?v=1771476276" alt="Alan Mango Wood Coffee Table" width="180" height="240" loading="lazy"></div><div class="fbt__t"><span>Alan Mango Wood Coffee&hellip;</span><label class="fbt__ck"><input type="checkbox" checked aria-label="Include Alan Mango Wood Coffee Table"></label></div><div class="fbt__p"><b>&pound;211.00</b><s>&pound;227.00</s></div></div>
+          <span class="fbt__plus">+</span>
+          <div class="fbt__it"><div class="fbt__img"><img src="https://cdn.shopify.com/s/files/1/0884/2690/5937/files/FRRU00156C_2_680ee4d5-ae49-4f54-8272-017fd42d9bfd_180x.png?v=1774601691" alt="Natalie Handloom Banana Silk Rug - Grey" width="180" height="240" loading="lazy"></div><div class="fbt__t"><span>Natalie Handloom&hellip;</span><label class="fbt__ck"><input type="checkbox" checked aria-label="Include Natalie Handloom Banana Silk Rug - Grey"></label></div><div class="fbt__p"><b>&pound;379.00</b><s>&pound;638.00</s></div>
+            <select class="fbt__sel" aria-label="Rug size"><option>120x180</option><option>Runner-70x140 cm</option><option>Runner-90x160 cm</option></select></div>
+          <span class="fbt__plus">+</span>
+          <div class="fbt__it"><div class="fbt__img"><img src="https://cdn.shopify.com/s/files/1/0884/2690/5937/files/FRET00083A_89_180x.png?v=1756888197" alt="Solace Travertine Side Table" width="180" height="240" loading="lazy"></div><div class="fbt__t"><span>Solace Travertine Si&hellip;</span><label class="fbt__ck"><input type="checkbox" checked aria-label="Include Solace Travertine Side Table"></label></div><div class="fbt__p"><b>&pound;178.00</b><s>&pound;237.00</s></div></div>
+        </div>
+      </div>
+      <div class="fbt__sum">
+        <div><span>Alan Mango Wood Coffee Table</span><b>&pound;211.00</b></div>
+        <div><span>Natalie Handloom Banana Silk Rug - Grey</span><b>&pound;379.00</b></div>
+        <div><span>Solace Travertine Side Table</span><b>&pound;178.00</b></div>
+        <div class="fbt__tot"><span>Total</span><b>&pound;729.60</b></div>
+        <button type="button" class="fbt__go">Add 3 items to Basket - &pound;729.60</button>
+      </div>
+    </div>
+    <p class="fbt__note">Discount will be applied at checkout</p>
+  </div>
+</section>
+
+<!-- ===== Priced with honesty ===== -->
+<section class="band honesty" id="honesty">
+  <div class="wrap">
+    <span class="eyebrow">VALUE</span>
+    <h2>Priced with honesty</h2>
+    <p class="band__lede">Prices that make sense, without the middlemen. <span class="info" title="Our pricing benchmarks ensure great savings vs traditional retail. While we compare the closest products in terms of design, size, and materials, some variations may exist, and competitor pricing is subject to change."><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></span></p>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" aria-controls="tabCompare" id="tCompare">How it compares</button>
+      <button role="tab" aria-selected="false" aria-controls="tabPriced" id="tPriced">How is this priced?</button>
+    </div>
+    <div class="tabpane" id="tabCompare" role="tabpanel">
+      <div class="scroller">
+        <table class="ctable ctable--fr">
+          <thead><tr><th>Values</th><th class="fr">FABLEROOM</th><th>TIKAMOON</th></tr></thead>
+          <tbody>
+            <tr><td>Price</td><td class="fr">&pound;211</td><td>&pound;350</td></tr>
+            <tr><td>Savings (%)</td><td class="fr"><span class="tick">&#10003;</span></td><td>40%</td></tr>
+            <tr><td>Direct-to-you</td><td class="fr"><span class="tick">&#10003;</span></td><td class="no">&#10005;</td></tr>
+            <tr><td>365-day quality guarantee</td><td class="fr"><span class="tick">&#10003;</span></td><td class="no">&#10005;</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="savebar">You save <b>&pound;139</b> &mdash; that&rsquo;s <b>40% less</b> than TIKAMOON</p>
+    </div>
+    <div class="tabpane" id="tabPriced" role="tabpanel" hidden>
+      <h3 class="tp__h">Transparent pricing</h3>
+      <p class="band__lede">Our direct relationship with makers allows us to make high quality furniture accessible - without compromising on craftsmanship, quality or ethics. We&rsquo;re open about what goes into your pieces, so you understand exactly what you&rsquo;re paying for and why.</p>
+      <p class="costs__h">What goes into your &pound;211.00</p>
+      <table class="costs">
+        <tbody>
+          <tr><td>Materials</td><td>&pound;31.90</td></tr>
+          <tr><td>Crafting</td><td>&pound;36.46</td></tr>
+          <tr><td>Packaging</td><td>&pound;7.60</td></tr>
+          <tr><td>Freight &amp; Handling</td><td>&pound;33.42</td></tr>
+          <tr><td>Credit Card Fees</td><td>&pound;4.56</td></tr>
+          <tr><td>Duties, Taxes &amp; Fees</td><td>&pound;37.98</td></tr>
+          <tr><td>Total Cost</td><td>&pound;152.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== You May Also Like ===== -->
+<section class="band band--ymal">
+  <div class="wrap">
+    <h2 style="text-align:center;margin-bottom:20px">You May Also Like</h2>
+    <div class="scroller">
+      <div class="rail">
+%%YMAL%%
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== No Middlemen ===== -->
+<section class="band band--cream">
+  <div class="wrap nomid">
+    <div class="nomid__txt">
+      <h2>No Middlemen</h2>
+      <p class="sub">Just Thoughtfully Made Homeware.</p>
+      <p>At FableRoom, we cut out the middlemen and go straight to the source, bringing you expert craftsmanship at a fraction of the usual price .</p>
+    </div>
+    <div class="values">
+      <div><i><img src="https://fableroom.com/cdn/shop/files/Group_4570.png?v=1764408663&amp;width=48" alt="" width="24" height="24"></i><span>Fairly Priced</span></div>
+      <div><i><img src="https://fableroom.com/cdn/shop/files/Group_4577.png?v=1764408662&amp;width=48" alt="" width="24" height="24"></i><span>BeautifullyCrafted</span></div>
+      <div><i><img src="https://fableroom.com/cdn/shop/files/Group_4579.png?v=1764408663&amp;width=48" alt="" width="24" height="24"></i><span>Ethically Sourced</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Meet the Makers ===== -->
+<section class="band">
+  <div class="wrap makers">
+    <div>
+      <h2>Meet the Makers</h2>
+      <p class="band__lede">Every piece of FableRoom furniture is made by skilled craftspeople who take pride in their work. From hand-sanded finishes to precise joinery, every detail is considered to ensure lasting quality and character. We partner closely with our makers to combine traditional techniques with modern design, creating furniture that feels timeless, honest and built to be part of your home for years to come.</p>
+    </div>
+    <div class="makers__img"><img src="https://fableroom.com/cdn/shop/files/1_03d43117-fd00-46ec-a83c-0622ee4e31a8.png?v=1764583357" alt="A craftsperson hand-carving a wooden panel" width="1200" height="800" loading="lazy"></div>
+  </div>
+</section>
+
+<!-- ===== What Our Customers Say ===== -->
+<section class="band">
+  <div class="wrap">
+    <h2 style="margin-bottom:22px">What Our Customers Say</h2>
+    <div class="scroller">
+      <div class="rail tmon">
+        <div class="review">
+          <span class="review__q">&rdquo;</span>
+          <span class="stars"><i></i><i></i><i></i><i></i><i></i></span>
+          <h3>What&rsquo;s Not To Love...?</h3>
+          <p>Great customer service, beautiful and fabulous quality products - this time I bought a gorgeous rug, love it! - all at really good price point. Oh, and prompt, efficient delivery!</p>
+          <div class="review__by"><span>Marcie</span><span>December 12, 2025</span></div>
+        </div>
+        <div class="review">
+          <span class="review__q">&rdquo;</span>
+          <span class="stars"><i></i><i></i><i></i><i></i><i></i></span>
+          <h3>What a fabulous find!</h3>
+          <p>My first time buying from FableRoom when I came across them on Instagram. So pleased I did, easy to find what I wanted on the website, delivery was quick and the quality of the cushions is great for such a reasonable price. I especially love the snowflake cushion which is so well made and so different. Will definitely buy from here again.</p>
+          <div class="review__by"><span>Carol</span><span>December 8, 2025</span></div>
+        </div>
+        <div class="review">
+          <span class="review__q">&rdquo;</span>
+          <span class="stars"><i></i><i></i><i></i><i></i><i></i></span>
+          <h3>10/10 customer service</h3>
+          <p>10/10 customer service. Even live chat late at night was manned by an actual person, Jha! Who was lovely and helped us out.<br>We ordered a gorgeous mango wood dining table and delivery was prompt and the table was easy to put together - although super heavy. Amazing quality, we are now looking to order a coffee table and new rug next. So glad to have found fableroom!</p>
+          <div class="review__by"><span>Miss Jessica Evans</span><span>November 22, 2025</span></div>
+        </div>
+      </div>
+    </div>
+    <a class="viewall" href="#">View All &rarr;</a>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="band">
+  <div class="wrap">
+    <h2 style="text-align:center;margin-bottom:22px">Everything You Need To Know</h2>
+    <div class="faq">
+      <details><summary>Why is mango wood a great choice for a coffee table?</summary><p>Mango wood is durable, naturally beautiful, and features unique grain patterns that make every table one of a kind.</p></details>
+      <details><summary>Do coffee tables with metal legs last longer?</summary><p>Yes, metal legs provide excellent stability, durability, and add a sleek modern-industrial touch.</p></details>
+      <details><summary>Which d&eacute;cor styles suit a wood and metal coffee table?</summary><p>It blends beautifully with industrial, contemporary, rustic, coastal, and modern interiors.</p></details>
+      <details><summary>How do I style a wooden coffee table?</summary><p>Keep it simple with a decorative tray, coffee table books, candles, or a small plant for a balanced look.</p></details>
+      <details><summary>Can a round coffee table make a living room feel more spacious?</summary><p>Yes, its curved shape improves movement and creates a more open, welcoming layout, especially in compact spaces.</p></details>
+      <details><summary>What should you look for in a coffee table for daily use?</summary><p>Look for a sturdy construction, practical proportions, and a surface that is easy to maintain.</p></details>
+      <details><summary>Can a wooden coffee table soften an industrial-style room?</summary><p>Yes, natural wood adds warmth and texture that can balance metal, concrete, and other harder finishes.</p></details>
+      <details><summary>Should a coffee table be lighter or darker than the sofa?</summary><p>Either can work. A contrasting tone can add depth, while similar shades create a more seamless look.</p></details>
+      <details><summary>How do you choose a coffee table for an open-plan living room?</summary><p>Consider the seating arrangement, walking space, and surrounding furniture so the table feels proportionate to the room.</p></details>
+      <details><summary>What can you keep on a coffee table without making it look cluttered?</summary><p>A small tray, a few books, or one decorative object can provide function and style while keeping the surface tidy.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Customer Reviews ===== -->
+<section class="band">
+  <div class="wrap jdg">
+    <h2>Customer Reviews</h2>
+    <div class="jdg__sum">
+      <div class="jdg__avg"><span class="stars stars--gold"><i></i><i></i><i></i><i></i><i></i></span> 5.00 out of 5<br><small>Based on 1 review</small></div>
+      <div class="jdg__hist">
+        <div><span class="stars stars--gold stars--sm"><i></i><i></i><i></i><i></i><i></i></span><b style="--w:100%"></b><em>1</em></div>
+        <div><span class="stars stars--gold stars--sm stars--4"><i></i><i></i><i></i><i></i><i></i></span><b style="--w:0%"></b><em>0</em></div>
+        <div><span class="stars stars--gold stars--sm stars--3"><i></i><i></i><i></i><i></i><i></i></span><b style="--w:0%"></b><em>0</em></div>
+        <div><span class="stars stars--gold stars--sm stars--2"><i></i><i></i><i></i><i></i><i></i></span><b style="--w:0%"></b><em>0</em></div>
+        <div><span class="stars stars--gold stars--sm stars--1"><i></i><i></i><i></i><i></i><i></i></span><b style="--w:0%"></b><em>0</em></div>
+      </div>
+      <div class="jdg__cta"><button type="button">Write a review</button></div>
+    </div>
+    <div class="jdg__sort">Most Recent <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
+    <article class="jdg__rev">
+      <div class="jdg__top"><span class="stars stars--gold"><i></i><i></i><i></i><i></i><i></i></span><time>07/08/2026</time></div>
+      <div class="jdg__who"><span class="jdg__av"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-5.6 7-5.6s7 2 7 5.6"/></svg></span>Mariela Turner</div>
+      <h3>Amazing concept with real people</h3>
+      <p>Amazing company, such beautifully curated furniture, with an actual person at the end of an email, answering questions and dealing with any queries. Love the transparency of the pricing and the craftsmanship that is built into the coffee table I ordered.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ===== Check out our Socials ===== -->
+<section class="band band--tight">
+  <div class="wrap">
+    <h2 class="soc__h">Check out our Socials</h2>
+    <div class="scroller">
+      <div class="soc">
+        <a href="https://www.instagram.com/p/Dd4CCWclFm5/" target="_blank" rel="noopener"><img src="social/ig-1.jpg" alt="FableRoom on Instagram" width="448" height="560" loading="lazy"></a>
+        <a href="https://www.instagram.com/p/Ddvj6-Wm56Z/" target="_blank" rel="noopener"><img src="social/ig-2.jpg" alt="FableRoom on Instagram" width="448" height="560" loading="lazy"></a>
+        <a href="https://www.instagram.com/p/DdrR1oJDR4l/" target="_blank" rel="noopener"><img src="social/ig-3.jpg" alt="FableRoom on Instagram" width="448" height="560" loading="lazy"></a>
+        <a href="https://www.instagram.com/p/Ddoh_SdjVZD/" target="_blank" rel="noopener"><img src="social/ig-4.jpg" alt="FableRoom on Instagram" width="448" height="560" loading="lazy"></a>
+        <a href="https://www.instagram.com/p/DdjlVxajLxB/" target="_blank" rel="noopener"><img src="social/ig-5.jpg" alt="FableRoom on Instagram" width="448" height="560" loading="lazy"></a>
+        <a href="https://www.instagram.com/reel/DdZY3-GMV2I/" target="_blank" rel="noopener"><img src="social/ig-6.jpg" alt="FableRoom on Instagram" width="448" height="560" loading="lazy"></a>
+        <a href="https://www.instagram.com/reel/DdRoDb2jssx/" target="_blank" rel="noopener"><img src="social/ig-7.jpg" alt="FableRoom on Instagram" width="448" height="560" loading="lazy"></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft__grid">
+      <div>
+        <div class="ft__brand">FABLEROOM</div>
+        <p>Thanks for stopping by! Have a question, need styling advice, or just want to say hello? Reach us at <a href="mailto:Support@fableroom.com">Support@fableroom.com.</a> We'd love to hear from you.</p>
+        <p>We&rsquo;re always crafting new designs that bring warmth, character, and effortless style to your home. Follow us for the latest drops and home inspiration.</p>
+        <div class="ft__cert"><small>Certified</small><span class="ft__bcorp">B</span><small>Corporation</small></div>
+      </div>
+      <div>
+        <h4>About Us</h4>
+        <ul>
+          <li><a href="#">Our Story</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Blogs</a></li>
+          <li><a href="#">FAQs</a></li>
+        </ul>
+        <div class="ft__social">
+          <a href="https://www.instagram.com/fableroomliving/" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r=".6"/></svg></a>
+          <a href="https://www.pinterest.com/fableroomliving/" aria-label="Pinterest"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M11 9.5c2.5-1 5 .5 4 3.3-.7 1.8-3.3 2.2-3.8.3M11.6 10.5 9.8 18"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>We Care</h4>
+        <ul>
+          <li><a href="#">Refer a Friend</a></li>
+          <li><a href="#">Sell on FableRoom</a></li>
+          <li><a href="#">Trade Program</a></li>
+          <li><a href="#">Rewards &amp; Offers Policy</a></li>
+          <li><a href="#">Rugs Sizing Guide</a></li>
+          <li><a href="#">Delivery &amp; Shipping</a></li>
+          <li><a href="#">Returns &amp; Exchange</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <span class="ft__ccy">United Kingdom (GBP &pound;) <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span>
+    <div class="ft__legal">
+      <span>&copy; 2026 <a href="#">FABLEROOM</a>. FableRoom Limited is a registered company in England &amp; Wales (No. 16249321). Registered office: 85 Great Portland Street, First Floor, London, W1W 7LT.</span>
+      <span>Prototype &mdash; 3D hero demonstration, not the live store</span>
+    </div>
+  </div>
+</footer>

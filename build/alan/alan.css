@@ -1,0 +1,196 @@
+
+/* ==========================================================================
+   ALAN — additions on top of the Belgrave sheet above. Only the pieces the
+   Alan page has and the Belgrave page did not. Every hex below was read off
+   the live page with getComputedStyle or a pixel sample, 7 Oct 2026.
+   ========================================================================== */
+:root{--gold:#ffc107;--fr-green:#08bd5e;--judge:#108474;--ymal-bg:#f4f4f5;
+  --badge:#efe8d7;--ft-bg:#edece9;--ft-ink:#433122;--fbt-tag:#e17825}
+
+/* gallery: every Alan photo is 3:4 (2800x3733 originals), the lead one too */
+.shot--wide{aspect-ratio:3/4}
+
+/* Size overlay owns the right gutter while it is on */
+.tools{transition:opacity .2s,visibility .2s}
+.hero__wrap.is-dims .tools{opacity:0;visibility:hidden}
+
+/* buybox */
+.rate{display:flex;align-items:center;gap:6px;font-size:15px;margin-top:-6px}
+.stars--gold i{background:var(--gold)}
+.loved{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;
+  background:#2c2318;color:#f2f2f2;font-size:12px;font-weight:700;padding:7px 10px;border-radius:2px}
+.loved svg{width:13px;height:13px;stroke:#f2f2f2;fill:none;stroke-width:1.8}
+.buy__sub{font-size:15px;letter-spacing:.03em;line-height:1.6;color:var(--ink)}
+.price b{font-weight:600}
+.vsave{align-self:flex-start;display:inline-flex;align-items:center;gap:5px;
+  background:#f4f7ef;border-radius:4px;padding:7px 10px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.vsave em{font-style:normal;color:var(--fr-green)}
+.vsave a{display:inline-grid;place-items:center;width:44px;height:44px;margin:-14px -14px -14px -10px}
+.vsave svg{width:14px;height:14px;stroke:var(--ink-2);fill:none;stroke-width:1.6;stroke-linecap:round}
+.feat i{background:none;width:32px;height:32px}
+.feat img{width:32px;height:32px}
+.feat{font-size:14px;letter-spacing:.04em}
+.swatch::before{background:#d9bf9a}
+.express--grey{background:#f4f4f4;color:#000;font-size:14px}
+.atc__go{font-size:16px;font-weight:700;letter-spacing:1.17px;color:#f4f4f4}
+.pay{border-color:var(--line-3)}
+.pay__row span{flex:1}
+.pay__row .pay__chev{width:15px;height:15px;stroke:var(--ink-2)}
+.pay__logos{background:#f6f2ec;gap:12px}
+.pay__logos img{height:11px;width:auto}
+.trust--box{align-self:center;background:#fff;border:1px solid var(--line-3);padding:12px 18px}
+.tp{display:inline-flex;align-items:center;gap:5px;font-size:15px}
+.tp__star{width:17px;height:17px;background:#00b67a;
+  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.assure img{width:20px;height:20px;margin:0 auto 6px}
+.acc__body h5{margin:12px 0 4px;font-size:13.5px;color:var(--ink)}
+.acc__body h5:first-child{margin-top:0}
+.acc__body p{margin:0 0 8px}
+.desc{margin:0;font-size:14px;line-height:1.7;color:var(--ink)}
+
+/* frequently bought together (a LimeSpot widget on the live page) */
+.band--tight{padding:28px 0}
+.fbt__h{font-size:24px;letter-spacing:1.37px}
+.fbt__disc{display:flex;align-items:center;gap:10px;margin:14px 0 12px;font-size:13px;color:var(--ink-2)}
+.fbt__disc span{background:var(--fbt-tag);color:#fff;font-size:12px;border-radius:5px;padding:6px 12px}
+.fbt__disc i{font-style:normal;color:#999}
+.fbt{display:grid;gap:22px}
+.fbt__items{display:flex;align-items:center;gap:10px}
+.fbt__it{flex:0 0 150px;background:#f5f5f5;padding:8px 8px 12px;border-radius:2px}
+.fbt__img{aspect-ratio:3/4;overflow:hidden;background:var(--gallery-bg)}
+.fbt__img img{width:100%;height:100%;object-fit:cover}
+.fbt__t{display:flex;justify-content:space-between;gap:6px;margin-top:8px;font-size:12.5px;font-weight:700;line-height:1.35}
+.fbt__t input{accent-color:#000;width:16px;height:16px;flex:none;margin:0}
+/* 16px box, 44px hit area: the label carries the padding, the box stays as drawn */
+.fbt__ck{flex:none;display:grid;place-items:center;width:44px;height:44px;margin:-14px -14px -14px -8px;cursor:pointer}
+.fbt__p{font-size:12.5px;margin-top:4px}
+.fbt__p s{color:#999;margin-left:4px}
+.fbt__sel{margin-top:10px;width:100%;min-height:36px;border:1px solid #999;border-radius:4px;background:#fff;font:inherit;font-size:12.5px;text-align:center}
+.fbt__plus{flex:none;font-size:20px;color:#999}
+.fbt__sum{font-size:13px}
+.fbt__sum div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line-3)}
+.fbt__sum b{font-weight:700}
+.fbt__tot{border-bottom:0!important;margin-top:8px}
+.fbt__tot span{font-weight:700}
+.fbt__tot b{color:var(--tan)}
+.fbt__go{width:100%;min-height:44px;margin-top:4px;border:1px solid #444;border-radius:8px;background:#000;color:#fff;font-size:14px;cursor:pointer}
+.fbt__note{margin:8px 0 0;font-family:var(--ff-d);font-style:italic;font-size:16px;color:var(--ink-2)}
+
+/* priced with honesty — tabbed on the live page */
+.honesty{border-top:1px solid var(--line-3)}
+.honesty .wrap{max-width:860px}
+.eyebrow{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--bronze);margin-bottom:6px}
+.info{display:inline-grid;place-items:center;vertical-align:-3px}
+.info svg{width:15px;height:15px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round}
+.tabs{display:flex;justify-content:center;gap:8px;border-bottom:1px solid var(--line-3);margin:0 auto 26px;max-width:380px}
+.tabs button{border:0;background:none;cursor:pointer;min-height:44px;padding:0 14px;
+  font-size:14px;font-weight:600;color:#333;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:#bd7e3f;border-bottom-color:#bd7e3f}
+.ctable--fr th,.ctable--fr td{text-align:center}
+.ctable--fr th.fr{background:var(--bronze);color:#fff;font-family:var(--ff-d);font-weight:600;
+  letter-spacing:1.3px;border-radius:8px 8px 0 0}
+.ctable--fr td.fr{background:#f8efe6}
+.ctable--fr .tick{color:var(--fr-green);font-weight:700;font-size:15px}
+.savebar{margin:16px 0 0;padding:12px 14px;border:1px solid rgba(8,189,94,.25);border-radius:4px;
+  background:rgba(8,189,94,.07);color:var(--fr-green);font-size:14.5px}
+.savebar b{font-weight:700}
+.tp__h{font-size:20px;margin-bottom:6px}
+.costs__h{font-weight:700;font-size:14px;margin:0 0 4px}
+
+/* you may also like */
+.band--ymal{background:var(--ymal-bg)}
+.band--ymal h2{font-size:24px;letter-spacing:1.37px}
+.card__img{border-radius:0}
+.card__badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.card__off{margin-top:0;background:var(--badge);color:#000}
+
+/* no middlemen: two columns at desktop on the live page */
+.nomid{display:grid;gap:26px;align-items:center}
+.nomid h2{font-family:var(--ff-d);font-style:italic;font-weight:600;letter-spacing:3px;font-size:clamp(26px,5vw,36px);text-align:center}
+.nomid .sub{font-family:var(--ff-d);color:var(--bronze);font-size:20px;letter-spacing:1.5px;margin:6px 0 14px;text-align:center}
+.nomid p{margin:0;font-size:14px;color:var(--ink-2);text-align:center}
+.nomid .values{margin-top:0}
+.values i img{width:24px;height:24px}
+.values span{font-size:14px;font-weight:600}
+
+/* meet the makers: text left, image right at desktop */
+.makers{display:grid;gap:22px;align-items:center}
+.makers h2{font-size:30px;font-weight:600;letter-spacing:3px;color:#333}
+.makers .band__lede{margin:12px 0 0;letter-spacing:.04em;line-height:1.7}
+.makers__img{margin-top:0;aspect-ratio:3/2}
+
+/* testimonials */
+.tmon{align-items:stretch;gap:24px;padding:4px 2px 12px}
+.tmon .review{flex:0 0 auto;width:min(84vw,400px);margin:0;border:0;border-radius:0;
+  box-shadow:0 2px 10px rgba(0,0,0,.14);display:flex;flex-direction:column}
+.tmon .review p{flex:1}
+.review__by span:first-child{font-family:var(--ff-d);font-size:15px}
+
+/* judge.me reviews block */
+.jdg{max-width:1200px}
+.jdg h2{text-align:center;font-size:24px;letter-spacing:1.37px;margin-bottom:20px}
+.jdg__sum{display:grid;gap:18px;padding-bottom:16px;border-bottom:1px solid var(--line-3);text-align:center}
+.jdg__avg{font-size:16px;line-height:1.5}
+.jdg__avg small{font-size:14px}
+.jdg__hist{display:grid;gap:4px;justify-content:center}
+.jdg__hist div{display:flex;align-items:center;gap:10px;font-size:12px}
+.jdg__hist b{width:140px;height:9px;background:#eee;position:relative}
+.jdg__hist b::after{content:"";position:absolute;inset:0;width:var(--w);background:var(--judge)}
+.jdg__hist em{font-style:normal;width:10px;color:var(--ink-2)}
+.stars--sm i{width:12px;height:12px}
+.stars--4 i:nth-child(n+5),.stars--3 i:nth-child(n+4),.stars--2 i:nth-child(n+3),
+.stars--1 i:nth-child(n+2){background:none;box-shadow:inset 0 0 0 1px var(--gold)}
+.jdg__cta button{min-height:44px;padding:0 44px;border:2px solid var(--judge);background:var(--judge);
+  color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+.jdg__sort{display:flex;align-items:center;gap:6px;padding:14px 0;border-bottom:1px solid var(--line-3);
+  color:var(--judge);font-size:14px;font-weight:600}
+.jdg__sort svg{width:14px;height:14px;stroke:var(--judge);fill:none;stroke-width:2}
+.jdg__rev{padding:16px 0}
+.jdg__top{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-2)}
+.jdg__who{display:flex;align-items:center;gap:8px;margin:8px 0 14px;color:var(--judge);font-size:16px}
+.jdg__av{width:30px;height:30px;display:grid;place-items:center;background:#eee}
+.jdg__av svg{width:18px;height:18px;stroke:var(--judge);fill:none;stroke-width:1.5}
+.jdg__rev h3{font-family:var(--ff-b);font-weight:700;font-size:16px;margin-bottom:8px}
+.jdg__rev p{margin:0;font-size:15px;line-height:1.6}
+
+/* socials */
+.soc__h{text-align:center;font-size:clamp(24px,4.6vw,30px);font-weight:600;letter-spacing:3px;margin-bottom:20px}
+.soc{display:flex;gap:0}
+.soc a{flex:0 0 auto;width:min(44vw,228px);aspect-ratio:4/5;overflow:hidden;background:var(--gallery-bg)}
+.soc img{width:100%;height:100%;object-fit:cover}
+
+/* footer — live colours */
+.ft{background:var(--ft-bg);color:var(--ft-ink)}
+.ft p,.ft a{color:var(--ft-ink)}
+.ft p a{text-decoration:underline}
+.ft__grid{display:grid;gap:26px}
+.ft__brand{margin-top:0}
+.ft__cert{display:inline-flex;flex-direction:column;align-items:center;gap:2px;margin-top:6px;font-weight:700}
+.ft__cert small{font-size:10px}
+.ft__social{display:flex;gap:4px;margin-top:14px}
+.ft__social a{width:44px;height:44px;display:grid;place-items:center}
+.ft__social svg{width:20px;height:20px;stroke:var(--ft-ink);fill:none;stroke-width:1.6}
+.ft__ccy{display:inline-flex;align-items:center;gap:6px;margin-top:22px;min-height:40px;padding:0 14px;
+  border:1px solid #ccc;border-radius:4px;background:#fff;font-size:12.5px}
+.ft__ccy svg{width:12px;height:12px;stroke:var(--ft-ink);fill:none;stroke-width:2}
+
+@media(min-width:760px){
+  .fbt{grid-template-columns:auto minmax(260px,1fr);align-items:center}
+  .nomid{grid-template-columns:1fr 1fr}
+  .makers{grid-template-columns:1fr 1fr;gap:48px}
+  .jdg__sum{grid-template-columns:1fr auto 1fr;align-items:center}
+  .ft__grid{grid-template-columns:1.2fr 1fr 1fr}
+}
+@media(min-width:1000px){
+  /* the description sits under the media column, as on the live page */
+  .pdp{grid-template-rows:auto 1fr}
+  .media{grid-column:1;grid-row:1}
+  .buy{grid-column:2;grid-row:1/span 2}
+  .desc{grid-column:1;grid-row:2}
+  .fbt__it{flex-basis:150px}
+  /* Alan's buybox carries three rows Belgrave's did not (rating, Loved by,
+     savings), which pushed Add to Basket 9px under a 900px fold at the
+     Belgrave gap. Same order, tighter rhythm. */
+  .buy{gap:11px}
+  .rate{margin-top:-3px}
+}
