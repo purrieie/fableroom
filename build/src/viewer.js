@@ -651,9 +651,13 @@ export function initViewer(opts) {
   }
 
   /* ----------------------------- dimensions ---------------------------------- */
-  // The scan is normalised so its footprint is one unit across; the real table
-  // is 120 cm across, which fixes the scale for everything placed beside it.
-  const M_PER_UNIT = 1.20;
+  // The scan is normalised so its footprint is one unit across, so the real
+  // width fixes the scale for everything measured against it. Pass the true
+  // size as opts.realSize = [width, height, depth] in metres; the Belgrave
+  // table's 1.20 x 0.76 is only the fallback, not a baked-in assumption.
+  const REAL = Array.isArray(opts.realSize) && opts.realSize.length >= 2
+    ? opts.realSize : [1.20, 0.76, 1.20];
+  const M_PER_UNIT = REAL[0];
   const U = (metres) => metres / M_PER_UNIT;
 
   let dimGroup = null, dimLabels = [];
@@ -685,7 +689,10 @@ export function initViewer(opts) {
     g.renderOrder = 3;
     dimLabels = [
       { id: 'dim-w', at: [0, y0 + tick * 1.6, z], text: Math.round(w * M_PER_UNIT * 100) + ' cm' },
-      { id: 'dim-h', at: [x, hgt / 2, 0], text: '76 cm' }
+      // Height comes from the declared real size rather than the normalised
+      // mesh: the scan's proportions can drift a few percent, and a rounded
+      // centimetre figure on a product page needs to match the spec sheet.
+      { id: 'dim-h', at: [x, hgt / 2, 0], text: Math.round(REAL[1] * 100) + ' cm' }
     ];
     return g;
   }
