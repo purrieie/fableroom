@@ -1,0 +1,50 @@
+{%- comment -%}
+  fableroom-room-view — "See it in your room" for rugs.
+  Render this snippet from a Custom Liquid block placed directly under the variant picker (see README).
+  Costs about 2 KB of HTML. The app (25 KB compressed) and every image load only after a shopper
+  hovers, touches or focuses one of the buttons below. See README.md.
+{%- endcomment -%}
+<style>
+.frrv-entry{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:14px 0 4px}
+.frrv-entry__btn{flex:1 1 100%;display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border:1.5px solid #B77E45;border-radius:8px;background:#FBF6EF;color:#433122;text-align:left;cursor:pointer;font:inherit;letter-spacing:normal;text-transform:none}
+.frrv-entry__btn:hover{background:#F6EDE1}
+.frrv-entry__btn>svg{flex:none;width:26px;height:26px;fill:none;stroke:#B77E45;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.frrv-entry__btn span{flex:1;line-height:1.25}
+.frrv-entry__btn b{display:block;font-family:"HKGrotesk-Bold","HKGrotesk-Regular",sans-serif;font-weight:600;font-size:15px}
+.frrv-entry__btn small{display:block;font-size:12.5px;color:#6b5b4d}
+.frrv-entry__btn i{flex:none;font-style:normal;font-size:20px;color:#B77E45}
+.frrv-entry__link{background:none;border:0;padding:4px 0;font:inherit;font-size:13.5px;color:#433122;text-decoration:underline;text-underline-offset:3px;cursor:pointer;letter-spacing:normal;text-transform:none}
+.frrv-pill{position:absolute;right:12px;top:12px;z-index:3;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px 0 11px;border:0;border-radius:99px;background:rgba(255,255,255,.92);color:#2c2c2c;box-shadow:0 1px 6px rgba(0,0,0,.18);font:inherit;font-size:13.5px;letter-spacing:normal;text-transform:none;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.frrv-pill svg{width:18px;height:18px;fill:none;stroke:#B77E45;stroke-width:1.8;stroke-linejoin:round}
+@media (min-width:1000px){.frrv-pill{right:16px;top:16px;height:42px;font-size:14px}}
+</style>
+<div class="frrv-entry">
+  <button type="button" class="frrv-entry__btn" data-frrv-open="room" data-frrv-src="entry">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 4l9 6.5V20H3z"/><path d="M7 20l2.2-5h5.6L17 20"/></svg>
+    <span><b>See it in your room</b><small>Try every size on your own floor — true to scale</small></span><i aria-hidden="true">›</i>
+  </button>
+  <button type="button" class="frrv-entry__link" data-frrv-open="size" data-frrv-src="entry">Which size do I need?</button>
+  <button type="button" class="frrv-entry__link" data-frrv-open="know" data-frrv-src="entry">Pile height &amp; door check</button>
+</div>
+<script>
+window.FRRV_CONFIG = {
+  appSrc: {{ 'fableroom-room-view.js' | asset_url | json }},
+  sku: {{ product.selected_or_first_available_variant.sku | json }},
+  gallerySelector: '.media-gallery__viewer',
+  analytics: 'gtm',
+  badges: { "200x290 cm": "Most Popular" },
+  spec: { name: "Laleh Rug", thicknessMm: 12 },
+  product: { variants: [
+    {%- for v in product.variants -%}
+      { id: {{ v.id }}, title: {{ v.title | json }}, price: {{ v.price }}, compare_at_price: {{ v.compare_at_price | default: 0 }}, available: {{ v.available }} }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ] },
+  assets: {
+    {%- assign frrv_files = 'laleh-rug-sm.webp,laleh-rug-md.webp,laleh-rug-hd.webp,room-living.webp,room-living-thumb.webp,room-lounge.webp,room-lounge-thumb.webp,room-bedroom.webp,room-bedroom-thumb.webp' | split: ',' -%}
+    {%- for f in frrv_files -%}
+      {{ f | json }}: {{ f | asset_url | json }}{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  }
+};
+(function(){var n=window,r=document,a=n.FRRV_CONFIG||{};if(n.FRRV)return;var o=!1;n.FRRV={q:[],open:function(t,e){n.FRRV.q.push([t,e]),i()}};function i(){if(!o){o=!0;var t=r.createElement("script");t.src=a.appSrc,t.async=!0,r.head.appendChild(t)}}function u(t){t.__frrv||(t.__frrv=1,["pointerenter","touchstart","focusin"].forEach(function(e){t.addEventListener(e,i,{passive:!0,once:!0})}),t.addEventListener("click",function(e){e.preventDefault(),e.stopPropagation(),n.FRRV.open(t.getAttribute("data-frrv-open")||"room",t.getAttribute("data-frrv-src")||"entry")}))}function c(){var t=a.gallerySelector&&r.querySelector(a.gallerySelector);if(t&&!t.querySelector(".frrv-pill")){var e=r.createElement("button");e.type="button",e.className="frrv-pill",e.setAttribute("data-frrv-open","room"),e.setAttribute("data-frrv-src","gallery"),e.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 4l9 6.5V20H3z"/><path d="M7 20l2.2-5h5.6L17 20"/></svg>See it in your room',t.appendChild(e)}[].forEach.call(r.querySelectorAll("[data-frrv-open]"),u)}r.readyState==="loading"?r.addEventListener("DOMContentLoaded",c):c()})();
+</script>

@@ -1,0 +1,5 @@
+src/rug-topdown-src.png
+src/rooms/*.jpg
+demo-base.html
+perf/*.json
+perf/run.log
