@@ -62,7 +62,18 @@ glue = glue.replace(
     "modelUrl:'model.glb', modelBytes:912332,\n    realSize:[1.20, 0.76, 1.20]        // the Belgrave's real metres: 120cm dia, 76cm high",
     "modelUrl:'model.glb', modelBytes:%d,\n    realSize:[0.80, 0.35, 0.80]        // the Alan's real metres: 80cm across, 35cm high" % model_bytes)
 assert "realSize:[0.80, 0.35, 0.80]" in glue
+
+# Wide, low table: at the engine's default framing the drum runs into the hour
+# rail and the zoom column. framePad pulls the home camera out; hotspot close-ups
+# are relative to the home distance, so they are divided by the same factor.
+FRAME_PAD = 1.3
+glue = glue.replace("realSize:[0.80, 0.35, 0.80]", "framePad:%s, realSize:[0.80, 0.35, 0.80]" % FRAME_PAD)
 glue = glue.replace('[belgrave]', '[alan]')
+# No HD file for Alan: the supplied model is the best source there is, so a
+# "Load HD" button would reload the same file. Remove it when data-hd-url is absent.
+_h = "hdDone = false;"
+assert glue.count(_h) == 1
+glue = glue.replace(_h, _h + "\n  if (!hdUrl) hdBtn.parentNode.removeChild(hdBtn);")
 # Size overlay: the Alan is wide and low, so its height line lands on the zoom
 # column at every width. Hide the column while Size is on (HANDOFF section 5);
 # visibility:hidden as well as opacity, or the buttons stay keyboard-focusable.
@@ -72,7 +83,9 @@ glue = glue.replace(_d, _d + " stage.classList.toggle('is-dims', on);")
 
 hs_start = glue.index('  /* ---- hotspots')
 hs_end = glue.index('  var hsLayer=')
-glue = glue[:hs_start] + open(os.path.join(HERE, 'alan-hotspots.js')).read() + glue[hs_end:]
+_hs = open(os.path.join(HERE, 'alan-hotspots.js')).read()
+_hs = re.sub(r'dist:([0-9.]+)', lambda m: 'dist:%.2f' % (float(m.group(1)) / FRAME_PAD), _hs)
+glue = glue[:hs_start] + _hs + glue[hs_end:]
 
 # tab switcher for "Priced with honesty" (the live page has two tabs)
 tabs_js = """

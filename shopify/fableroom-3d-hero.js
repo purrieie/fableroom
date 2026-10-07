@@ -154,6 +154,10 @@
     '.fr3d-spin svg,.fr3d-tool svg{position:relative;z-index:1;stroke:var(--fr3d-ink);fill:none;',
     '  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}',
     '.fr3d-spin svg{width:14px;height:14px}.fr3d-tool svg{width:15px;height:15px}',
+    /* Size overlay owns the right gutter while on: a wide, low product's height
+       label lands on the zoom column otherwise. visibility as well as opacity,
+       or the hidden buttons stay keyboard-focusable. */
+    '.fr3d-stage.is-dims .fr3d-tools{opacity:0;visibility:hidden}',
     '.fr3d-tools{position:absolute;right:5px;top:50%;transform:translateY(-50%);z-index:3;',
     '  display:flex;flex-direction:column;gap:0}',
 
@@ -370,7 +374,8 @@
     var viewer = window.__initBelgraveViewer({
       hostId: ids.stage, statusId: ids.status, barId: ids.bar,
       modelUrl: o.modelUrl, modelBytes: o.modelBytes || 0,
-      realSize: o.realSize || [1.20, 0.76, 1.20]
+      realSize: o.realSize || [1.20, 0.76, 1.20],
+      framePad: o.framePad || 1
     });
     if (!viewer) { stage.classList.add('is-unsupported'); b3.disabled = true; toPhotos(); return null; }
     host.__fr3dViewer = viewer;
@@ -477,6 +482,7 @@
     dimBtn.addEventListener('click', function () {
       var on = !viewer.dimensionsOn();
       viewer.setDimensions(on); dimBtn.classList.toggle('on', on);
+      stage.classList.toggle('is-dims', on);   // frees the right gutter for the height label
       if (!on) Object.keys(dimEls).forEach(function (k) { dimEls[k].classList.remove('on'); });
     });
 
@@ -517,6 +523,9 @@
        unchanged and the button doubles as a real read on download speed. */
     var hdBtn = q('.fr3d-hd'), hdLabel = hdBtn.querySelector('span');
     var hdUrl = o.hdUrl || o.modelUrl, hdBytes = o.hdBytes || o.modelBytes || 0, hdDone = false;
+    // No data-hd-url means there is nothing better to load: drop the button
+    // rather than ship one that silently re-downloads the same model.
+    if (!o.hdUrl) hdBtn.parentNode.removeChild(hdBtn);
     hdBtn.addEventListener('click', function () {
       if (hdDone || hdBtn.disabled) return;
       hdBtn.disabled = true; hdLabel.textContent = 'Loading 0%';
@@ -562,6 +571,7 @@
       hdUrl: el.getAttribute('data-hd-url') || null,
       hdBytes: +(el.getAttribute('data-hd-bytes') || 0),
       realSize: (rs.length >= 2 && rs.every(function (x) { return !isNaN(x); })) ? rs : null,
+      framePad: parseFloat(el.getAttribute('data-frame-pad')) || null,
       placeholderUrl: el.getAttribute('data-placeholder-url') || null,
       gallerySelector: el.getAttribute('data-gallery-selector') || null,
       default2d: el.getAttribute('data-default') === 'photos'

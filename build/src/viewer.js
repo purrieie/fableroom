@@ -761,12 +761,15 @@ export function initViewer(opts) {
     const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
     // Enough air that the height label, which sits outside the silhouette,
     // still lands inside the frame at the default framing.
+    // opts.framePad (default 1) pulls the home camera further out for wide,
+    // low products whose silhouette otherwise runs into the stage controls.
     const pad = camera.aspect < 0.8 ? 1.42 : 1.16;
-    const d = Math.max(vHalf / Math.sin(vFov / 2), hRad / Math.sin(hFov / 2)) * pad;
+    const framePad = opts.framePad > 0 ? opts.framePad : 1;
+    const d = Math.max(vHalf / Math.sin(vFov / 2), hRad / Math.sin(hFov / 2)) * pad * framePad;
     const changed = Math.abs(d - fitDist) > 1e-4;
     const wasDefault = Math.abs(controls.goal.radius - fitDist) < 1e-3;
     fitDist = d;
-    controls.minR = d * 0.52;
+    controls.minR = (d / framePad) * 0.52;   // closest zoom unchanged by framePad
     controls.maxR = d * 1.75;
     if (changed && (wasDefault || !ready)) {
       controls.goal.radius = d;

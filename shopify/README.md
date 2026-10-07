@@ -9,7 +9,7 @@ injected at runtime — there is no CSS file and no build step.
 | `fableroom-3d-hero.js` | 32 KB | The drop-in: markup, styles, 3D/Photos toggle, hotspots, HD upgrade. All classes prefixed `fr3d-`. |
 
 Models live in `../belgrave/` (`model.glb` 890 KB, `model-hd.glb` 2.5 MB).
-Live reference: https://purrieie.github.io/fableroom/belgrave/
+Live references: https://purrieie.github.io/fableroom/belgrave/ · https://purrieie.github.io/fableroom/alan/ (Alan package: see `build/alan/`)
 
 ## Install
 
@@ -34,7 +34,8 @@ Load order matters — the engine bundle must come first.
 | `data-model-bytes` | no | `0` | Exact byte size, for an accurate progress bar |
 | `data-real-size` | **yes for a new product** | `1.20,0.76,1.20` | Real `width,height,depth` in **metres**. Drives the Size overlay *and* the model's world scale. Wrong value = wrong centimetres on the page. |
 | `data-gallery-selector` | strongly recommended | none | CSS selector of the theme's gallery wrapper. Without it the toggle has nothing to switch back to. |
-| `data-hd-url` / `data-hd-bytes` | no | same as model | Heavier model for the "Load HD" button |
+| `data-hd-url` / `data-hd-bytes` | no | none | Heavier model for the "Load HD" button. Omit it and the button is removed rather than shown as a no-op. |
+| `data-frame-pad` | no | `1` | Pulls the default camera out for wide, low products that otherwise crowd the stage controls (Alan uses `1.3`). Hotspot `view.dist` values are relative to it. |
 | `data-placeholder-url` | no | none | Image blurred behind the loading state |
 | `data-default` | no | `3d` | `photos` to land on the gallery instead |
 
@@ -54,7 +55,8 @@ npx esbuild build/src/viewer.js --bundle --format=iife --minify --target=es2019 
 2. `data-real-size`
 3. `DEFAULT_HOTSPOTS` in `fableroom-3d-hero.js` — copy **and** positions. `at` is in
    normalised model space and will not transfer between products.
-4. `data-gallery-selector`, if the theme template differs.
+4. `data-frame-pad`, if the product crowds the stage controls.
+5. `data-gallery-selector`, if the theme template differs.
 
 ## Notes
 
