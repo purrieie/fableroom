@@ -2,7 +2,7 @@
    - Entry buttons are plain HTML in the snippet, so nothing shifts on load.
    - The app script is injected on the first sign of intent (pointer over / touch /
      keyboard focus on an entry), and a tap opens it as soon as it has arrived.
-   - A "See it in your room" pill is added over the main gallery image once the
+   - A "View in your room" pill is added over the main gallery image once the
      DOM is ready; it is absolutely positioned, so it cannot move the layout. */
 (function () {
   var W = window, D = document, C = W.FRRV_CONFIG || {};
@@ -27,7 +27,7 @@
       var b = D.createElement('button');
       b.type = 'button'; b.className = 'frrv-pill';
       b.setAttribute('data-frrv-open', 'room'); b.setAttribute('data-frrv-src', 'gallery');
-      b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 4l9 6.5V20H3z"/><path d="M7 20l2.2-5h5.6L17 20"/></svg>See it in your room';
+      b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7z"/><path d="M3.5 7 12 11.5 20.5 7M12 11.5v10"/></svg>View in your room';
       g.appendChild(b);
     }
     [].forEach.call(D.querySelectorAll('[data-frrv-open]'), hook);

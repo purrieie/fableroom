@@ -1,0 +1,7 @@
+[
+ { "id": "living",  "label": "Living room",    "kind": "living" },
+ { "id": "lounge",  "label": "Classic lounge", "kind": "living" },
+ { "id": "bedroom", "label": "Bedroom",        "kind": "bedroom" },
+ { "id": "dining",  "label": "Dining room",    "kind": "dining" },
+ { "id": "reading", "label": "Reading corner", "kind": "reading" }
+]

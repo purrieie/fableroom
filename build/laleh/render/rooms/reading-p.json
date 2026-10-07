@@ -1,0 +1,163 @@
+{
+ "id": "reading-p",
+ "output": {
+  "width": 1350,
+  "height": 1690
+ },
+ "camera": {
+  "height": 2.8,
+  "vfovDeg": 54,
+  "pitchDeg": 38.66
+ },
+ "rug": {
+  "x": 0,
+  "z": -3.75,
+  "yawDeg": 90
+ },
+ "room": {
+  "floor": {
+   "x": [
+    -3,
+    3
+   ],
+   "z": [
+    -5.3,
+    0.8
+   ]
+  },
+  "wallHeight": 2.75,
+  "wallThickness": 0.14,
+  "walls": [
+   "back",
+   "left",
+   "right"
+  ],
+  "ceiling": false,
+  "floorMaterial": {
+   "texture": "laminate_floor_02",
+   "res": "2k",
+   "rotationDeg": 0,
+   "roughness": 0.62
+  },
+  "wallMaterial": {
+   "color": "#f0ebe3",
+   "roughness": 0.92
+  },
+  "skirting": {
+   "height": 0.1
+  },
+  "openings": [
+   {
+    "wall": "back",
+    "type": "window",
+    "center": -1.1,
+    "width": 1.8,
+    "sill": 0.45,
+    "height": 1.95,
+    "panes": 3,
+    "portal": {
+     "intensity": 3
+    }
+   },
+   {
+    "wall": "right",
+    "type": "window",
+    "center": -3.3,
+    "width": 1.4,
+    "sill": 0.6,
+    "height": 1.7,
+    "panes": 2,
+    "portal": {
+     "intensity": 3
+    }
+   }
+  ]
+ },
+ "lighting": {
+  "hdri": "kloofendal_48d_partly_cloudy_puresky",
+  "intensity": 1,
+  "rotationDeg": 60
+ },
+ "render": {
+  "toneMapping": "agx",
+  "exposure": 1.1,
+  "samples": 320
+ },
+ "furniture": [
+  {
+   "name": "chair",
+   "source": "polyhaven",
+   "id": "mid_century_lounge_chair",
+   "size": {
+    "w": 0.8
+   },
+   "position": [
+    -0.75,
+    -4.55
+   ],
+   "rotationYDeg": 15
+  },
+  {
+   "name": "ottoman",
+   "source": "polyhaven",
+   "id": "Ottoman_01",
+   "size": {
+    "w": 0.6
+   },
+   "position": [
+    -0.45,
+    -3.55
+   ],
+   "rotationYDeg": 10
+  },
+  {
+   "name": "side",
+   "source": "polyhaven",
+   "id": "side_table_01",
+   "size": {
+    "h": 0.5
+   },
+   "position": [
+    0.2,
+    -4.85
+   ]
+  },
+  {
+   "name": "vase",
+   "source": "polyhaven",
+   "id": "ceramic_vase_01",
+   "on": "side",
+   "size": {
+    "h": 0.24
+   },
+   "position": [
+    0.2,
+    -4.85
+   ]
+  },
+  {
+   "name": "shelf",
+   "source": "polyhaven",
+   "id": "wooden_display_shelves_01",
+   "size": {
+    "h": 1.25
+   },
+   "position": [
+    1.6,
+    -5.05
+   ]
+  },
+  {
+   "name": "plant",
+   "source": "polyhaven",
+   "id": "potted_plant_02",
+   "size": {
+    "h": 1.25
+   },
+   "position": [
+    -2.3,
+    -4.95
+   ]
+  }
+ ]
+}

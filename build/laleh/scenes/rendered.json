@@ -1,0 +1,117 @@
+[
+ {
+  "id": "living",
+  "label": "Living room",
+  "kind": "living",
+  "img": "room-living.webp",
+  "thumb": "room-living-thumb.webp",
+  "maskImg": "room-living-mask.png",
+  "shadeImg": "room-living-shade.webp",
+  "f": 0.76886,
+  "hz": -0.52515,
+  "h": 2.8,
+  "ref": [
+   1000,
+   750
+  ],
+  "rugWorld": {
+   "x": 0,
+   "z": -2.6,
+   "yawDeg": 90
+  },
+  "size": 2,
+  "mzoom": 1
+ },
+ {
+  "id": "lounge",
+  "label": "Classic lounge",
+  "kind": "living",
+  "thumb": "room-lounge-thumb.webp",
+  "size": 2,
+  "mzoom": 1,
+  "img": "room-lounge.webp",
+  "maskImg": "room-lounge-mask.png",
+  "shadeImg": "room-lounge-shade.webp",
+  "f": 0.76886,
+  "hz": -0.52515,
+  "h": 2.8,
+  "ref": [
+   1000,
+   750
+  ],
+  "rugWorld": {
+   "x": 0,
+   "z": -2.6,
+   "yawDeg": 90
+  }
+ },
+ {
+  "id": "bedroom",
+  "label": "Bedroom",
+  "kind": "bedroom",
+  "thumb": "room-bedroom-thumb.webp",
+  "size": 2,
+  "mzoom": 1,
+  "img": "room-bedroom.webp",
+  "maskImg": "room-bedroom-mask.png",
+  "shadeImg": "room-bedroom-shade.webp",
+  "f": 0.76886,
+  "hz": -0.52515,
+  "h": 2.8,
+  "ref": [
+   1000,
+   750
+  ],
+  "rugWorld": {
+   "x": 0,
+   "z": -2.6,
+   "yawDeg": 90
+  }
+ },
+ {
+  "id": "dining",
+  "label": "Dining room",
+  "kind": "dining",
+  "thumb": "room-dining-thumb.webp",
+  "size": 2,
+  "mzoom": 1,
+  "img": "room-dining.webp",
+  "maskImg": "room-dining-mask.png",
+  "shadeImg": "room-dining-shade.webp",
+  "f": 0.76886,
+  "hz": -0.56158,
+  "h": 2.8,
+  "ref": [
+   1000,
+   750
+  ],
+  "rugWorld": {
+   "x": 0,
+   "z": -2.65,
+   "yawDeg": 90
+  }
+ },
+ {
+  "id": "reading",
+  "label": "Reading corner",
+  "kind": "reading",
+  "thumb": "room-reading-thumb.webp",
+  "size": 2,
+  "mzoom": 1,
+  "img": "room-reading.webp",
+  "maskImg": "room-reading-mask.png",
+  "shadeImg": "room-reading-shade.webp",
+  "f": 0.76886,
+  "hz": -0.52515,
+  "h": 2.8,
+  "ref": [
+   1000,
+   750
+  ],
+  "rugWorld": {
+   "x": 0,
+   "z": -2.75,
+   "yawDeg": 90
+  }
+ }
+]

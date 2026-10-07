@@ -41,7 +41,7 @@
      fraction of image height, h = camera height in metres. place = where the rug's
      centre starts, as image fractions; yaw = the room's axis in degrees. occl = image-
      space polygons (fractions) of furniture that stands in front of the rug. */
-  var SCENES = CFG.scenes || [
+  var SCENES = CFG.scenes || /*SCENES*/[
     { id: 'living', label: 'Living room', img: 'room-living.webp', thumb: 'room-living-thumb.webp',
       f: 0.78, hz: 0.5, h: 0.72, place: [0.56, 0.75], yaw: 58, focus: [0.56, 0.7], size: 2, ref: [2000, 1333],
       occl: [
@@ -71,7 +71,7 @@
         [[296, 925], [309, 925], [311, 1027], [299, 1027]],
         [[405, 920], [418, 920], [492, 1030], [480, 1030]]
       ] }
-  ];
+  ]/*END*/;
 
   /* --------------------------------------------------------------- analytics */
   var sentOnce = {}, sentCount = 0;
@@ -118,7 +118,7 @@
   var S = {
     open: false, tab: 'room', unit: 'cm', vi: Math.max(0, VARIANTS.length - 1),
     scene: null, cam: null, img: null, rug: { x: 0, z: -3, yaw: 0 }, anim: null,
-    dims: true, tape: false, compare: false, adjust: false, finder: { room: 'living' },
+    dims: true, tape: false, compare: false, adjust: false, zoom: 1, full: false, split: null, yaw0: 0,
     own: null // { img, cam } for the shopper's own photo
   };
 
@@ -164,7 +164,7 @@
     '.frrv-tool[hidden]{display:none}',
     '.frrv-tool .frrv-tip{position:absolute;right:50px;top:50%;transform:translateY(-50%);background:#2c2c2c;color:#fff;font-size:12px;padding:4px 8px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s}',
     '@media (hover:hover){.frrv-tool:hover .frrv-tip{opacity:1}}',
-    '.frrv-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(44,44,44,.78);color:#fff;font-size:12.5px;padding:7px 12px;border-radius:99px;white-space:nowrap;pointer-events:none;transition:opacity .4s;z-index:2}',
+    '.frrv-hint{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);background:rgba(44,44,44,.78);color:#fff;font-size:12.5px;padding:7px 12px;border-radius:99px;white-space:nowrap;pointer-events:none;transition:opacity .4s;z-index:2}',
     '.frrv-hint.is-gone{opacity:0}',
     '.frrv-chip{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:flex-start;padding:7px 10px;border-radius:10px;background:#fff;border:1.5px solid #E6DED2;line-height:1.2;text-align:left;position:relative}',
     '.frrv-chip b{font-family:"HKGrotesk-Bold","HKGrotesk-Regular",sans-serif;font-weight:600;font-size:13px;white-space:nowrap}',
@@ -196,7 +196,7 @@
     '.frrv[data-tab=size] .frrv-side,.frrv[data-tab=know] .frrv-side{flex:1}',
     '.frrv-pane{display:none;min-height:0}',
     '.frrv[data-tab=room] .frrv-pane[data-p=room],.frrv[data-tab=size] .frrv-pane[data-p=size],.frrv[data-tab=know] .frrv-pane[data-p=know]{display:block}',
-    '.frrv-pane[data-p=size],.frrv-pane[data-p=know]{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:16px 16px 28px}',
+    '.frrv-pane[data-p=size]{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px 14px calc(14px + env(safe-area-inset-bottom))}',
     '.frrv-pane[data-p=room]{padding:12px 12px calc(10px + env(safe-area-inset-bottom))}',
     '.frrv-rooms{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0 8px}',
     '.frrv-rooms::-webkit-scrollbar{display:none}',
@@ -252,10 +252,6 @@
     '.frrv-facts h4{margin:0 0 3px;font-size:14.5px;font-family:"HKGrotesk-Bold","HKGrotesk-Regular",sans-serif;font-weight:600;color:#2c2c2c;letter-spacing:0;text-transform:none}',
     '.frrv-facts p{margin:0;font-size:13px;line-height:1.45;color:#4a3d32}',
     '.frrv-est{font-size:11px;color:#8a7a6c}',
-    '.frrv-door{margin-top:10px;background:#FBF6EF;border-radius:10px;padding:10px 12px}',
-    '.frrv-door input[type=range]{width:100%;accent-color:#B77E45;height:28px;margin:0}',
-    '.frrv-door-out{font-size:13px;line-height:1.4;margin-top:4px}',
-    '.frrv-door-out b{font-family:"HKGrotesk-Bold","HKGrotesk-Regular",sans-serif;font-weight:600}',
     /* desktop: modal with the stage left and a sidebar right */
     '@media (min-width:900px){',
     ' .frrv-box{inset:auto;left:50%;top:50%;width:min(1340px,calc(100vw - 48px));height:min(780px,calc(100vh - 48px));transform:translate(-50%,calc(-50% + 12px));border-radius:14px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.35)}',
@@ -269,7 +265,11 @@
     ' .frrv-side,.frrv[data-tab=size] .frrv-side,.frrv[data-tab=know] .frrv-side{flex:none}',
     ' .frrv-tabs{border-bottom:1px solid #EFE9E1;padding:10px 12px}',
     ' .frrv-pane[data-p=room]{flex:1;overflow-y:auto;padding:16px 18px 20px}',
-    ' .frrv-pane[data-p=size],.frrv-pane[data-p=know]{padding:18px 20px 28px}',
+    ' .frrv-pane[data-p=size]{padding:16px 18px 20px}',
+    ' .frrv-hd .frrv-tabs{display:none}',
+    ' .frrv.is-full .frrv-box{left:0;top:0;width:100vw;height:100vh;transform:none;border-radius:0}',
+    ' .frrv-bar{left:12px;right:auto;bottom:12px;max-width:calc(100% - 24px)}',
+    ' .frrv-rotbar{flex:0 0 260px}',
     ' .frrv-rooms{flex-wrap:wrap;overflow:visible}',
     ' .frrv-room{width:calc(50% - 4px);text-align:left;font-size:12.5px}',
     ' .frrv-room i{width:100%;height:96px}',
@@ -286,6 +286,69 @@
     '.frrv-badge{font-size:10.5px;letter-spacing:.04em;background:#3D1A1E;color:#fff;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:2px}',
     '@media (max-width:899px){.frrv-badge{position:absolute;top:-8px;right:6px;margin:0;font-size:9.5px;padding:1px 5px}.frrv-cta-note{display:none}}',
     '.frrv-h4{margin:4px 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#7a6a5c;font-weight:400}',
+    /* phones: the tabs sit in the header, the title goes */
+    '.frrv-hd .frrv-tabs{flex:1;min-width:0;border:0;padding:0;justify-content:center;gap:2px}',
+    '.frrv-hd .frrv-tabs button{flex:0 1 auto;padding:7px 12px;font-size:13.5px}',
+    '@media (max-width:899px){.frrv-ttl{display:none}.frrv-hd{gap:4px}}',
+    /* view bar (Fullscreen · Zoom · Compare · Before/After · Rotation) */
+    '.frrv-bar{position:absolute;left:8px;right:8px;bottom:8px;z-index:3;display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none}',
+    '.frrv-bar::-webkit-scrollbar{display:none}',
+    '.frrv-barbtn{flex:none;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 12px;border-radius:8px;background:rgba(255,255,255,.95);border:1px solid #E6DED2;box-shadow:0 1px 3px rgba(0,0,0,.1);font-size:13.5px;color:#2c2c2c;white-space:nowrap}',
+    '.frrv-barbtn svg{width:18px;height:18px;color:#B77E45;flex:none}',
+    '.frrv-barbtn.on{background:#433122;border-color:#433122;color:#fff}',
+    '.frrv-barbtn.on svg{color:#fff}',
+    '.frrv-rotbar{flex:1 1 auto;min-width:150px;display:flex;align-items:center;gap:8px;height:38px;padding:0 10px;border-radius:8px;background:rgba(255,255,255,.95);border:1px solid #E6DED2;box-shadow:0 1px 3px rgba(0,0,0,.1);font-size:13.5px;color:#2c2c2c;margin:0}',
+    '.frrv-rotbar svg{width:18px;height:18px;color:#B77E45;flex:none}',
+    '.frrv-rotbar input{flex:1;min-width:50px;accent-color:#B77E45;margin:0;height:28px}',
+    '.frrv-rotbar b{min-width:36px;text-align:right;font-family:"HKGrotesk-Bold","HKGrotesk-Regular",sans-serif;font-weight:600}',
+    '@media (max-width:899px){.frrv-bar{gap:5px}.frrv-barbtn{flex-direction:column;justify-content:center;gap:1px;width:52px;height:46px;padding:0}' +
+      '.frrv-barbtn span{font-size:9.5px;line-height:1;letter-spacing:0}.frrv-barbtn svg{width:17px;height:17px}' +
+      '.frrv-rotbar{height:46px;min-width:120px;padding:0 8px;gap:6px}.frrv-rotbar span{display:none}}',
+    /* split views */
+    '.frrv-split{position:absolute;top:0;bottom:0;width:0;z-index:2;pointer-events:none}',
+    '.frrv-split::before{content:"";position:absolute;top:0;bottom:0;left:-1px;width:2px;background:#fff;box-shadow:0 0 5px rgba(0,0,0,.35)}',
+    '.frrv-split i{position:absolute;top:45%;left:0;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.3);display:grid;place-items:center;color:#433122}',
+    '.frrv-split i svg{width:20px;height:20px}',
+    '.frrv-splitlab{position:absolute;top:12px;pointer-events:auto;white-space:nowrap;font-size:12.5px;padding:6px 11px;border-radius:99px;background:rgba(44,44,44,.8) !important;color:#fff !important}',
+    '.frrv-splitlab[data-side=a]{right:12px}',
+    '.frrv-splitlab[data-side=b]{left:12px}',
+    '.frrv-splitlab[disabled]{cursor:default}',
+    /* fullscreen: the stage takes over */
+    '.frrv.is-full .frrv-side,.frrv.is-full .frrv-hd{display:none !important}',
+    /* which size (one phone screen) */
+    '.frrv-seg--full{display:flex;width:100%}',
+    '.frrv-seg--full button{flex:1;padding:7px 6px}',
+    '.frrv-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:10px -14px 10px;padding:0 14px}',
+    '.frrv-chips::-webkit-scrollbar{display:none}',
+    '.frrv-chips button{flex:none;font-size:13px;padding:7px 12px;border:1px solid #E1D7CA !important;border-radius:99px;white-space:nowrap;color:#4a3d32}',
+    '.frrv-chips button.on{border-color:#B77E45 !important;background:#FBF6EF;color:#2c2c2c;font-family:"HKGrotesk-Bold","HKGrotesk-Regular",sans-serif;font-weight:600}',
+    '.frrv-pick{border:1px solid #EADFD2;border-radius:12px;padding:10px 12px 12px}',
+    '.frrv-pick-hd{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}',
+    '.frrv-pick-hd small{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#7a6a5c}',
+    '.frrv-pick-hd b{display:block;font-family:"IvyPrestoDisplay-Regular",Georgia,serif;font-weight:400;font-size:21px;color:#433122;line-height:1.15}',
+    '.frrv-pick-price{font-size:18px;color:#C8861E;font-family:"HKGrotesk-Bold","HKGrotesk-Regular",sans-serif;font-weight:600}',
+    '.frrv-pick-why{margin:2px 0 6px;font-size:13px;color:#4a3d32;line-height:1.35}',
+    '.frrv-pick .frrv-diag{display:block;width:100%;height:118px;margin:0 0 8px;border:0;background:#FCFAF7;border-radius:8px}',
+    '.frrv-fits{display:flex;gap:6px;margin-bottom:10px}',
+    '.frrv-fit{flex:1;min-width:0;border-radius:8px;padding:5px 4px;font-size:11.5px;line-height:1.3;text-align:center;background:#F4EFE8;color:#5b4a3c}',
+    '.frrv-fit b{display:block;font-size:12.5px;color:#2c2c2c;font-family:"HKGrotesk-Bold","HKGrotesk-Regular",sans-serif;font-weight:600}',
+    '.frrv-fit--great{background:#EAF2E6;color:#2f5a2a}',
+    '.frrv-fit--ok{background:#F6EED9;color:#7a5a12}',
+    '.frrv-fit--small{background:#F7E6E1;color:#8a2f1f}',
+    '.frrv-fit.is-best{box-shadow:0 0 0 1.5px #B77E45}',
+    '.frrv-pick .frrv-btn{width:100%}',
+    '.frrv-door{margin-top:10px;background:#FBF6EF;border-radius:12px;padding:10px 12px}',
+    '.frrv-door-hd b{font-size:14px;font-family:"HKGrotesk-Bold","HKGrotesk-Regular",sans-serif;font-weight:600;color:#2c2c2c}',
+    '.frrv-door-hd span{display:block;font-size:12px;color:#6b5b4d;line-height:1.35;margin-top:1px}',
+    '.frrv-door-hd i{font-style:normal;color:#9a8a7c}',
+    '.frrv-door-row{display:flex;align-items:center;gap:8px;margin:4px 0 0;font-size:12.5px;color:#5b4a3c}',
+    '.frrv-door-row input{flex:1;accent-color:#B77E45;height:28px;margin:0}',
+    '.frrv-door-row b{min-width:46px;text-align:right;color:#2c2c2c}',
+    '.frrv-door-out{font-size:12.5px;line-height:1.35;color:#4a3d32}',
+    '.frrv-door-out b{font-family:"HKGrotesk-Bold","HKGrotesk-Regular",sans-serif;font-weight:600}',
+    '.frrv-door-out .ok{color:#2f5a2a}',
+    '.frrv-door-out .mid{color:#7a5a12}',
+    '.frrv-door-out .no{color:#8a2f1f}',
     '@media (prefers-reduced-motion:reduce){.frrv-box,.frrv-scrim,.frrv-hint,.frrv-toast{transition:none}}',
     '.frrv-btn svg{width:20px;height:20px;flex:none}'
   ].join('\n').replace(/(^|[{},]|\n\s*)\.frrv-/g, '$1.frrv .frrv-');
@@ -308,7 +371,12 @@
     leaf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19C5 10 10 5 20 4c0 10-5 15-14 15z"/><path d="M5 19l8-8"/></svg>',
     box: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M3 8l9-4 9 4v9l-9 4-9-4z"/><path d="M3 8l9 4 9-4M12 12v9"/></svg>',
     back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a5 5 0 0 1 0 10h-2"/></svg>',
-    home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/></svg>'
+    home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/></svg>',
+    full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
+    zoom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20M10.5 7.5v6M7.5 10.5h6"/></svg>',
+    cmp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="7" height="14" rx="1.5"/><rect x="14" y="5" width="7" height="14" rx="1.5"/></svg>',
+    ba: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M12 3v18M7 12l-2 0M17 12h2"/></svg>',
+    split: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7l-5 5 5 5M15 7l5 5-5 5"/></svg>'
   };
 
   /* -------------------------------------------------------------- camera math */
@@ -352,18 +420,32 @@
     return M;
   }
 
+  function imgMat(c) {
+    var cp = Math.cos(c.pitch), sp = Math.sin(c.pitch), cr = Math.cos(c.roll), sr = Math.sin(c.roll);
+    var rx = [1, 0, 0, 0], ry = [0, -cp, sp, cp * c.h], rz = [0, -sp, -cp, sp * c.h], M = new Float32Array(16);
+    for (var i = 0; i < 4; i++) {
+      M[i * 4] = (c.f * cr * rx[i] - c.f * sr * ry[i] + c.cx * rz[i]) / c.iw;
+      M[i * 4 + 1] = (c.f * sr * rx[i] + c.f * cr * ry[i] + c.cy * rz[i]) / c.ih;
+      M[i * 4 + 2] = 0; M[i * 4 + 3] = rz[i];
+    }
+    return M;
+  }
+
   /* --------------------------------------------------------------- renderer */
   var VS_BG = 'attribute vec2 aP;attribute vec2 aT;varying vec2 vT;void main(){vT=aT;gl_Position=vec4(aP,0.,1.);}';
   var FS_BG = 'precision mediump float;varying vec2 vT;uniform sampler2D uTex;uniform sampler2D uMask;uniform float uM;' +
-    'void main(){vec4 c=texture2D(uTex,vT);float a=uM>.5?texture2D(uMask,vT).a:1.;gl_FragColor=vec4(c.rgb*a,a);}';
-  var VS_RUG = 'attribute vec3 aP;attribute vec2 aT;attribute vec2 aL;attribute float aS;uniform mat4 uMat;' +
-    'varying vec2 vT;varying vec2 vL;varying float vS;void main(){vT=aT;vL=aL;vS=aS;gl_Position=uMat*vec4(aP,1.);}';
-  var FS_RUG = 'precision mediump float;varying vec2 vT;varying vec2 vL;varying float vS;' +
+    'void main(){vec4 c=texture2D(uTex,vT);float a=uM>.5?texture2D(uMask,vT).r:1.;gl_FragColor=vec4(c.rgb*a,a);}';
+  var VS_RUG = 'attribute vec3 aP;attribute vec2 aT;attribute vec2 aL;attribute float aS;uniform mat4 uMat;uniform mat4 uImg;' +
+    'varying vec2 vT;varying vec2 vL;varying float vS;varying vec3 vI;' +
+    'void main(){vT=aT;vL=aL;vS=aS;vec4 q=uImg*vec4(aP,1.);vI=vec3(q.x,q.y,q.w);gl_Position=uMat*vec4(aP,1.);}';
+  // uShade: for rendered rooms, the floor's own lighting (furniture shadows, light fall-off) multiplied into the rug
+  var FS_RUG = 'precision mediump float;varying vec2 vT;varying vec2 vL;varying float vS;varying vec3 vI;' +
     'uniform sampler2D uTex;uniform float uMode;uniform vec2 uHalf;uniform vec3 uTint;uniform vec4 uLight;uniform vec3 uEdge;' +
-    'uniform float uShadow;uniform float uSoft;' +
+    'uniform float uShadow;uniform float uSoft;uniform sampler2D uShade;uniform float uShadeOn;uniform float uShadeRef;' +
     'float sdBox(vec2 p,vec2 b,float r){vec2 q=abs(p)-(b-r);return length(max(q,0.))+min(max(q.x,q.y),0.)-r;}' +
     'void main(){float d=sdBox(vL,uHalf,.012);' +
     'float L=mix(mix(uLight.x,uLight.y,vT.x),mix(uLight.z,uLight.w,vT.x),vT.y);' +
+    'if(uShadeOn>.5){float sh=texture2D(uShade,vI.xy/vI.z).r;L*=clamp(sh/uShadeRef,.2,1.35);}' +
     'if(uMode<.5){float a=1.-smoothstep(-.003,.0015,d);float ao=mix(.84,1.,smoothstep(0.,.035,-d));' +
     'vec3 c=texture2D(uTex,vT).rgb*uTint*L*ao;gl_FragColor=vec4(c*a,a);}' +
     'else if(uMode<1.5){gl_FragColor=vec4(uEdge*uTint*L*vS,1.);}' +
@@ -377,9 +459,9 @@
     this.gl = gl; this.gl2 = gl2; this.canvas = canvas;
     this.aniso = gl.getExtension('EXT_texture_filter_anisotropic') || gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
     this.bg = prog(gl, VS_BG, FS_BG, ['aP', 'aT'], ['uTex', 'uMask', 'uM']);
-    this.rug = prog(gl, VS_RUG, FS_RUG, ['aP', 'aT', 'aL', 'aS'], ['uMat', 'uTex', 'uMode', 'uHalf', 'uTint', 'uLight', 'uEdge', 'uShadow', 'uSoft']);
+    this.rug = prog(gl, VS_RUG, FS_RUG, ['aP', 'aT', 'aL', 'aS'], ['uMat', 'uImg', 'uTex', 'uMode', 'uHalf', 'uTint', 'uLight', 'uEdge', 'uShadow', 'uSoft', 'uShade', 'uShadeOn', 'uShadeRef']);
     this.bgBuf = gl.createBuffer(); this.rugBuf = gl.createBuffer();
-    this.photo = null; this.mask = null; this.rugTex = null; this.rugLevel = 0;
+    this.photo = null; this.mask = null; this.shade = null; this.shadeRef = 0.8; this.rugTex = null; this.rugLevel = 0;
     gl.disable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
   }
   function prog(gl, vs, fs, attrs, unis) {
@@ -423,8 +505,9 @@
     if (c.width !== W2 || c.height !== H2) { c.width = W2; c.height = H2; }
     this.gl.viewport(0, 0, W2, H2);
   };
-  Renderer.prototype.draw = function (st) {
+  Renderer.prototype.draw = function (st, box) {
     var gl = this.gl, d = st.disp;
+    if (box) { gl.enable(gl.SCISSOR_TEST); gl.scissor(box[0], box[1], box[2], box[3]); } else gl.disable(gl.SCISSOR_TEST);
     gl.clearColor(0.93, 0.906, 0.875, 1); gl.clear(gl.COLOR_BUFFER_BIT);
     if (!this.photo) return;
     // photo quad, in clip space
@@ -446,6 +529,7 @@
         gl.activeTexture(gl.TEXTURE0);
       }
     }
+    gl.disable(gl.SCISSOR_TEST);
   };
   Renderer.prototype.useBg = function (q) {
     var gl = this.gl, b = this.bg;
@@ -461,7 +545,9 @@
     var F = 8 * 4; // x y z u v lx lz shade
     gl.vertexAttribPointer(0, 3, gl.FLOAT, false, F, 0); gl.vertexAttribPointer(1, 2, gl.FLOAT, false, F, 12);
     gl.vertexAttribPointer(2, 2, gl.FLOAT, false, F, 20); gl.vertexAttribPointer(3, 1, gl.FLOAT, false, F, 28);
-    gl.uniformMatrix4fv(r.u.uMat, false, st.mat);
+    gl.uniformMatrix4fv(r.u.uMat, false, st.mat); gl.uniformMatrix4fv(r.u.uImg, false, st.img);
+    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, this.shade || this.rugTex); gl.uniform1i(r.u.uShade, 2);
+    gl.uniform1f(r.u.uShadeOn, this.shade ? 1 : 0); gl.uniform1f(r.u.uShadeRef, this.shadeRef);
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, this.rugTex); gl.uniform1i(r.u.uTex, 0);
     gl.uniform2f(r.u.uHalf, R.hw, R.hl);
     gl.uniform3fv(r.u.uTint, st.tint); gl.uniform4fv(r.u.uLight, st.light);
@@ -501,7 +587,7 @@
       '<div class="frrv-box">' +
         '<header class="frrv-hd">' +
           '<button class="frrv-x" type="button" aria-label="Close">' + I.x + '</button>' +
-          '<div class="frrv-ttl"><b>' + SPEC.name + '</b><span>See it in your room</span></div>' +
+          '<div class="frrv-ttl"><b>' + SPEC.name + '</b><span>View in your room</span></div>' +
           '<div class="frrv-units" role="group" aria-label="Units"><button type="button" data-u="cm" class="on">cm</button><button type="button" data-u="ft">ft</button></div>' +
         '</header>' +
         '<div class="frrv-body">' +
@@ -510,10 +596,16 @@
               '<canvas class="frrv-gl"></canvas><canvas class="frrv-2d"></canvas>' +
               '<div class="frrv-load"><i></i></div>' +
               '<div class="frrv-tools">' +
-                tool('rot', I.rot, 'Turn 90°') + tool('dims', I.dims, 'Rug size') + tool('tape', I.tape, 'Measure the floor') +
-                tool('eye', I.eye, 'Hold to compare') + tool('save', I.save, 'Save image') + tool('adj', I.adj, 'Line up the floor', true) +
+                tool('dims', I.dims, 'Rug size labels') + tool('tape', I.tape, 'Measure the floor') +
+                tool('save', I.save, 'Save image') + tool('adj', I.adj, 'Line up the floor', true) +
               '</div>' +
+              '<div class="frrv-split" hidden><i aria-hidden="true">' + I.split + '</i>' +
+                '<button type="button" class="frrv-splitlab" data-side="a"></button><button type="button" class="frrv-splitlab" data-side="b"></button></div>' +
               '<div class="frrv-hint"></div>' +
+              '<div class="frrv-bar" role="toolbar" aria-label="View">' +
+                barBtn('full', I.full, 'Fullscreen') + barBtn('zoom', I.zoom, 'Zoom in') + barBtn('cmp', I.cmp, 'Compare') + barBtn('ba', I.ba, 'Before/After') +
+                '<label class="frrv-rotbar">' + I.rot + '<span>Rotation</span><input type="range" min="0" max="359" step="1" value="0" aria-label="Rotation"><b>0°</b></label>' +
+              '</div>' +
               '<div class="frrv-rotor" aria-hidden="true">' + I.rot + '</div>' +
               '<div class="frrv-pin" data-pin="a" hidden></div><div class="frrv-pin" data-pin="b" hidden></div>' +
               '<div class="frrv-adjust" hidden></div>' +
@@ -523,11 +615,9 @@
             '<nav class="frrv-tabs" role="tablist">' +
               '<button type="button" role="tab" data-t="room" class="on">In your room</button>' +
               '<button type="button" role="tab" data-t="size">Which size?</button>' +
-              '<button type="button" role="tab" data-t="know">Good to know</button>' +
             '</nav>' +
             '<div class="frrv-pane" data-p="room"></div>' +
             '<div class="frrv-pane" data-p="size"></div>' +
-            '<div class="frrv-pane" data-p="know"></div>' +
           '</aside>' +
         '</div>' +
         '<div class="frrv-sheet" role="dialog" aria-label="Use a photo of your room"><div></div></div>' +
@@ -539,7 +629,7 @@
     function placeTabs() {
       var tabs = $('.frrv-tabs', root);
       if (mq.matches) $('.frrv-side', root).insertBefore(tabs, $('.frrv-side', root).firstChild);
-      else $('.frrv-box', root).insertBefore(tabs, $('.frrv-body', root));
+      else $('.frrv-hd', root).insertBefore(tabs, $('.frrv-units', root));
     }
     placeTabs(); (mq.addEventListener ? mq.addEventListener('change', placeTabs) : mq.addListener(placeTabs));
 
@@ -562,33 +652,101 @@
     $$('.frrv-tabs button', root).forEach(function (b) { b.addEventListener('click', function () { setTab(b.getAttribute('data-t'), 'tab'); }); });
 
     // tools
-    toolBtn('rot').addEventListener('click', function () { turn(Math.PI / 2); track('pdp_room_interaction', 'rotate', '90', 'button'); });
     toolBtn('dims').addEventListener('click', function () { S.dims = !S.dims; syncTools(); redraw(); track('pdp_room_interaction', S.dims ? 'dims_on' : 'dims_off', null, 'button'); });
     toolBtn('tape').addEventListener('click', function () { setTape(!S.tape); track('pdp_room_interaction', S.tape ? 'tape_on' : 'tape_off', null, 'button'); });
-    var eye = toolBtn('eye');
-    function cmp(on) { return function (e) { if (e.cancelable) e.preventDefault(); S.compare = on; syncTools(); redraw(); if (on) track('pdp_room_interaction', 'compare', null, 'button', null, true); }; }
-    eye.addEventListener('pointerdown', cmp(true)); ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (t) { eye.addEventListener(t, cmp(false)); });
-    eye.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') { S.compare = true; redraw(); } });
-    eye.addEventListener('keyup', function () { S.compare = false; redraw(); });
-    eye.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     toolBtn('save').addEventListener('click', saveImage);
     toolBtn('adj').addEventListener('click', function () { setAdjust(!S.adjust); });
+    // the Floori-style view bar
+    barEl('full').addEventListener('click', function () { setFull(!S.full); });
+    barEl('zoom').addEventListener('click', function () { setZoom(S.zoom > 1 ? 1 : 2); });
+    barEl('cmp').addEventListener('click', function () { setSplit(S.split && S.split.mode === 'cmp' ? null : 'cmp'); });
+    barEl('ba').addEventListener('click', function () { setSplit(S.split && S.split.mode === 'ba' ? null : 'ba'); });
+    var rot = $('.frrv-rotbar input', root);
+    rot.addEventListener('input', function () {
+      S.rug.yaw = S.yaw0 + (+rot.value) * Math.PI / 180; S.moved = true; redraw();
+      track('pdp_room_interaction', 'rotate', 'slider', 'slider', null, true);
+    });
+    $$('.frrv-splitlab', root).forEach(function (b) { b.addEventListener('click', function () { cycleSplitSize(b.getAttribute('data-side')); }); });
+    D.addEventListener('fullscreenchange', function () { if (!D.fullscreenElement && S.full) setFull(false, true); });
+    D.addEventListener('webkitfullscreenchange', function () { if (!D.webkitFullscreenElement && S.full) setFull(false, true); });
 
-    buildRoomPane(); buildFinder(); buildKnow();
+    buildRoomPane(); buildFinder();
     bindStage();
-    W.addEventListener('resize', function () { if (S.open) layout(); });
+    W.addEventListener('resize', function () {
+      if (!S.open) return;
+      if (S.base && S.base.portrait && !!S.scene.isPortrait !== !!tallStage()) setScene(S.base.id, null); else layout();
+    });
   }
   function tool(id, icon, label, hidden) {
     return '<button type="button" class="frrv-tool" data-tool="' + id + '" aria-label="' + label + '"' + (hidden ? ' hidden' : '') + '>' + icon +
       '<span class="frrv-tip" aria-hidden="true">' + label + '</span></button>';
   }
   function toolBtn(id) { return $('[data-tool=' + id + ']', root); }
+  function barBtn(id, icon, label) {
+    return '<button type="button" class="frrv-barbtn" data-act="' + id + '" aria-label="' + label + '">' + icon + '<span>' + label + '</span></button>';
+  }
+  var SHORT = { full: ['Fullscreen', 'Exit', 'Full', 'Exit'], zoom: ['Zoom in', 'Zoom out', 'Zoom', 'Zoom out'] };
+  function phone() { return !W.matchMedia('(min-width:900px)').matches; }
+  function barEl(id) { return $('[data-act=' + id + ']', root); }
   function syncTools() {
     toolBtn('dims').classList.toggle('on', S.dims);
     toolBtn('tape').classList.toggle('on', S.tape);
-    toolBtn('eye').classList.toggle('on', S.compare);
     var own = S.scene && S.scene.own;
     toolBtn('adj').hidden = !own; toolBtn('adj').classList.toggle('on', S.adjust);
+    var ph = phone() ? 2 : 0;
+    barEl('full').classList.toggle('on', !!S.full); $('span', barEl('full')).textContent = SHORT.full[ph + (S.full ? 1 : 0)];
+    barEl('zoom').classList.toggle('on', S.zoom > 1); $('span', barEl('zoom')).textContent = SHORT.zoom[ph + (S.zoom > 1 ? 1 : 0)];
+    $('span', barEl('ba')).textContent = ph ? 'Before' : 'Before/After';
+    barEl('cmp').classList.toggle('on', !!(S.split && S.split.mode === 'cmp'));
+    barEl('ba').classList.toggle('on', !!(S.split && S.split.mode === 'ba'));
+  }
+  // Fullscreen: real fullscreen where the browser allows it on an element (desktop, Android);
+  // on iPhone, which doesn't, the stage simply takes over the overlay.
+  function setFull(on, fromEvent) {
+    S.full = on; root.classList.toggle('is-full', on); syncTools();
+    var box = $('.frrv-box', root);
+    if (!fromEvent) {
+      try {
+        if (on && box.requestFullscreen) box.requestFullscreen().catch(function () {});
+        else if (on && box.webkitRequestFullscreen) box.webkitRequestFullscreen();
+        else if (!on && D.fullscreenElement && D.exitFullscreen) D.exitFullscreen().catch(function () {});
+        else if (!on && D.webkitFullscreenElement && D.webkitExitFullscreen) D.webkitExitFullscreen();
+      } catch (e) {}
+    }
+    setTimeout(function () { layout(); }, 60);
+    track('pdp_room_interaction', on ? 'fullscreen_on' : 'fullscreen_off', null, 'bar');
+  }
+  // Zoom: 2x, centred on the rug
+  function setZoom(z) {
+    S.zoom = z;
+    var rc = S.cam && proj(S.cam, S.rug.x, 0, S.rug.z);
+    if (rc) S.frameOn = [rc[0] / S.cam.iw, rc[1] / S.cam.ih];
+    syncTools(); layout();
+    track('pdp_room_interaction', z > 1 ? 'zoom_in' : 'zoom_out', null, 'bar');
+  }
+  // Split views. Before/After: left = the room as it is, right = with the rug.
+  // Compare: two sizes side by side; tap a side's label to change its size.
+  function setSplit(mode) {
+    if (!mode) { S.split = null; }
+    else {
+      var a = S.vi;
+      if (mode === 'cmp') {
+        var order = [S.vi - 1, S.vi + 1, S.vi - 2, S.vi + 2].filter(function (i) { return VARIANTS[i]; });
+        a = order.filter(function (i) { return VARIANTS[i].available; })[0];
+        if (a == null) a = order[0];
+      }
+      S.split = { mode: mode, x: 0.5, a: a };
+      if (S.tape) setTape(false);
+    }
+    $('.frrv-split', root).hidden = !S.split;
+    syncTools(); redraw();
+    if (mode) track('pdp_room_interaction', mode === 'cmp' ? 'compare' : 'before_after', null, 'bar');
+  }
+  function cycleSplitSize(side) {
+    if (!S.split || S.split.mode !== 'cmp') return;
+    if (side === 'a') S.split.a = (S.split.a + 1) % VARIANTS.length;
+    else { S.userSized = true; setSize((S.vi + 1) % VARIANTS.length, 'compare'); }
+    redraw();
   }
   function trapFocus(e) {
     var f = $$('button,input,select,a[href],[tabindex]:not([tabindex="-1"])', root).filter(function (x) { return x.offsetParent !== null && !x.disabled; });
@@ -663,7 +821,15 @@
   function setSize(i, src) {
     if (!VARIANTS[i]) return;
     var from = VARIANTS[S.vi]; S.vi = i; renderSizes();
-    if (from && S.cam) {
+    if (S.anchor && !S.moved && S.cam) {
+      var x0 = S.rug.x, z0 = S.rug.z; anchorRug(VARIANTS[i]);
+      var x1 = S.rug.x, z1 = S.rug.z; S.rug.x = x0; S.rug.z = z0;
+      var ta = now(), ra = { w: from.w, l: from.l }, rb = VARIANTS[i];
+      S.anim = function (t) { var k = clamp((t - ta) / 260, 0, 1), e = 1 - Math.pow(1 - k, 3);
+        S.rug.x = x0 + (x1 - x0) * e; S.rug.z = z0 + (z1 - z0) * e;
+        S.wl = k < 1 ? [ra.w + (rb.w - ra.w) * e, ra.l + (rb.l - ra.l) * e] : null; return k < 1; };
+      loop();
+    } else if (from && S.cam) {
       var t0 = now(), a = { w: from.w, l: from.l }, b = VARIANTS[i];
       S.anim = function (t) { var k = clamp((t - t0) / 260, 0, 1), e = 1 - Math.pow(1 - k, 3);
         S.wl = k < 1 ? [a.w + (b.w - a.w) * e, a.l + (b.l - a.l) * e] : null; return k < 1; };
@@ -674,6 +840,7 @@
     renderFinder();
   }
   function turn(by) {
+    S.moved = true;
     var y0 = S.rug.yaw, t0 = now();
     S.anim = function (t) { var k = clamp((t - t0) / 280, 0, 1), e = 1 - Math.pow(1 - k, 3); S.rug.yaw = y0 + by * e; return k < 1; };
     loop();
@@ -681,22 +848,35 @@
 
   /* --------------------------------------------------------- scenes & photos */
   var sceneToken = 0;
+  // Rendered rooms come in two framings; tall (phone) stages get the portrait one, which is pulled
+  // back far enough that a whole 200x290 rug fits across the screen.
+  function tallStage() { return stage.clientWidth && stage.clientWidth / stage.clientHeight < 1; }
+  function viewOf(sc) {
+    if (!sc.portrait || !tallStage()) return sc;
+    var v = {}; for (var k in sc) v[k] = sc[k]; for (var q in sc.portrait) v[q] = sc.portrait[q]; v.isPortrait = true;
+    return v;
+  }
   function setScene(id, src) {
-    var sc = id === 'own' ? S.own && S.own.scene : SCENES.filter(function (s) { return s.id === id; })[0];
-    if (!sc) return;
+    var base = id === 'own' ? S.own && S.own.scene : SCENES.filter(function (s) { return s.id === id; })[0];
+    if (!base) return;
+    var sc = viewOf(base);
     var tok = ++sceneToken;
-    S.scene = sc; S.adjust = false; adjustEl.hidden = true;
+    S.scene = sc; S.base = base; S.adjust = false; adjustEl.hidden = true;
     $$('.frrv-room', root).forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-scene') === id); });
     stage.classList.remove('is-ready');
     var p = sc.own ? Promise.resolve(S.own.img) : loadImg(asset(sc.img));
+    var pm = sc.maskImg ? loadImg(asset(sc.maskImg)) : Promise.resolve(null);
+    var ps = sc.shadeImg ? loadImg(asset(sc.shadeImg)) : Promise.resolve(null);
     var t0 = now();
-    Promise.all([p, ensureRug()]).then(function (r) {
+    Promise.all([p, ensureRug(), pm, ps]).then(function (r) {
       if (tok !== sceneToken) return;
       var img = r[0];
-      S.img = img;
+      S.img = img; S.split = null; $('.frrv-split', root).hidden = true; S.zoom = 1;
       S.cam = camFor(sc, img.naturalWidth || img.width, img.naturalHeight || img.height);
       R.photo = R.tex(img, true, R.photo);
-      R.mask = sc.occl ? R.tex(maskCanvas(sc, S.cam), false, R.mask) : null;
+      R.mask = r[2] ? R.tex(r[2], false, R.mask) : sc.occl ? R.tex(maskCanvas(sc, S.cam), false, R.mask) : null;
+      R.shade = r[3] ? R.tex(r[3], false, R.shade) : null;
+      if (r[3]) R.shadeRef = shadeRef(r[3], r[2]);
       sampleLight(img);
       placeRug(sc);
       var rc = proj(S.cam, S.rug.x, 0, S.rug.z);
@@ -716,22 +896,59 @@
     if (src) track('pdp_room_interaction', 'scene', id, src);
   }
   function placeRug(sc) {
-    var c = S.cam, p = sc.place || [0.5, 0.78];
+    var c = S.cam, p = sc.far || sc.place || [0.5, 0.78];
     var fl = unproj(c, p[0] * c.iw, p[1] * c.ih) || [0, -2.5];
-    S.rug.x = fl[0]; S.rug.z = fl[1]; S.rug.yaw = (sc.yaw || 0) * Math.PI / 180;
+    S.rug.yaw = (sc.rugWorld ? sc.rugWorld.yawDeg : sc.yaw || 0) * Math.PI / 180; S.yaw0 = S.rug.yaw; S.moved = false;
     if (sc.size != null && !S.userSized && VARIANTS[sc.size]) { S.vi = sc.size; renderSizes(); }
+    if (sc.rugWorld) {
+      // rugWorld = centre of the largest size; pin its back edge so every size keeps it
+      var big = VARIANTS[VARIANTS.length - 1], ax = camAxis(big), half = ax[2] / 200;
+      S.anchor = [sc.rugWorld.x - ax[3] * ax[0] * half, sc.rugWorld.z - ax[3] * ax[1] * half];
+      anchorRug(VARIANTS[S.vi]); S.wl = null; return;
+    }
+    // `far` pins the rug's back edge (e.g. under the sofa's front legs): every size then grows toward
+    // the camera, the way a real rug swap would. `place` pins the centre instead.
+    S.anchor = sc.far ? fl : null;
+    if (S.anchor) anchorRug(VARIANTS[S.vi]); else { S.rug.x = fl[0]; S.rug.z = fl[1]; }
     S.wl = null;
+  }
+  // the rug axis that points most toward the camera (+Z): [dirX, dirZ, extent cm along it, sign]
+  function camAxis(v) {
+    var c = Math.cos(S.rug.yaw), s = Math.sin(S.rug.yaw);
+    var ax = Math.abs(s) > Math.abs(c) ? [c, -s, v.w] : [s, c, v.l];  // local x -> (c,-s); local z -> (s,c)
+    ax.push(ax[1] >= 0 ? 1 : -1); return ax;
+  }
+  function anchoredCentre(v) {
+    var ax = camAxis(v), half = ax[2] / 200;
+    return [S.anchor[0] + ax[3] * ax[0] * half, S.anchor[1] + ax[3] * ax[1] * half];
+  }
+  function anchorRug(v) {
+    if (!S.anchor || !v) return;
+    var p = anchoredCentre(v); S.rug.x = p[0]; S.rug.z = p[1];
   }
   // Furniture that stands in front of the rug: polygons (image fractions) -> alpha mask.
   function maskCanvas(sc, c) {
     var k = Math.min(1, 1024 / Math.max(c.iw, c.ih)), cv = D.createElement('canvas');
     cv.width = Math.round(c.iw * k); cv.height = Math.round(c.ih * k);
     var g = cv.getContext('2d'); g.fillStyle = '#fff';
+    if ('filter' in g) g.filter = 'blur(' + Math.max(0.6, cv.width / 1400).toFixed(1) + 'px)'; // soften the cut-out edge
     sc.occl.forEach(function (poly) {
       var rw = sc.ref ? sc.ref[0] : 1, rh = sc.ref ? sc.ref[1] : 1;
       g.beginPath(); poly.forEach(function (p, i) { g[i ? 'lineTo' : 'moveTo'](p[0] / rw * cv.width, p[1] / rh * cv.height); }); g.closePath(); g.fill();
     });
     return cv;
+  }
+  // The shade map's typical open-floor value: the rug is shown at its true colour there, darker in shadow.
+  function shadeRef(sh, mk) {
+    var n = 64, m = 48, cv = D.createElement('canvas'); cv.width = n; cv.height = m;
+    var g = cv.getContext('2d'), a, b;
+    try { g.drawImage(sh, 0, 0, n, m); a = g.getImageData(0, 0, n, m).data;
+          if (mk) { g.drawImage(mk, 0, 0, n, m); b = g.getImageData(0, 0, n, m).data; } } catch (e) { return 0.8; }
+    var vals = [];
+    for (var i = 0; i < n * m; i++) if (!b || b[i * 4] < 40) vals.push(a[i * 4] / 255);
+    if (!vals.length) return 0.8;
+    vals.sort(function (x, y) { return x - y; });
+    return Math.max(0.2, vals[Math.floor(vals.length * 0.6)]);   // typical lit floor, not the sun patch
   }
   // Rug texture: sm paints first, md replaces it, hd only when the rug fills the screen.
   var rugP = null, hdP = null;
@@ -981,8 +1198,9 @@
     if (w / hh < 0.9 && c.iw > c.ih) {
       // a landscape room on a phone: zoom in a little and frame the rug, not the ceiling
       s *= (S.scene && S.scene.mzoom) || 1.18;
-      if (S.frameOn) { f = S.frameOn; ay = 0.6; }
+      if (S.frameOn) { f = S.frameOn; ay = 0.58; }
     }
+    if (S.zoom > 1) { s *= S.zoom; if (S.frameOn) { f = S.frameOn; ay = 0.5; } }
     var ox = clamp(w / 2 - c.iw * f[0] * s, w - c.iw * s, 0), oy = clamp(hh * ay - c.ih * f[1] * s, hh - c.ih * s, 0);
     S.disp = { w: w, h: hh, s: s, ox: ox, oy: oy, dpr: dpr };
     redraw();
@@ -1003,18 +1221,47 @@
     if (!more) S.anim = null;
     var v = VARIANTS[S.vi], wl = S.wl || [v.w, v.l];
     var wM = wl[0] / 100, lM = wl[1] / 100, tM = SPEC.thicknessMm / 1000;
-    var geom = rugGeometry(S.rug, wM, lM, tM);
-    var st = { disp: S.disp, cam: S.cam, showRug: !S.compare, rugGeom: geom, mat: clipMat(S.cam, S.disp), tint: tint, light: cornerLight(wM, lM) };
-    R.draw(st);
+    var mat = clipMat(S.cam, S.disp), img = imgMat(S.cam);
+    function state(rug, w, l, show) {
+      return { disp: S.disp, cam: S.cam, showRug: show, rugGeom: rugGeometry(rug, w, l, tM), mat: mat, img: img, tint: tint,
+               light: R.shade ? [1, 1, 1, 1] : cornerLight(rug, w, l) };
+    }
+    R.draw(state(S.rug, wM, lM, !S.compare));
+    if (S.split) {
+      // left of the divider: the "before" room, or the comparison size
+      var bx = Math.round(S.split.x * S.disp.w * S.disp.dpr), va = VARIANTS[S.split.a];
+      var left = S.split.mode === 'ba' ? state(S.rug, wM, lM, false) : state(rugFor(S.split.a), va.w / 100, va.l / 100, true);
+      R.draw(left, [0, 0, bx, glc.height]);
+    }
     overlay(wM, lM);
+    syncRotation(); syncSplit();
     // fetch the 1024px texture once the rug is big on screen
     if (R.rugLevel === 2 && !hdP && rugScreenSpan(wM, lM) * S.disp.dpr > 900) ensureHD();
     if (more) redraw();
   }
-  function cornerLight(wM, lM) {
-    var c = Math.cos(S.rug.yaw), s = Math.sin(S.rug.yaw), out = [];
+  // where a given size sits: pinned to the back edge until the shopper moves the rug, else the same centre
+  function rugFor(vi) {
+    if (S.anchor && !S.moved) { var p = anchoredCentre(VARIANTS[vi]); return { x: p[0], z: p[1], yaw: S.rug.yaw }; }
+    return S.rug;
+  }
+  var lastDeg = null;
+  function syncRotation() {
+    var deg = Math.round(((S.rug.yaw - S.yaw0) * 180 / Math.PI % 360 + 360) % 360) % 360;
+    if (deg === lastDeg) return; lastDeg = deg;
+    var bar = $('.frrv-rotbar', root); $('input', bar).value = deg; $('b', bar).textContent = deg + '\u00b0';
+  }
+  function syncSplit() {
+    var el = $('.frrv-split', root); if (!S.split) return;
+    el.style.left = (S.split.x * 100) + '%';
+    var a = $('[data-side=a]', el), b = $('[data-side=b]', el), cmp = S.split.mode === 'cmp';
+    a.textContent = cmp ? sizeLabel(VARIANTS[S.split.a]) + ' \u25be' : 'Before';
+    b.textContent = cmp ? sizeLabel(VARIANTS[S.vi]) + ' \u25be' : 'After';
+    a.disabled = b.disabled = !cmp;
+  }
+  function cornerLight(rug, wM, lM) {
+    var c = Math.cos(rug.yaw), s = Math.sin(rug.yaw), out = [];
     [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (k) {
-      var lx = k[0] * wM / 2, lz = k[1] * lM / 2, p = proj(S.cam, S.rug.x + c * lx + s * lz, 0, S.rug.z - s * lx + c * lz);
+      var lx = k[0] * wM / 2, lz = k[1] * lM / 2, p = proj(S.cam, rug.x + c * lx + s * lz, 0, rug.z - s * lx + c * lz);
       var L = p ? lumAt(p[0], p[1]) : lumMean;
       out.push(L);
     });
@@ -1042,15 +1289,15 @@
     if (S.adjust) drawGrid();
     var corners = rugCorners(wM, lM, SPEC.thicknessMm / 1000).map(function (p) { return scrOf(p[0], p[1], p[2]); });
     var ok = corners.every(Boolean);
-    if (S.dims && ok && !S.compare) drawDims(corners, wM, lM);
+    if (S.dims && ok && !S.compare && !S.split) drawDims(corners, wM, lM);
     if (S.tape && tapePts) drawTape();
     // rotate handle beside the rug's nearest corner
-    if (ok && !S.compare && !S.tape) {
+    if (ok && !S.compare && !S.tape && !S.split) {
       var near = 0; corners.forEach(function (p, i) { if (p[1] > corners[near][1]) near = i; });
       var cen = scrOf(S.rug.x, 0, S.rug.z), p = corners[near];
       if (cen) {
         var dx = p[0] - cen[0], dy = p[1] - cen[1], L = Math.hypot(dx, dy) || 1;
-        var hx = clamp(p[0] + dx / L * 30, 24, d.w - 24), hy = clamp(p[1] + dy / L * 30, 24, d.h - 24);
+        var hx = clamp(p[0] + dx / L * 30, 24, d.w - 24), hy = clamp(p[1] + dy / L * 30, 24, d.h - 80);
         rotor.style.left = hx + 'px'; rotor.style.top = hy + 'px'; rotor.hidden = false;
       }
     } else rotor.hidden = true;
@@ -1059,7 +1306,7 @@
   function pill(text, x, y) {
     ctx.font = '600 12.5px "HKGrotesk-Bold","HKGrotesk-Regular",system-ui,sans-serif';
     var w = ctx.measureText(text).width + 14, hh = 22;
-    x = clamp(x, w / 2 + 4, S.disp.w - w / 2 - 4); y = clamp(y, hh / 2 + 4, S.disp.h - hh / 2 - 4);
+    x = clamp(x, w / 2 + 4, S.disp.w - w / 2 - 4); y = clamp(y, hh / 2 + 4, S.disp.h - hh / 2 - 62);
     ctx.fillStyle = 'rgba(255,255,255,.94)'; ctx.shadowColor = 'rgba(0,0,0,.25)'; ctx.shadowBlur = 4;
     var r = 11; ctx.beginPath();
     ctx.moveTo(x - w / 2 + r, y - hh / 2); ctx.arcTo(x + w / 2, y - hh / 2, x + w / 2, y + hh / 2, r); ctx.arcTo(x + w / 2, y + hh / 2, x - w / 2, y + hh / 2, r);
@@ -1128,9 +1375,13 @@
     function local(e) { var r = stage.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
     function ids() { return Object.keys(pts); }
     stage.addEventListener('pointerdown', function (e) {
-      if (e.target.closest('.frrv-tool,.frrv-adjust')) return;
+      if (e.target.closest('.frrv-tool,.frrv-adjust,.frrv-bar,.frrv-splitlab')) return;
       if (!S.cam) return;
       var p = local(e);
+      if (S.split) {   // in a split view, a drag anywhere moves the divider
+        stage.setPointerCapture && stage.setPointerCapture(e.pointerId);
+        pts[e.pointerId] = p; mode = 'split'; stage.classList.add('is-drag'); hideHint(); return;
+      }
       // tape label: tap to correct the scale (own photo)
       if (S.tape && tapeLabelBox && S.scene && S.scene.own) {
         var b = tapeLabelBox;
@@ -1158,6 +1409,7 @@
       if (!(e.pointerId in pts)) return;
       var p = local(e); pts[e.pointerId] = p;
       if (start && Math.hypot(p[0] - start[0], p[1] - start[1]) > 3) moved = true;
+      if (mode === 'split') { S.split.x = clamp(p[0] / S.disp.w, 0.04, 0.96); redraw(); return; }
       if (mode === 'move') {
         var f = floorAt(p[0], p[1]); if (!f) return;
         setRugPos(grab.x + f[0] - grab.f[0], grab.z + f[1] - grab.f[1]);
@@ -1168,12 +1420,12 @@
       } else if (mode === 'rotor') {
         var a1 = Math.atan2(p[1] - grab.cen[1], p[0] - grab.cen[0]);
         // screen angle → floor angle: close enough for a handle, and it feels direct
-        S.rug.yaw = grab.yaw - (a1 - grab.a0); redraw();
+        S.rug.yaw = grab.yaw - (a1 - grab.a0); S.moved = true; redraw();
         track('pdp_room_interaction', 'rotate', 'free', 'handle', null, true);
       } else if (mode === 'two' && ids().length === 2) {
         var k = ids(), a = pts[k[0]], b = pts[k[1]];
         var ang = Math.atan2(b[1] - a[1], b[0] - a[0]);
-        S.rug.yaw = grab.yaw - (ang - grab.ang);
+        S.rug.yaw = grab.yaw - (ang - grab.ang); S.moved = true;
         var m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], fm = floorAt(m[0], m[1]);
         if (fm && grab.f) setRugPos(grab.x + fm[0] - grab.f[0], grab.z + fm[1] - grab.f[1]); else redraw();
         track('pdp_room_interaction', 'rotate', 'free', 'twist', null, true);
@@ -1203,7 +1455,7 @@
     if (!p || p[2] < 0.6) return;
     var s = toScr(p[0], p[1]), hv = toScr(0, horizonV(c))[1];
     if (s[0] < -d.w * 0.25 || s[0] > d.w * 1.25 || s[1] > d.h * 1.2 || s[1] < Math.max(hv + 20, -d.h)) return;
-    S.rug.x = x; S.rug.z = z; redraw();
+    S.rug.x = x; S.rug.z = z; S.moved = true; redraw();
   }
   var hintGone = false;
   function hideHint() { if (hintGone) return; hintGone = true; hintEl.classList.add('is-gone'); }
@@ -1276,200 +1528,120 @@
   }
 
   /* -------------------------------------------------------------- size finder */
-  var BEDS = [['single', 'Single', 90, 190], ['sdouble', 'Small double', 120, 190], ['double', 'Double', 135, 190], ['king', 'King', 150, 200], ['sking', 'Super king', 180, 200]];
-  var SOFAS = [['2', '2-seater', 170], ['3', '3-seater', 210], ['corner', 'Corner', 250]];
-  var TABLES = [['4', '4-seater', 120, 80, 'rect'], ['6', '6-seater', 180, 90, 'rect'], ['r4', 'Round, 4', 110, 110, 'round']];
-  var lastPick = '';
-  var F = { room: 'living', sofa: 210, layout: 'front', bed: 'double', table: '4', tl: 120, tw: 80, shape: 'rect', rw: '', rl: '' };
+  // Kept to one phone screen (iPhone 13): room, one furniture choice, the answer drawn to scale,
+  // the three sizes rated in a row, and the door check.
+  var FURN = {
+    living: [['2', '2-seater sofa', 170], ['3', '3-seater sofa', 210], ['corner', 'Corner sofa', 250]],
+    bedroom: [['double', 'Double bed', 135, 190], ['king', 'King', 150, 200], ['sking', 'Super king', 180, 200], ['sdouble', 'Small double', 120, 190], ['single', 'Single', 90, 190]],
+    dining: [['4', '4-seat table', 120, 80], ['6', '6-seat table', 180, 90], ['r4', 'Round table', 110, 110, 'round']]
+  };
+  var F = { room: 'living', pick: { living: '3', bedroom: 'double', dining: '4' } }, lastPick = '';
+  function furn() { var id = F.pick[F.room]; return FURN[F.room].filter(function (x) { return x[0] === id; })[0]; }
   function buildFinder() {
     var pane = $('.frrv-pane[data-p=size]', root);
     pane.innerHTML =
-      '<h3 class="frrv-h">Which size do I need?</h3>' +
-      '<p class="frrv-sub">Tell us what the rug goes with. We’ll check each size against the usual UK guidance and draw it to scale.</p>' +
-      '<div class="frrv-q">Room</div><div class="frrv-seg" data-k="room"><button type="button" data-v="living">Living room</button><button type="button" data-v="bedroom">Bedroom</button><button type="button" data-v="dining">Dining</button></div>' +
-      '<div class="frrv-fq" data-r="living">' +
-        '<div class="frrv-q">Sofa</div><div class="frrv-seg" data-k="sofa">' + SOFAS.map(function (s) { return '<button type="button" data-v="' + s[2] + '">' + s[1] + '</button>'; }).join('') + '</div>' +
-        '<div class="frrv-in" style="margin-top:8px">or width <input type="number" inputmode="numeric" data-in="sofa" min="80" max="400"> <span class="frrv-u">cm</span></div>' +
-        '<div class="frrv-q">Layout</div><div class="frrv-seg" data-k="layout"><button type="button" data-v="front">Front legs on the rug</button><button type="button" data-v="float">Rug in front</button><button type="button" data-v="all">All legs on</button></div>' +
-      '</div>' +
-      '<div class="frrv-fq" data-r="bedroom">' +
-        '<div class="frrv-q">Bed</div><div class="frrv-seg" data-k="bed">' + BEDS.map(function (b) { return '<button type="button" data-v="' + b[0] + '">' + b[1] + '</button>'; }).join('') + '</div>' +
-        '<p class="frrv-note">Rug turned sideways under the lower two-thirds of the bed.</p>' +
-      '</div>' +
-      '<div class="frrv-fq" data-r="dining">' +
-        '<div class="frrv-q">Table</div><div class="frrv-seg" data-k="table">' + TABLES.map(function (t) { return '<button type="button" data-v="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>' +
-        '<div class="frrv-in" style="margin-top:8px">or <input type="number" inputmode="numeric" data-in="tl" min="50" max="400"> × <input type="number" inputmode="numeric" data-in="tw" min="50" max="300"> <span class="frrv-u">cm</span></div>' +
-      '</div>' +
-      '<div class="frrv-q">Room size <span style="text-transform:none;letter-spacing:0">(optional)</span></div>' +
-      '<div class="frrv-in"><input type="number" inputmode="numeric" data-in="rw" min="100" max="2000" placeholder="width"> × <input type="number" inputmode="numeric" data-in="rl" min="100" max="2000" placeholder="length"> <span class="frrv-u">cm</span></div>' +
-      '<div class="frrv-result"></div>';
-    $$('.frrv-seg[data-k]', pane).forEach(function (g) {
-      var k = g.getAttribute('data-k');
-      $$('button', g).forEach(function (b) {
-        b.addEventListener('click', function () {
-          var v = b.getAttribute('data-v');
-          if (k === 'sofa') { F.sofa = +v; $('[data-in=sofa]', pane).value = ''; }
-          else if (k === 'table') { var t = TABLES.filter(function (x) { return x[0] === v; })[0]; F.table = v; F.tl = t[2]; F.tw = t[3]; F.shape = t[4]; $('[data-in=tl]', pane).value = ''; $('[data-in=tw]', pane).value = ''; }
-          else F[k] = v;
-          renderFinder(); track('pdp_room_interaction', 'finder_' + k, v, 'button');
-        });
-      });
+      '<div class="frrv-seg frrv-seg--full" data-k="room" role="group" aria-label="Room">' +
+        '<button type="button" data-v="living">Living room</button><button type="button" data-v="bedroom">Bedroom</button><button type="button" data-v="dining">Dining</button></div>' +
+      '<div class="frrv-chips" role="group" aria-label="Furniture"></div>' +
+      '<div class="frrv-pick" aria-live="polite"></div>' +
+      '<div class="frrv-door">' +
+        '<div class="frrv-door-hd"><b>Will a door clear it?</b><span>' + SPEC.pileBand.replace(/\s*\(/, ' (') + ', dense ' + SPEC.pileType + ' pile · ~' + (SPEC.thicknessMm / 10).toFixed(1) + ' cm with backing <i>est.</i></span></div>' +
+        '<label class="frrv-door-row" for="frrv-gap"><span>Gap under door</span><input id="frrv-gap" type="range" min="2" max="30" step="1" value="10"><b class="frrv-gapv"></b></label>' +
+        '<div class="frrv-door-out"></div>' +
+      '</div>';
+    $$('.frrv-seg[data-k=room] button', pane).forEach(function (b) {
+      b.addEventListener('click', function () { F.room = b.getAttribute('data-v'); renderFinder(); track('pdp_room_interaction', 'finder_room', F.room, 'button'); });
     });
-    $$('input[data-in]', pane).forEach(function (inp) {
-      inp.addEventListener('input', function () {
-        var k = inp.getAttribute('data-in'), n = parseFloat(inp.value);
-        if (S.unit === 'ft' && n) n = n * 2.54; // ft mode takes inches
-        if (k === 'sofa') { if (n > 60) F.sofa = n; }
-        else if (k === 'tl' || k === 'tw') { if (n > 40) { F[k] = n; F.table = ''; F.shape = 'rect'; } }
-        else F[k] = n > 50 ? n : '';
-        renderFinder();
-      });
-    });
+    var gap = $('#frrv-gap', pane);
+    gap.addEventListener('input', function () { renderDoor(); track('pdp_room_interaction', 'door_check', gap.value, 'slider', null, true); });
+    renderDoor();
   }
   function grade(v) {
-    // returns { s: 'great'|'ok'|'small'|'big', t: reason } for variant v under the current answers
-    var L = Math.max(v.w, v.l), Wd = Math.min(v.w, v.l), r;
-    if (F.room === 'living') {
-      if (F.layout === 'float') r = L >= F.sofa * 0.66 ? { s: 'great', t: 'At least two-thirds the sofa’s width — the usual rule for a rug in front.' } : { s: 'small', t: 'Less than two-thirds of the sofa’s width; it will look lost.' };
-      else if (F.layout === 'all') r = (Wd >= 200 && L >= F.sofa + 20) ? { s: 'great', t: 'Room for the sofa and the furniture around it.' } : { s: 'small', t: 'Too small to hold every leg of the sofa and chairs.' };
-      else {
-        var over = (L - F.sofa) / 2;
-        r = over >= 10 ? { s: 'great', t: (over >= 1 ? 'Runs ' + len(over) + ' past each end of the sofa.' : 'As wide as the sofa.') }
-          : over >= -15 ? { s: 'ok', t: 'A little narrower than the sofa (' + len(-over) + ' short each end) — fine, but bigger looks more generous.' }
-          : { s: 'small', t: 'Much narrower than the sofa; the front legs won’t all sit on it.' };
-      }
-    } else if (F.room === 'bedroom') {
-      var bed = BEDS.filter(function (b) { return b[0] === F.bed; })[0], m = (L - bed[2]) / 2;
-      r = m >= 45 ? { s: 'great', t: len(m) + ' of rug either side of the bed — room to step out onto.' }
-        : m >= 30 ? { s: 'ok', t: len(m) + ' either side. Works; 45 cm+ feels more generous.' }
-        : { s: 'small', t: 'Only ' + len(Math.max(m, 0)) + ' either side — too little to step onto.' };
-    } else {
-      var tl = Math.max(F.tl, F.tw), tw = Math.min(F.tl, F.tw), mm = Math.min((L - tl) / 2, (Wd - tw) / 2);
-      r = mm >= 75 ? { s: 'great', t: len(mm) + ' round the table — chairs stay on the rug when pulled out.' }
-        : mm >= 60 ? { s: 'ok', t: len(mm) + ' round the table — just enough for chairs to stay on.' }
-        : { s: 'small', t: (mm > 0 ? 'Only ' + len(mm) + ' round the table' : 'Smaller than the table') + ' — chairs will catch the edge (60 cm+ needed).' };
+    var L = Math.max(v.w, v.l), Wd = Math.min(v.w, v.l), f = furn(), m;
+    if (F.room === 'living') {               // front legs on the rug
+      m = (L - f[2]) / 2;
+      return m >= 10 ? { s: 'great', t: len(m) + ' past each end of the sofa' }
+        : m >= -15 ? { s: 'ok', t: 'a little narrower than the sofa' } : { s: 'small', t: 'narrower than the sofa' };
     }
-    if (F.rw && F.rl && r.s !== 'small') {
-      var rL = Math.max(F.rw, F.rl), rW = Math.min(F.rw, F.rl), gap = Math.min((rL - L) / 2, (rW - Wd) / 2);
-      if (gap < 0) r = { s: 'big', t: 'Bigger than the room.' };
-      else if (gap < 20) r = { s: 'big', t: 'Leaves only ' + len(gap) + ' of floor at the walls — it will feel cramped.' };
+    if (F.room === 'bedroom') {              // sideways under the lower two-thirds of the bed
+      m = (L - f[2]) / 2;
+      return m >= 45 ? { s: 'great', t: len(m) + ' either side of the bed' }
+        : m >= 30 ? { s: 'ok', t: len(m) + ' either side of the bed' } : { s: 'small', t: 'only ' + len(Math.max(m, 0)) + ' either side' };
     }
-    return r;
+    m = Math.min((L - Math.max(f[2], f[3])) / 2, (Wd - Math.min(f[2], f[3])) / 2);   // chairs stay on when pulled out
+    return m >= 75 ? { s: 'great', t: len(m) + ' round the table' }
+      : m >= 60 ? { s: 'ok', t: len(m) + ' round the table, just enough' } : { s: 'small', t: 'chairs would catch the edge' };
   }
   function renderFinder() {
     var pane = root && $('.frrv-pane[data-p=size]', root); if (!pane) return;
-    $$('.frrv-seg[data-k]', pane).forEach(function (g) {
-      var k = g.getAttribute('data-k'), cur = k === 'sofa' ? String(F.sofa) : F[k];
-      $$('button', g).forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-v') === cur); });
+    $$('.frrv-seg[data-k=room] button', pane).forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-v') === F.room); });
+    var chips = $('.frrv-chips', pane);
+    chips.innerHTML = FURN[F.room].map(function (x) {
+      return '<button type="button" data-v="' + x[0] + '" class="' + (x[0] === F.pick[F.room] ? 'on' : '') + '">' + x[1] + '</button>';
+    }).join('');
+    $$('button', chips).forEach(function (b) {
+      b.addEventListener('click', function () { F.pick[F.room] = b.getAttribute('data-v'); renderFinder(); track('pdp_room_interaction', 'finder_item', F.pick[F.room], 'button'); });
     });
-    $$('.frrv-fq', pane).forEach(function (q) { q.style.display = q.getAttribute('data-r') === F.room ? '' : 'none'; });
-    $$('.frrv-u', pane).forEach(function (u) { u.textContent = S.unit === 'ft' ? 'inches' : 'cm'; });
-    var grades = VARIANTS.map(grade), rank = { great: 3, ok: 2, big: 1, small: 0 };
-    // recommend: the smallest available 'great'; else the best-rated available
-    var best = -1;
+    var grades = VARIANTS.map(grade), rank = { great: 3, ok: 2, small: 0 }, best = -1;
     VARIANTS.forEach(function (v, i) { if (best < 0 && v.available && grades[i].s === 'great') best = i; });
     if (best < 0) VARIANTS.forEach(function (v, i) { if (v.available && (best < 0 || rank[grades[i].s] > rank[grades[best].s])) best = i; });
-    var bv = VARIANTS[best], bg = grades[best], none = bg.s === 'small' || bg.s === 'big';
-    var greatOut = VARIANTS.filter(function (v, i) { return !v.available && grades[i].s === 'great' && (i < best || bg.s !== 'great'); })[0];
-    var tagTxt = { great: 'Great fit', ok: 'Works', small: 'Too small', big: 'Too big' };
-    var res = $('.frrv-result', pane);
-    res.innerHTML =
-      '<div class="frrv-result-hd"><small>' + (none ? 'Closest fit' : 'Our pick') + '</small><b>' + sizeLabel(bv) + ' · ' + money(bv.price) + '</b><p>' + bg.t +
-        (greatOut ? ' ' + sizeLabel(greatOut) + ' would also be great but is sold out right now.' : '') + '</p></div>' +
+    var bv = VARIANTS[best], bg = grades[best], mark = { great: '✓', ok: '~', small: '✕' };
+    var pick = $('.frrv-pick', pane);
+    pick.innerHTML =
+      '<div class="frrv-pick-hd"><div><small>' + (bg.s === 'small' ? 'Closest fit' : 'Best fit') + '</small><b>' + sizeLabel(bv) + '</b></div>' +
+        '<span class="frrv-pick-price">' + money(bv.price) + '</span></div>' +
+      '<p class="frrv-pick-why">' + bg.t.charAt(0).toUpperCase() + bg.t.slice(1) + '.</p>' +
       diagram(bv) +
-      '<ul class="frrv-verdicts">' + VARIANTS.map(function (v, i) {
-        return '<li><b>' + sizeLabel(v) + '</b><span class="frrv-tag frrv-tag--' + grades[i].s + '">' + tagTxt[grades[i].s] + '</span><span>' + grades[i].t + (v.available ? '' : ' <em>(sold out)</em>') + '</span></li>';
-      }).join('') + '</ul>' +
-      '<div class="frrv-result-ft"><button type="button" class="frrv-btn frrv-btn--sm frrv-see">See ' + sizeLabel(bv) + ' in a room</button></div>';
-    $('.frrv-see', res).addEventListener('click', function () {
-      S.userSized = true; setSize(best, 'finder');
-      var want = F.room === 'bedroom' ? 'bedroom' : F.room === 'living' ? 'living' : null;
-      setTab('room', 'finder');
-      if (!(S.scene && S.scene.own) && want && (!S.scene || S.scene.id !== want)) setScene(want, 'finder');
+      '<div class="frrv-fits">' + VARIANTS.map(function (v, i) {
+        return '<span class="frrv-fit frrv-fit--' + grades[i].s + (i === best ? ' is-best' : '') + '"><b>' + sizeLabel(v).replace(' cm', '') + '</b>' +
+          mark[grades[i].s] + ' ' + (v.available ? { great: 'Great', ok: 'Works', small: 'Too small' }[grades[i].s] : 'Sold out') + '</span>';
+      }).join('') + '</div>' +
+      '<button type="button" class="frrv-btn frrv-btn--sm frrv-see">See ' + sizeLabel(bv) + ' in a room</button>';
+    $('.frrv-see', pick).addEventListener('click', function () {
+      S.userSized = true; setSize(best, 'finder'); setTab('room', 'finder');
+      var want = SCENES.filter(function (x) { return x.kind === F.room; })[0];
+      if (!(S.scene && S.scene.own) && want && (!S.scene || S.scene.kind !== F.room)) setScene(want.id, 'finder');
     });
-    var key = F.room + ':' + bv.title;
+    var key = F.room + ':' + F.pick[F.room] + ':' + bv.title;
     if (S.open && S.tab === 'size' && key !== lastPick) { lastPick = key; track('pdp_room_interaction', 'finder_result', key, bg.s); }
   }
   // Top-down plan, to scale: furniture in grey, the rug with its own pattern.
   function diagram(v) {
-    var L = Math.max(v.w, v.l), Wd = Math.min(v.w, v.l), items = [], rug, room = null;
+    var L = Math.max(v.w, v.l), Wd = Math.min(v.w, v.l), f = furn(), items = [], rug = { x: -L / 2, y: -Wd / 2, w: L, h: Wd };
     if (F.room === 'living') {
-      var sd = 92, sofaY = F.layout === 'float' ? -Wd / 2 - sd - 10 : F.layout === 'all' ? -Wd / 2 + 15 : -Wd / 2 - sd + 22;
-      items.push({ x: -F.sofa / 2, y: sofaY, w: F.sofa, h: sd, r: 10, label: 'Sofa ' + len(F.sofa) });
-      items.push({ x: -55, y: sofaY + sd + 45, w: 110, h: 60, r: 4, label: 'Coffee table' });
-      rug = { x: -L / 2, y: -Wd / 2, w: L, h: Wd };
+      var sd = 92, sy = -Wd / 2 - sd + 22;
+      items.push({ x: -f[2] / 2, y: sy, w: f[2], h: sd, r: 10, label: 'Sofa' });
+      items.push({ x: -55, y: sy + sd + 40, w: 110, h: 60, r: 4 });
     } else if (F.room === 'bedroom') {
-      var bd = BEDS.filter(function (b) { return b[0] === F.bed; })[0];
-      var by = -Wd / 2 - bd[3] / 3;
-      items.push({ x: -bd[2] / 2 - 50, y: by, w: 45, h: 45, r: 4 }, { x: bd[2] / 2 + 5, y: by, w: 45, h: 45, r: 4 });
-      items.push({ x: -bd[2] / 2, y: by, w: bd[2], h: bd[3], r: 6, label: bd[1] + ' bed' });
-      rug = { x: -L / 2, y: -Wd / 2, w: L, h: Wd };
+      var by = -Wd / 2 - f[3] / 3;
+      items.push({ x: -f[2] / 2 - 50, y: by, w: 45, h: 45, r: 4 }, { x: f[2] / 2 + 5, y: by, w: 45, h: 45, r: 4 });
+      items.push({ x: -f[2] / 2, y: by, w: f[2], h: f[3], r: 6, label: 'Bed' });
     } else {
-      var tl = Math.max(F.tl, F.tw), tw = Math.min(F.tl, F.tw), round = F.shape === 'round';
-      rug = { x: -L / 2, y: -Wd / 2, w: L, h: Wd };
-      var n = round ? 4 : Math.max(2, Math.round(tl / 60)), cw = 45;
-      for (var i = 0; i < n && !round; i++) {
-        var cx = -tl / 2 + (i + 0.5) * tl / n - cw / 2;
-        items.push({ x: cx, y: -tw / 2 - 60, w: cw, h: 45, r: 6 }, { x: cx, y: tw / 2 + 15, w: cw, h: 45, r: 6 });
-      }
+      var tl = Math.max(f[2], f[3]), tw = Math.min(f[2], f[3]), round = f[4] === 'round', cw = 45, n = round ? 0 : Math.max(2, Math.round(tl / 60));
+      for (var i = 0; i < n; i++) { var cx = -tl / 2 + (i + 0.5) * tl / n - cw / 2; items.push({ x: cx, y: -tw / 2 - 60, w: cw, h: 45, r: 6 }, { x: cx, y: tw / 2 + 15, w: cw, h: 45, r: 6 }); }
       if (round) [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(function (k) { items.push({ x: k[0] * (tl / 2 + 38) - cw / 2, y: k[1] * (tw / 2 + 38) - 22, w: cw, h: 45, r: 6 }); });
-      items.push({ x: -tl / 2, y: -tw / 2, w: tl, h: tw, r: round ? tl / 2 : 4, label: 'Table ' + len(tl) + (round ? '' : ' × ' + len(tw)) });
+      items.push({ x: -tl / 2, y: -tw / 2, w: tl, h: tw, r: round ? tl / 2 : 4, label: 'Table' });
     }
-    if (F.rw && F.rl) { var rL = Math.max(F.rw, F.rl), rW = Math.min(F.rw, F.rl); room = { x: -rL / 2, y: -rW / 2, w: rL, h: rW }; }
-    var all = items.concat([rug], room ? [room] : []);
-    var x0 = Math.min.apply(0, all.map(function (b) { return b.x; })) - 30, y0 = Math.min.apply(0, all.map(function (b) { return b.y; })) - 30;
-    var x1 = Math.max.apply(0, all.map(function (b) { return b.x + b.w; })) + 30, y1 = Math.max.apply(0, all.map(function (b) { return b.y + b.h; })) + 50;
-    var vw = x1 - x0, vh = y1 - y0, fs = Math.max(vw, vh) / 26;
+    var all = items.concat([rug]);
+    var x0 = Math.min.apply(0, all.map(function (b) { return b.x; })) - 20, y0 = Math.min.apply(0, all.map(function (b) { return b.y; })) - 14;
+    var x1 = Math.max.apply(0, all.map(function (b) { return b.x + b.w; })) + 20, y1 = Math.max.apply(0, all.map(function (b) { return b.y + b.h; })) + 14;
+    var vw = x1 - x0, vh = y1 - y0, fs = Math.max(vw, vh) / 22;
     function rect(b, fill, stroke, extra) { return '<rect x="' + b.x + '" y="' + b.y + '" width="' + b.w + '" height="' + b.h + '" rx="' + (b.r || 0) + '" fill="' + fill + '" stroke="' + stroke + '" ' + (extra || '') + '/>'; }
-    // the rug image is portrait; rotate it 90° so its long side runs across
     var img = '<g transform="translate(' + rug.x + ',' + (rug.y + rug.h) + ') rotate(-90)"><image href="' + asset('laleh-rug-sm.webp') + '" width="' + rug.h + '" height="' + rug.w + '" preserveAspectRatio="none"/></g>';
-    var svg = '<svg class="frrv-diag" viewBox="' + x0 + ' ' + y0 + ' ' + vw + ' ' + vh + '" role="img" aria-label="Plan view: ' + sizeLabel(v) + ' rug with your furniture, to scale">' +
-      (room ? rect(room, '#FBF8F3', '#BFB3A5', 'stroke-width="' + fs / 6 + '" stroke-dasharray="' + fs / 2 + ' ' + fs / 3 + '"') : '') +
+    return '<svg class="frrv-diag" viewBox="' + x0 + ' ' + y0 + ' ' + vw + ' ' + vh + '" role="img" aria-label="Plan view: ' + sizeLabel(v) + ' rug with your furniture, to scale">' +
       img + rect(rug, 'none', '#B77E45', 'stroke-width="' + fs / 7 + '"') +
       items.map(function (b) {
-        return rect(b, 'rgba(120,108,98,.78)', 'rgba(70,60,52,.9)', 'stroke-width="' + fs / 10 + '"') +
-          (b.label ? '<text x="' + (b.x + b.w / 2) + '" y="' + (b.y + b.h / 2) + '" font-size="' + fs * 0.9 + '" fill="#fff" text-anchor="middle" dominant-baseline="middle" font-family="HKGrotesk-Regular,system-ui,sans-serif">' + b.label + '</text>' : '');
-      }).join('') +
-      '<text x="' + (rug.x + rug.w / 2) + '" y="' + (rug.y + rug.h + fs * 1.4) + '" font-size="' + fs + '" fill="#7C5723" text-anchor="middle" font-family="HKGrotesk-Regular,system-ui,sans-serif">' + sizeLabel(v) + ' rug</text>' +
-      (room ? '<text x="' + (room.x + fs * 0.5) + '" y="' + (room.y + fs * 1.2) + '" font-size="' + fs * 0.85 + '" fill="#8a7a6c" font-family="HKGrotesk-Regular,system-ui,sans-serif">Room ' + len(room.w) + ' × ' + len(room.h) + '</text>' : '') +
-      '</svg>';
-    return svg;
-  }
-
-  /* ------------------------------------------------------------ good to know */
-  function buildKnow() {
-    var pane = $('.frrv-pane[data-p=know]', root), t = SPEC.thicknessMm;
-    var facts = CFG.facts || [
-      [I.door, 'How thick is it?', SPEC.pileBand + ', a dense ' + SPEC.pileType + ' pile — about ' + (t / 10).toFixed(1) + ' cm in all with the backing <span class="frrv-est">(estimate)</span>. Most UK internal doors are trimmed about 1 cm above the floor, so check before a door swings over it.', 'door'],
-      [I.heat, 'Underfloor heating', 'Wool works over underfloor heating. A rug slows the heat coming through that patch, so pair it with a thin felt underlay rather than a thick rubber one.'],
-      [I.layer, 'Wood, laminate or tiles', 'Use a non-slip underlay — it stops the rug creeping and keeps the corners flat.'],
-      [I.paw, 'Pets', 'This is a loop pile, so a claw can catch a loop. Keep nails trimmed and snip — never pull — any loop that lifts.'],
-      [I.leaf, 'The first few weeks', 'Some shedding is normal for the first few months and eases with low-suction vacuuming. A mild latex smell fades within 1–2 weeks of airing.'],
-      [I.box, 'Delivery', 'Arrives rolled (the 140 × 200 cm box is 143 × 18 × 18 cm, 10.1 kg). Express delivery in 4 working days to mainland UK. Lay it flat for a day; roll it the other way briefly if a corner curls.'],
-      [I.home, 'Where it works best', 'Bedrooms, living rooms and studies — low-to-medium traffic. Not the main rug in a busy hallway.'],
-      [I.back, 'Get the size right first', 'Returns are within 14 days, and a collection fee applies unless the rug is faulty — so it’s worth checking the size in your room first. Handmade sizes can vary by 2–3%.']
-    ];
-    pane.innerHTML = '<h3 class="frrv-h">Good to know</h3><p class="frrv-sub">What people in the UK ask before buying a wool rug.</p>' +
-      '<ul class="frrv-facts">' + facts.map(function (f) {
-        return '<li><i>' + f[0] + '</i><div><h4>' + f[1] + '</h4><p>' + f[2] + '</p>' + (f[3] === 'door' ? doorWidget() : '') + '</div></li>';
-      }).join('') + '</ul>';
-    var inp = $('#frrv-gap', pane);
-    if (inp) inp.addEventListener('input', function () { renderDoor(); track('pdp_room_interaction', 'door_check', inp.value, 'slider', null, true); });
-    renderDoor();
-  }
-  function doorWidget() {
-    return '<div class="frrv-door"><label for="frrv-gap" style="font-size:12.5px;color:#5b4a3c">Gap under your door: <b class="frrv-gapv"></b></label>' +
-      '<input id="frrv-gap" type="range" min="2" max="30" step="1" value="10"><div class="frrv-door-out" aria-live="polite"></div>' +
-      '<p class="frrv-note" style="margin-top:4px">Close the door and slide a ruler under it.</p></div>';
+        return rect(b, 'rgba(120,108,98,.8)', 'rgba(70,60,52,.9)', 'stroke-width="' + fs / 10 + '"') +
+          (b.label ? '<text x="' + (b.x + b.w / 2) + '" y="' + (b.y + b.h / 2) + '" font-size="' + fs * 0.95 + '" fill="#fff" text-anchor="middle" dominant-baseline="middle" font-family="HKGrotesk-Regular,system-ui,sans-serif">' + b.label + '</text>' : '');
+      }).join('') + '</svg>';
   }
   function renderDoor() {
     var inp = root && $('#frrv-gap', root); if (!inp) return;
     var g = +inp.value, t = SPEC.thicknessMm, mm = function (x) { return S.unit === 'ft' ? (x / 25.4).toFixed(2) + ' in' : x + ' mm'; };
     $('.frrv-gapv', root).textContent = mm(g);
-    var out = $('.frrv-door-out', root);
-    out.innerHTML = g >= t + 3 ? '<b style="color:#2f5a2a">Clears it.</b> A ' + mm(g) + ' gap gives the rug (~' + mm(t) + ') room to pass under.'
-      : g >= t - 2 ? '<b style="color:#7a5a12">Tight.</b> The pile squashes a little, but the door may drag. Keep the rug just outside the door’s swing.'
-      : '<b style="color:#8a2f1f">Won’t clear.</b> Place the rug so the door doesn’t open over it.';
+    $('.frrv-door-out', root).innerHTML = g >= t + 3 ? '<b class="ok">Clears it.</b> Room for the rug to pass under.'
+      : g >= t - 2 ? '<b class="mid">Tight.</b> The door may drag. Keep the rug outside its swing.'
+      : '<b class="no">Won’t clear.</b> Keep the rug outside the door’s swing.';
   }
 
   /* ---------------------------------------------------------------- open/close */
@@ -1490,7 +1662,7 @@
     scrollY = W.scrollY; D.documentElement.style.overflow = 'hidden';
     root.classList.add('is-open'); root.setAttribute('data-tab', S.tab);
     requestAnimationFrame(function () { root.classList.add('is-in'); layout(); });
-    S.tab = null; setTab(tab || 'room', src || 'open');
+    S.tab = null; setTab(tab === 'size' ? 'size' : 'room', src || 'open');
     if (R && !S.scene) setScene(SCENES[0].id, null);
     setTimeout(function () { var x = $('.frrv-x', root); x && x.focus({ preventScroll: true }); }, 60);
     track('pdp_room_view', 'open', tab || 'room', src, now() - T0);

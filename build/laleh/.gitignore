@@ -1,5 +1,9 @@
-src/rug-topdown-src.png
-src/rooms/*.jpg
 demo-base.html
 perf/*.json
 perf/run.log
+render/assets/
+render/node_modules/
+render/out/
+src/rooms/*.jpg
+src/rug-topdown-src.png
+test/out/

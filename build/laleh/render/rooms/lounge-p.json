@@ -1,0 +1,213 @@
+{
+ "id": "lounge-p",
+ "output": {
+  "width": 1350,
+  "height": 1690
+ },
+ "camera": {
+  "height": 2.8,
+  "vfovDeg": 54,
+  "pitchDeg": 39.89
+ },
+ "rug": {
+  "x": 0,
+  "z": -3.6,
+  "yawDeg": 90
+ },
+ "room": {
+  "floor": {
+   "x": [
+    -3.2,
+    3.2
+   ],
+   "z": [
+    -5.45,
+    0.8
+   ]
+  },
+  "wallHeight": 2.8,
+  "wallThickness": 0.14,
+  "walls": [
+   "back",
+   "left",
+   "right"
+  ],
+  "ceiling": false,
+  "floorMaterial": {
+   "texture": "herringbone_parquet",
+   "res": "2k",
+   "rotationDeg": 0,
+   "roughness": 0.62
+  },
+  "wallMaterial": {
+   "color": "#cdd3c3",
+   "roughness": 0.92
+  },
+  "skirting": {
+   "height": 0.14,
+   "material": {
+    "color": "#f4f2ec",
+    "roughness": 0.4
+   }
+  },
+  "openings": [
+   {
+    "wall": "back",
+    "type": "window",
+    "center": -1.95,
+    "width": 1.3,
+    "sill": 0.5,
+    "height": 1.95,
+    "panes": 2,
+    "portal": {
+     "intensity": 3
+    }
+   },
+   {
+    "wall": "back",
+    "type": "window",
+    "center": 1.95,
+    "width": 1.3,
+    "sill": 0.5,
+    "height": 1.95,
+    "panes": 2,
+    "portal": {
+     "intensity": 3
+    }
+   }
+  ]
+ },
+ "lighting": {
+  "hdri": "kloofendal_48d_partly_cloudy_puresky",
+  "intensity": 1,
+  "rotationDeg": 300
+ },
+ "render": {
+  "toneMapping": "agx",
+  "exposure": 1.1,
+  "samples": 320
+ },
+ "furniture": [
+  {
+   "name": "sofa",
+   "source": "procedural",
+   "kind": "sofa",
+   "params": {
+    "width": 2.1,
+    "depth": 0.92,
+    "seats": 2,
+    "pillows": 2,
+    "armStyle": "round"
+   },
+   "materials": {
+    "fabric": {
+     "texture": "rough_linen",
+     "res": "1k",
+     "tileMetres": 0.45,
+     "color": "#d8cdbb",
+     "roughness": 0.95,
+     "useDiffuse": false
+    },
+    "legs": {
+     "color": "#2d2119",
+     "roughness": 0.45
+    },
+    "pillow": {
+     "texture": "rough_linen",
+     "res": "1k",
+     "tileMetres": 0.5,
+     "color": "#d6a28e",
+     "useDiffuse": false,
+     "roughness": 0.95
+    },
+    "pillow2": {
+     "texture": "rough_linen",
+     "res": "1k",
+     "tileMetres": 0.5,
+     "color": "#9db3c9",
+     "useDiffuse": false,
+     "roughness": 0.95
+    }
+   },
+   "position": [
+    0,
+    -4.91
+   ]
+  },
+  {
+   "name": "coffee",
+   "source": "polyhaven",
+   "id": "coffee_table_round_01",
+   "size": {
+    "w": 0.85
+   },
+   "position": [
+    0,
+    -3.6
+   ]
+  },
+  {
+   "name": "chair1",
+   "source": "polyhaven",
+   "id": "ArmChair_01",
+   "size": {
+    "w": 0.75
+   },
+   "position": [
+    -1.7,
+    -3.45
+   ],
+   "rotationYDeg": 90
+  },
+  {
+   "name": "chair2",
+   "source": "polyhaven",
+   "id": "ArmChair_01",
+   "size": {
+    "w": 0.75
+   },
+   "position": [
+    1.7,
+    -3.45
+   ],
+   "rotationYDeg": -90
+  },
+  {
+   "name": "plant",
+   "source": "polyhaven",
+   "id": "potted_plant_01",
+   "size": {
+    "h": 1.05
+   },
+   "position": [
+    -1.45,
+    -5.05
+   ]
+  },
+  {
+   "name": "side",
+   "source": "polyhaven",
+   "id": "side_table_01",
+   "size": {
+    "h": 0.55
+   },
+   "position": [
+    1.42,
+    -5
+   ]
+  },
+  {
+   "name": "books",
+   "source": "polyhaven",
+   "id": "brass_vase_01",
+   "on": "side",
+   "size": {
+    "h": 0.28
+   },
+   "position": [
+    1.42,
+    -5
+   ]
+  }
+ ]
+}

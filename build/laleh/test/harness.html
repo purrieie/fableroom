@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>room-view harness</title>
+<style>body{margin:0;font-family:system-ui;background:#fff}</style></head>
+<body>
+<script>
+// Scenes are injected by test/scene_shot.mjs before the app loads (window.__scenes).
+window.FRRV_CONFIG = {
+  analytics: 'none', demo: true, syncPage: false,
+  assetBase: '/build/laleh/assets/',
+  spec: { name: 'Laleh Rug', thicknessMm: 12 },
+  badges: { '200x290 cm': 'Most Popular' },
+  product: { variants: [
+    { id: 1, title: '140x200 cm', price: 10700, compare_at_price: 15900, available: true },
+    { id: 2, title: '160x230 cm', price: 16000, compare_at_price: 23900, available: false },
+    { id: 3, title: '200x290 cm', price: 27000, compare_at_price: 38900, available: true } ] }
+};
+if (window.__scenes) window.FRRV_CONFIG.scenes = window.__scenes;
+</script>
+<script src="/build/laleh/src/room-view.js"></script>
+</body></html>

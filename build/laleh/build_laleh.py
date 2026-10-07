@@ -14,7 +14,18 @@ ESBUILD = os.path.join(HERE, '..', 'node_modules', '.bin', 'esbuild')
 BASE = sys.argv[1] if len(sys.argv) > 1 else 'https://purrieie.github.io/fableroom/laleh/rv/'
 SHOP = os.path.join(REPO, 'shopify', 'laleh')
 DEMO = os.path.join(REPO, 'laleh')
-ASSETS = sorted(f for f in os.listdir(os.path.join(HERE, 'assets')) if f.endswith('.webp'))
+
+
+def shipped():
+    # the rug textures plus every file the default scenes reference
+    names = {'laleh-rug-sm.webp', 'laleh-rug-md.webp', 'laleh-rug-hd.webp'}
+    r = os.path.join(HERE, 'scenes', 'rendered.json')
+    for sc in (json.load(open(r)) if os.path.exists(r) else []):
+        for v in (sc, sc.get('portrait') or {}):
+            for k in ('img', 'thumb', 'maskImg', 'shadeImg'):
+                if v.get(k): names.add(v[k])
+    return sorted(names)
+ASSETS = shipped()
 
 def esb(src):
     return subprocess.run([ESBUILD, src, '--minify', '--target=es2017', '--legal-comments=none'],
@@ -27,14 +38,25 @@ def br_kb(b):
     except ImportError:
         return len(gzip.compress(b, 9)) / 1024
 
-app = esb(os.path.join(HERE, 'src', 'room-view.js'))
+# default scenes: the rendered top-view rooms (scenes/rendered.json), injected between /*SCENES*/ and /*END*/
+src = open(os.path.join(HERE, 'src', 'room-view.js')).read()
+rendered = os.path.join(HERE, 'scenes', 'rendered.json')
+if os.path.exists(rendered):
+    sc_json = open(rendered).read()
+    src = re.sub(r'/\*SCENES\*/.*?/\*END\*/', lambda m: sc_json, src, flags=re.S)
+    tmp = os.path.join(HERE, 'src', '.room-view.build.js'); open(tmp, 'w').write(src)
+    app = esb(tmp); os.remove(tmp)
+else:
+    app = esb(os.path.join(HERE, 'src', 'room-view.js'))
 loader = esb(os.path.join(HERE, 'src', 'loader.js'))
 app_kb = br_kb(app.encode())
 snippet = open(os.path.join(HERE, 'src', 'snippet.liquid')).read()
-snippet = snippet.replace('%%LOADER%%', loader).replace('%%APP_KB%%', '%.0f' % app_kb)
+snippet = snippet.replace('%%LOADER%%', loader).replace('%%APP_KB%%', '%.0f' % app_kb).replace('%%ASSET_LIST%%', ','.join(ASSETS))
 
 # ---- Shopify package
 os.makedirs(SHOP, exist_ok=True)
+for f in os.listdir(SHOP):
+    if f.endswith(('.webp', '.png')) and f not in ASSETS: os.remove(os.path.join(SHOP, f))
 open(os.path.join(SHOP, 'fableroom-room-view.js'), 'w').write(app + '\n')
 open(os.path.join(SHOP, 'fableroom-room-view.liquid'), 'w').write(snippet)
 for f in ASSETS:
@@ -64,6 +86,8 @@ assert page.count(anchor) >= 1
 page = page.replace(anchor, anchor + '\n<!-- fableroom-room-view snippet -->\n' + static + '\n<!-- /fableroom-room-view -->', 1)
 page = page.replace('<title>', '<title>[Demo] ', 1)
 os.makedirs(os.path.join(DEMO, 'rv'), exist_ok=True)
+for f in os.listdir(os.path.join(DEMO, 'rv')):
+    if f.endswith(('.webp', '.png')) and f not in ASSETS: os.remove(os.path.join(DEMO, 'rv', f))
 open(os.path.join(DEMO, 'index.html'), 'w').write(page)
 open(os.path.join(DEMO, 'rv', 'fableroom-room-view.js'), 'w').write(app + '\n')
 for f in ASSETS:

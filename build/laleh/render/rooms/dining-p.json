@@ -1,0 +1,189 @@
+{
+ "id": "dining-p",
+ "output": {
+  "width": 1350,
+  "height": 1690
+ },
+ "camera": {
+  "height": 2.8,
+  "vfovDeg": 54,
+  "pitchDeg": 39.47
+ },
+ "rug": {
+  "x": 0,
+  "z": -3.65,
+  "yawDeg": 90
+ },
+ "room": {
+  "floor": {
+   "x": [
+    -3.1,
+    3.1
+   ],
+   "z": [
+    -5.5,
+    0.8
+   ]
+  },
+  "wallHeight": 2.8,
+  "wallThickness": 0.14,
+  "walls": [
+   "back",
+   "left",
+   "right"
+  ],
+  "ceiling": false,
+  "floorMaterial": {
+   "texture": "herringbone_parquet",
+   "res": "2k",
+   "rotationDeg": 0,
+   "roughness": 0.62
+  },
+  "wallMaterial": {
+   "color": "#f1eee8",
+   "roughness": 0.92
+  },
+  "skirting": {
+   "height": 0.12
+  },
+  "openings": [
+   {
+    "wall": "back",
+    "type": "window",
+    "center": 1.9,
+    "width": 1.4,
+    "sill": 0.6,
+    "height": 1.75,
+    "panes": 2,
+    "portal": {
+     "intensity": 3
+    }
+   },
+   {
+    "wall": "left",
+    "type": "window",
+    "center": -3.6,
+    "width": 1.6,
+    "sill": 0.6,
+    "height": 1.75,
+    "panes": 2,
+    "portal": {
+     "intensity": 3
+    }
+   }
+  ]
+ },
+ "lighting": {
+  "hdri": "kloofendal_48d_partly_cloudy_puresky",
+  "intensity": 1,
+  "rotationDeg": 120
+ },
+ "render": {
+  "toneMapping": "agx",
+  "exposure": 1.1,
+  "samples": 320
+ },
+ "furniture": [
+  {
+   "name": "table",
+   "source": "fableroom",
+   "file": "belgrave/model.glb",
+   "size": {
+    "w": 1.2
+   },
+   "position": [
+    0,
+    -3.65
+   ]
+  },
+  {
+   "name": "c1",
+   "source": "fableroom",
+   "file": "chair.glb",
+   "size": {
+    "h": 0.82
+   },
+   "position": [
+    0,
+    -4.42
+   ],
+   "rotationYDeg": 0
+  },
+  {
+   "name": "c2",
+   "source": "fableroom",
+   "file": "chair.glb",
+   "size": {
+    "h": 0.82
+   },
+   "position": [
+    0,
+    -2.88
+   ],
+   "rotationYDeg": 180
+  },
+  {
+   "name": "c3",
+   "source": "fableroom",
+   "file": "chair.glb",
+   "size": {
+    "h": 0.82
+   },
+   "position": [
+    -0.77,
+    -3.65
+   ],
+   "rotationYDeg": 90
+  },
+  {
+   "name": "c4",
+   "source": "fableroom",
+   "file": "chair.glb",
+   "size": {
+    "h": 0.82
+   },
+   "position": [
+    0.77,
+    -3.65
+   ],
+   "rotationYDeg": -90
+  },
+  {
+   "name": "sideboard",
+   "source": "polyhaven",
+   "id": "modern_wooden_cabinet",
+   "size": {
+    "w": 1.8
+   },
+   "position": [
+    -0.7,
+    -5.25
+   ]
+  },
+  {
+   "name": "vase",
+   "source": "polyhaven",
+   "id": "ceramic_vase_01",
+   "on": "sideboard",
+   "size": {
+    "h": 0.32
+   },
+   "position": [
+    -1.25,
+    -5.25
+   ]
+  },
+  {
+   "name": "plant",
+   "source": "polyhaven",
+   "id": "potted_plant_02",
+   "size": {
+    "h": 1.3
+   },
+   "position": [
+    2.6,
+    -5.05
+   ]
+  }
+ ]
+}

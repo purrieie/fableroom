@@ -1,13 +1,15 @@
 # Shopify drop-in: "See it in your room" for the Laleh rug
 
-This adds a photo-based rug visualiser to the Laleh Hand-tufted Wool Persian Rug
-page. A shopper picks a sample room, or takes or uploads a photo of their own
-room, and the rug is drawn on the floor **at true size**. They can switch between
-140×200, 160×230 and 200×290 cm, move and turn the rug, measure the floor, and
-save the picture. The add-on also has a **"Which size?"** finder (sofa, UK bed
-size or dining table in, a to-scale plan out) and a **"Good to know"** panel with
-the questions UK buyers ask (pile height, door clearance, underfloor heating,
-underlay, pets, shedding, delivery, returns).
+This adds a RugLove/Floori-style rug visualiser to the Laleh Hand-tufted Wool Persian
+Rug page. A shopper picks one of five rendered rooms seen from above (living room,
+classic lounge, bedroom, dining room, reading corner), or takes/uploads a photo of
+their own room, and the rug is drawn on the floor **at true size**, sliding under
+the furniture and picking up the room's light and shadows. They can switch between
+140×200, 160×230 and 200×290 cm, move it, turn it (rotation slider), zoom, compare
+two sizes side by side, drag a before/after divider, go fullscreen, measure the
+floor and save the picture. A **"Which size?"** tab fits on one phone screen: room
+type, sofa/bed/table size, the best fit drawn to scale, all three sizes rated, and
+a door-clearance check (pile height).
 
 It sits on top of the existing theme. Nothing is replaced: the gallery, size
 buttons and Add to Basket all stay as they are.
@@ -23,7 +25,7 @@ Basket shows a "demo" toast there).
 | HTML + inline CSS/JS (the snippet) | **~1.8 KB** compressed | — |
 | Requests | **0** | app JS + images |
 | `fableroom-room-view.js` | — | %%APP_KB%% KB compressed (%%APP_RAW%% KB raw) |
-| Room photo (only the one being viewed) | — | 75–177 KB |
+| Room image + mask + light map (only the room being viewed, desktop or phone framing) | — | ~120–220 KB |
 | Rug texture | — | 23 KB, then 122 KB; 477 KB only when the rug fills the screen or on Save |
 
 The script is injected on the first sign of intent (pointer over, touch, or
@@ -40,12 +42,14 @@ see **Performance** at the bottom.
 | `fableroom-room-view.liquid` | The snippet: entry buttons, their CSS, the config and the inline loader. |
 | `fableroom-room-view.js` | The app: overlay, WebGL renderer, size finder, buying checks. Every class/id is prefixed `frrv-`. |
 | `laleh-rug-sm.webp` / `-md` / `-hd` | The rug, cropped from the top-down product shot (FRRU00175A_3), 256/512/1024 px wide. |
-| `room-living.webp`, `room-lounge.webp`, `room-bedroom.webp` (+ `-thumb`) | Sample rooms. **Placeholders** from Unsplash (free licence), see *Sample rooms*. |
+| `room-<id>.webp`, `room-<id>-p.webp` | The five rendered rooms, desktop (1800×1350) and phone (1350×1690) framings. |
+| `room-<id>-mask.png`, `room-<id>-shade.webp` (+ `-p`) | Per room: what stands in front of the floor (so the rug goes under it) and the floor's light/shadow (multiplied into the rug). |
+| `room-<id>-thumb.webp` | Room picker thumbnails. |
 
 ## Install (duplicate theme first)
 
-1. **Assets:** upload `fableroom-room-view.js` and the nine `.webp` files to the
-   theme's `assets/`.
+1. **Assets:** upload `fableroom-room-view.js` and every `.webp` / `.png` file in
+   this folder to the theme's `assets/` (the snippet's asset list is generated to match).
 2. **Snippet:** add `snippets/fableroom-room-view.liquid` with the contents of the file.
 3. **Placement:** in the theme editor, product template, add a **Custom Liquid**
    block directly **under the variant picker** (Dimensions) with:
@@ -58,7 +62,7 @@ see **Performance** at the bottom.
    template has no Custom Liquid block there, paste the same line into
    `main-product` right after `</variant-picker>`.
 
-That is all. The snippet also adds a **"See it in your room"** pill to the top-right
+That is all. The snippet also adds a **"View in your room"** pill to the top-right
 of the main gallery image (`.media-gallery__viewer`), positioned absolutely so it
 can't shift the layout.
 
@@ -97,23 +101,29 @@ link in the size-guide modal), loading the app first if needed.
 
 ## How the rug is placed (why sizes are true)
 
-Each photo is treated as a camera: a height above the floor, a downward tilt and a
-focal length. Those three fix the floor plane, so a 200 × 290 cm rug is drawn at
-exactly 200 × 290 cm on that floor, with correct perspective, a 12 mm edge, a soft
-contact shadow and the room's light falling across it.
+Each room is a camera: a height above the floor, a downward tilt and a focal length.
+Those three fix the floor plane, so a 200 × 290 cm rug is drawn at exactly that size,
+with correct perspective, a 12 mm edge and a soft contact shadow.
 
-- **Sample rooms** carry measured values (camera height checked against furniture
-  of standard size, e.g. the wing chair's ~82 cm width). Furniture that
-  stands on the rug (sofa legs, the bed, the pouf) is masked, so the rug slides
-  underneath it.
-- **The shopper's own photo:** focal length comes from the photo's EXIF where
-  present (iPhones and most Androids write it); the tilt is worked out from the
-  photo's vertical lines (door frames, wall corners, furniture legs converge
-  when the phone points down). They then see a 50 cm floor grid with two sliders
-  (floor angle, phone height) and a tape measure: drag it across something they
-  know, tap the reading, type the real length, and the whole scene rescales.
-- **Privacy:** the photo never leaves the device. It is decoded and drawn locally,
-  nothing is uploaded or stored.
+- **Rendered rooms** (`build/laleh/render/`) are path-traced in three.js from a room
+  description, so the camera is known exactly (checked: 0 px error between the
+  renderer and the tool). Each render also writes a mask (anything that isn't
+  floor, so the rug slides under sofa legs, tables and beds) and a light map of the
+  floor alone (so furniture shadows and window light fall across the rug).
+  Furniture: FableRoom's own Alan coffee table, Belgrave table and Keaton chairs,
+  plus CC0 models/textures from Poly Haven. Phones get a portrait framing pulled
+  back so a whole 200×290 rug fits the screen.
+- **The shopper's own photo:** focal length from EXIF where present; the tilt is read
+  from the photo's vertical lines. A 50 cm floor grid, two sliders and a tape
+  measure correct it. The photo never leaves the device.
+
+## View controls (Floori-style bar)
+
+Fullscreen (real fullscreen where the browser allows; on iPhone the stage takes over
+the overlay) · Zoom (2×, centred on the rug) · Compare (two sizes split by a
+draggable divider; tap a side's label to change its size) · Before/After (the room
+without and with the rug) · Rotation slider (0–359°, plus two-finger twist and the
+handle on the rug).
 
 ## Tracking
 
@@ -122,26 +132,20 @@ contact shadow and the room's light falling across it.
 | Event | `frrv_action` |
 |---|---|
 | `pdp_room_view` | `open` (frrv_item = tab, frrv_source = `entry`/`gallery`), `scene_ready` (frrv_ms = load time), `scene_failed`, `own_photo_failed`, `unsupported`, `close` (frrv_ms = time open) |
-| `pdp_room_interaction` | `scene`, `size`, `move`, `rotate`, `dims_on/off`, `tape_on/off`, `tape_drag`, `tape_correct`, `compare`, `save`, `own_photo_sheet`, `own_photo` (frrv_item = `exif_26` / `no_exif`), `adjust_angle`, `adjust_height`, `tab`, `unit`, `finder_room/sofa/layout/bed/table`, `finder_result` (frrv_item = `bedroom:200x290 cm`), `door_check`, `add_to_basket` |
+| `pdp_room_interaction` | `scene`, `size`, `move`, `rotate` (handle / twist / slider), `fullscreen_on/off`, `zoom_in/out`, `compare`, `before_after`, `dims_on/off`, `tape_on/off`, `tape_drag`, `tape_correct`, `save`, `own_photo_sheet`, `own_photo` (frrv_item = `exif_26` / `no_exif`), `adjust_angle`, `adjust_height`, `tab`, `unit`, `finder_room`, `finder_item`, `finder_result` (frrv_item = `bedroom:double:200x290 cm`), `door_check`, `add_to_basket` |
 
 Continuous gestures (move, drag, rotate) are sent once per page view; at most 60
 events per page view. GTM: Custom Event trigger on regex `^pdp_room_`, then a GA4
 event tag mapping the `frrv_*` variables, exactly as for `pdp_3d_*`.
 
-## Sample rooms — to replace
+## Rooms
 
-The three rooms are free-licence Unsplash photos used as stand-ins. FableRoom's
-own room photography or renders should replace them. What makes a good one:
-
-- landscape, 1800 px+ wide, **plenty of open floor in the lower half**, shot from
-  ~1.2–1.5 m with the camera tilted slightly down (more floor = better on phones);
-- a sofa, bed or table the rug can sit under;
-- for a render: note camera height, vertical tilt and focal length — those three
-  numbers make calibration exact (`h`, `hz`, `f` in the scene entry).
-
-A scene entry: `{ id, label, img, thumb, f (focal ÷ image width), hz (horizon ÷ image
-height), h (camera height, m), place [x, y] (rug centre, image fractions), yaw
-(degrees), size (default variant index), ref [w, h], occl [polygons in ref pixels] }`.
+Five rendered rooms ship by default (`scenes/rendered.json`, injected into the app at
+build time). To add or change one: write `build/laleh/render/rooms/<id>.json` (field
+reference at the top of `render/render.mjs`), preview with
+`node render.mjs rooms/<id>.json --preview --scale 0.5`, make the phone framing with
+`node portrait.mjs rooms/<id>.json`, render both (`render_all.sh`), list it in
+`render/rooms.order.json`, then `node scenes_build.js && python3 build_laleh.py`.
 
 ## Things to confirm with FableRoom
 
