@@ -10,7 +10,7 @@ page.on('console', m => { if (m.type() === 'error' && /room-view|rv\//.test(m.te
 const mobile = +W < 700;
 await page.setViewport({ width: +W, height: +H, deviceScaleFactor: 2, isMobile: mobile, hasTouch: mobile });
 const reqs = []; page.on('request', r => { if (/\/laleh\/rv\//.test(r.url())) reqs.push({ t: Date.now(), u: r.url().split('/rv/')[1] }); });
-await page.goto('http://localhost:8812/laleh/index.html', { waitUntil: 'networkidle2', timeout: 90000 });
+await page.goto(process.env.URL || 'http://localhost:8812/laleh/index.html', { waitUntil: 'networkidle2', timeout: 90000 });
 await new Promise(r => setTimeout(r, 1500));
 console.log('rv requests before any tap:', JSON.stringify(reqs.map(r => r.u)));
 const wait = ms => new Promise(r => setTimeout(r, ms));
