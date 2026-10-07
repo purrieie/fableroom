@@ -1,0 +1,34 @@
+
+/* ==========================================================================
+   SCENE LAB — internal comparison panel + scene layers. Not part of the PDP.
+   ========================================================================== */
+.lab{max-width:var(--maxw);margin:0 auto;padding:4px var(--pad) 10px}
+.lab__in{border:1px dashed #c9b89c;border-radius:8px;background:#fffdf9;padding:12px 14px;display:grid;gap:10px}
+.lab__head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.lab__head p{margin:0;font-size:12.5px;color:var(--ink-2);flex:1;min-width:220px}
+.lab__tag{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--ink);color:#fff;border-radius:100px;padding:4px 10px;white-space:nowrap}
+.lab__rows{display:grid;gap:6px}
+.lab__row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.lab__k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
+  min-width:74px}
+.chip{min-height:36px;border:1px solid var(--line);background:#fff;border-radius:100px;padding:6px 13px;
+  font-size:12.5px;cursor:pointer;color:var(--ink);transition:background .15s,color .15s,border-color .15s}
+.chip:hover{border-color:var(--ink-3)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip.busy{opacity:.6;cursor:progress}
+.lab__info{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.lab__card{border:1px solid var(--line-2);border-radius:6px;padding:9px 11px;font-size:12px;line-height:1.45;background:#fff}
+.lab__card b{display:block;font-size:12.5px;margin-bottom:3px}
+.lab__card .m{color:var(--green);font-weight:700}
+.lab__card .n{color:var(--ink-2)}
+@media(max-width:600px){.lab__k{min-width:100%}}
+
+/* Option D: a soft photo of a room behind the transparent canvas. Its image
+   is attached by script on first use, so it costs nothing until chosen. */
+#glc{position:relative;z-index:1}
+.bdrop{position:absolute;inset:0;z-index:0;background-position:50% 0;background-size:cover;
+  opacity:0;transition:opacity .6s ease;pointer-events:none}
+.hero__wrap.is-backdrop .bdrop{opacity:1}
+#roomBtn.on{background:var(--ink);color:#fff}
+.hero__wrap.is-room #hotspots{visibility:hidden}

@@ -447,6 +447,9 @@ export function initViewer(opts) {
   let blob = null, model = null, ready = false;
   applyLighting('studio');
   let hRad = 0.5, vHalf = 0.6, fitDist = 2.15, modelTargetY = 0.3;
+  // Optional scene context (a room, a figure, a rug) widens the framing while
+  // it shows: {hRad, vHalf, ty, phi} in the product's normalised units, or null.
+  let sceneFit = null, productFitDist = 2.15;
 
   function frameModel(obj) {
     const box = new Box3().setFromObject(obj);
@@ -744,6 +747,10 @@ export function initViewer(opts) {
 
   function resize() {
     const nw = host.clientWidth, nh = host.clientHeight;
+    // Hidden (e.g. the shopper is on Photos while the model loads): a zero-size
+    // canvas would make the fit distance infinite and the first real frame
+    // would start far too close. Wait until there is a real size.
+    if (!nw || !nh) return;
     if (nw === w && nh === h) return;
     w = nw; h = nh;
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, maxDpr));
@@ -765,11 +772,15 @@ export function initViewer(opts) {
     // low products whose silhouette otherwise runs into the stage controls.
     const pad = camera.aspect < 0.8 ? 1.42 : 1.16;
     const framePad = opts.framePad > 0 ? opts.framePad : 1;
-    const d = Math.max(vHalf / Math.sin(vFov / 2), hRad / Math.sin(hFov / 2)) * pad * framePad;
+    const productD = Math.max(vHalf / Math.sin(vFov / 2), hRad / Math.sin(hFov / 2)) * pad;
+    const d = sceneFit
+      ? Math.max(sceneFit.vHalf / Math.sin(vFov / 2), sceneFit.hRad / Math.sin(hFov / 2)) * pad
+      : productD * framePad;
     const changed = Math.abs(d - fitDist) > 1e-4;
     const wasDefault = Math.abs(controls.goal.radius - fitDist) < 1e-3;
     fitDist = d;
-    controls.minR = (d / framePad) * 0.52;   // closest zoom unchanged by framePad
+    productFitDist = productD * framePad;
+    controls.minR = productD * 0.52;   // closest zoom unchanged by framePad or a scene
     controls.maxR = d * 1.75;
     if (changed && (wasDefault || !ready)) {
       controls.goal.radius = d;
@@ -931,8 +942,33 @@ export function initViewer(opts) {
     setHotspots,
     hotspotPositions,
     flyTo,
-    home: () => flyTo({ theta: MathUtils.degToRad(28), phi: 74, dist: 1,
-                        ty: model ? modelTargetY : 0.3 }, 800),
+    home: () => flyTo({ theta: MathUtils.degToRad(28), phi: sceneFit && sceneFit.phi ? sceneFit.phi : 74, dist: 1,
+                        ty: sceneFit && sceneFit.ty != null ? sceneFit.ty : (model ? modelTargetY : 0.3) }, 800),
+
+    /* ---- scene context hooks (props around the product) ----
+       Props live in `root`, in the product's normalised units, so they scale
+       and turn with it. metresPerUnit converts real sizes. */
+    metresPerUnit: M_PER_UNIT,
+    // flyTo distances are relative to the current fit; multiply a product
+    // close-up's dist by this so it stays the same while a scene is showing.
+    productDistRatio: () => productFitDist / (fitDist || 1),
+    camera,
+    addProp: (obj) => { root.add(obj); w = 0; h = 0; },
+    removeProp: (obj) => { root.remove(obj); w = 0; h = 0; },
+    contactShadow: (radiusUnits) => groundBlob(radiusUnits),
+    productBlob: () => blob,
+    loadGLB: (url) => new Promise((resolve, reject) => {
+      const l = new GLTFLoader(); l.setMeshoptDecoder(MeshoptDecoder);
+      l.load(url, (g) => resolve(g.scene), undefined, reject);
+    }),
+    setSceneFrame: (f, ms) => {
+      const r0 = controls.goal.radius;
+      sceneFit = f || null;
+      applyFit();
+      controls.goal.radius = r0;
+      flyTo({ theta: controls.goal.theta, phi: f && f.phi ? f.phi : 74, dist: 1,
+              ty: f && f.ty != null ? f.ty : modelTargetY }, ms == null ? 1100 : ms);
+    },
     setAutoRotate: (v) => { controls.autoRotate = !!v; },
     autoRotate: () => controls.autoRotate,
     onFirstInput: (fn) => { controls.onFirstInput = fn; },

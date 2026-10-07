@@ -1,0 +1,29 @@
+<!-- ===== SCENE LAB (internal test page — not part of the PDP) ===== -->
+<section class="lab" id="lab" aria-label="Scene lab">
+  <div class="lab__in">
+    <div class="lab__head">
+      <span class="lab__tag">Scene lab</span>
+      <p>Context options for the 3D hero. Each loads only when chosen — nothing here is downloaded on page load, so PageSpeed is unaffected. Mix one from each row.</p>
+    </div>
+    <div class="lab__rows">
+      <div class="lab__row" data-group="figure">
+        <span class="lab__k">Person</span>
+        <button class="chip on" data-opt="">None</button>
+        <button class="chip" data-opt="a1">A1 · FableRoom's 160 cm figure</button>
+        <button class="chip" data-opt="a2">A2 · Clay figure</button>
+      </div>
+      <div class="lab__row" data-group="room">
+        <span class="lab__k">Room</span>
+        <button class="chip on" data-opt="">None</button>
+        <button class="chip" data-opt="b">B · Clay living room</button>
+        <button class="chip" data-opt="c">C · Real FableRoom pieces</button>
+      </div>
+      <div class="lab__row" data-group="backdrop">
+        <span class="lab__k">Backdrop</span>
+        <button class="chip on" data-opt="">Studio</button>
+        <button class="chip" data-opt="d">D · Soft room photo</button>
+      </div>
+    </div>
+    <div class="lab__info" id="labInfo" aria-live="polite"></div>
+  </div>
+</section>

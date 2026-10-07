@@ -54,7 +54,22 @@ body = open(os.path.join(HERE, 'alan-body.html')).read().replace('%%YMAL%%', '\n
 assert body.count('class="card"') == 20
 
 # --- engine: the committed Shopify bundle (built from build/src/viewer.js) ---
-bundle = open(os.path.join(REPO, 'shopify/belgrave-hero.bundle.js')).read().strip()
+# FR3D_LAB=1 builds the scene-lab variant instead (alan-scenes/index.html): a
+# bundle with the scene-context modules, plus the lab panel and controller.
+LAB = os.environ.get('FR3D_LAB') == '1'
+LABDIR = os.path.join(REPO, 'build', 'alan-scenes')
+bundle_path = os.path.join(LABDIR, 'lab.bundle.js') if LAB else os.path.join(REPO, 'shopify/belgrave-hero.bundle.js')
+bundle = open(bundle_path).read().strip()
+if LAB:
+    css += open(os.path.join(LABDIR, 'lab.css')).read()
+    _crumb_end = body.index('</nav>', body.index('class="crumb"')) + len('</nav>')
+    body = body[:_crumb_end] + '\n' + open(os.path.join(LABDIR, 'lab-panel.html')).read() + body[_crumb_end:]
+    _c = '<canvas id="glc"></canvas>'
+    assert body.count(_c) == 1
+    body = body.replace(_c, '<div class="bdrop" id="bdrop" aria-hidden="true"></div>\n        ' + _c)
+    _d = '<button class="act" id="dimBtn">'
+    assert body.count(_d) == 1
+    body = body.replace(_d, '<button class="act" id="roomBtn" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 11V8.5A2.5 2.5 0 0 1 6.5 6h11A2.5 2.5 0 0 1 20 8.5V11"/><path d="M3 11.5a1.5 1.5 0 0 1 3 0V14h12v-2.5a1.5 1.5 0 0 1 3 0V17H3Z"/><path d="M5 17v2M19 17v2"/></svg><span>Room</span></button>\n            ' + _d)
 
 # --- glue: Belgrave's, with Alan's model, size and hotspots ---
 model_bytes = os.path.getsize(os.path.join(REPO, 'alan/model.glb'))
@@ -101,7 +116,16 @@ tabs_js = """
 """
 glue = glue.replace('</body>', tabs_js + '</body>')
 
+if LAB:
+    # Hotspot close-ups keep their framing while a scene widens the camera.
+    _f = "viewer.flyTo(h.view, REDUCED?10:900);"
+    assert glue.count(_f) == 1, 'flyTo anchor'
+    glue = glue.replace(_f, "viewer.flyTo(Object.assign({}, h.view, {dist: h.view.dist * viewer.productDistRatio()}), REDUCED?10:900);")
+    glue = glue.replace('</body>', '<script>\n' + open(os.path.join(LABDIR, 'lab.js')).read() + '\n</script>\n</body>')
+    head = head.replace('<title>Alan Mango Wood Coffee Table | Handcrafted Modern Elegance – FABLEROOM</title>',
+                        '<title>Scene lab — Alan Mango Wood Coffee Table</title>')
+
 out = head + css + '</style>\n</head>\n' + body + '\n<script>\n' + bundle + '\n</script>' + glue
-dst = os.path.join(REPO, 'alan/index.html')
+dst = os.path.join(REPO, 'alan-scenes/index.html' if LAB else 'alan/index.html')
 open(dst, 'w').write(out)
 print('wrote', dst, len(out), 'bytes; model', model_bytes)
