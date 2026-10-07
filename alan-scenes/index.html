@@ -816,6 +816,11 @@ h1,h2,h3,h4{margin:0;font-family:var(--ff-d);font-weight:400;letter-spacing:.005
 .hero__wrap.is-backdrop .bdrop{opacity:1}
 #roomBtn.on{background:var(--ink);color:#fff}
 .hero__wrap.is-room #hotspots{visibility:hidden}
+
+/* Room button: scene loads on first tap; pins hide while it shows */
+#roomBtn.on{background:var(--ink);color:#fff}
+#roomBtn.busy{opacity:.6}
+.hero__wrap.is-room #hotspots{visibility:hidden}
 </style>
 </head>
 <body>
@@ -870,11 +875,6 @@ h1,h2,h3,h4{margin:0;font-family:var(--ff-d);font-weight:400;letter-spacing:.005
         <button class="chip on" data-opt="">None</button>
         <button class="chip" data-opt="b">B · Clay living room</button>
         <button class="chip" data-opt="c">C · Real FableRoom pieces</button>
-      </div>
-      <div class="lab__row" data-group="backdrop">
-        <span class="lab__k">Backdrop</span>
-        <button class="chip on" data-opt="">Studio</button>
-        <button class="chip" data-opt="d">D · Real room photo</button>
       </div>
     </div>
     <div class="lab__info" id="labInfo" aria-live="polite"></div>

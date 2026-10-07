@@ -58,7 +58,7 @@ assert body.count('class="card"') == 20
 # bundle with the scene-context modules, plus the lab panel and controller.
 LAB = os.environ.get('FR3D_LAB') == '1'
 LABDIR = os.path.join(REPO, 'build', 'alan-scenes')
-bundle_path = os.path.join(LABDIR, 'lab.bundle.js') if LAB else os.path.join(REPO, 'shopify/belgrave-hero.bundle.js')
+bundle_path = os.path.join(LABDIR, 'lab.bundle.js') if LAB else os.path.join(HERE, 'alan.bundle.js')   # engine + Room scene (entry-alan.js)
 bundle = open(bundle_path).read().strip()
 if LAB:
     css += open(os.path.join(LABDIR, 'lab.css')).read()
@@ -67,9 +67,10 @@ if LAB:
     _c = '<canvas id="glc"></canvas>'
     assert body.count(_c) == 1
     body = body.replace(_c, '<div class="bdrop" id="bdrop" aria-hidden="true"></div>\n        ' + _c)
-    _d = '<button class="act" id="dimBtn">'
-    assert body.count(_d) == 1
-    body = body.replace(_d, '<button class="act" id="roomBtn" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 11V8.5A2.5 2.5 0 0 1 6.5 6h11A2.5 2.5 0 0 1 20 8.5V11"/><path d="M3 11.5a1.5 1.5 0 0 1 3 0V14h12v-2.5a1.5 1.5 0 0 1 3 0V17H3Z"/><path d="M5 17v2M19 17v2"/></svg><span>Room</span></button>\n            ' + _d)
+_d = '<button class="act" id="dimBtn">'
+assert body.count(_d) == 1
+body = body.replace(_d, '<button class="act" id="roomBtn" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 11V8.5A2.5 2.5 0 0 1 6.5 6h11A2.5 2.5 0 0 1 20 8.5V11"/><path d="M3 11.5a1.5 1.5 0 0 1 3 0V14h12v-2.5a1.5 1.5 0 0 1 3 0V17H3Z"/><path d="M5 17v2M19 17v2"/></svg><span>Room</span></button>\n            ' + _d)
+css += '\n/* Room button: scene loads on first tap; pins hide while it shows */\n#roomBtn.on{background:var(--ink);color:#fff}\n#roomBtn.busy{opacity:.6}\n.hero__wrap.is-room #hotspots{visibility:hidden}\n'
 
 # --- glue: Belgrave's, with Alan's model, size and hotspots ---
 model_bytes = os.path.getsize(os.path.join(REPO, 'alan/model.glb'))
@@ -124,6 +125,12 @@ if LAB:
     glue = glue.replace('</body>', '<script>\n' + open(os.path.join(LABDIR, 'lab.js')).read() + '\n</script>\n</body>')
     head = head.replace('<title>Alan Mango Wood Coffee Table | Handcrafted Modern Elegance – FABLEROOM</title>',
                         '<title>Scene lab — Alan Mango Wood Coffee Table</title>')
+
+if not LAB:
+    glue = glue.replace('</body>', '<script>\n' + open(os.path.join(HERE, 'room.js')).read() + '\n</script>\n</body>')
+    _f = "viewer.flyTo(h.view, REDUCED?10:900);"
+    assert glue.count(_f) == 1
+    glue = glue.replace(_f, "viewer.flyTo(Object.assign({}, h.view, {dist: h.view.dist * viewer.productDistRatio()}), REDUCED?10:900);")
 
 out = head + css + '</style>\n</head>\n' + body + '\n<script>\n' + bundle + '\n</script>' + glue
 dst = os.path.join(REPO, 'alan-scenes/index.html' if LAB else 'alan/index.html')
