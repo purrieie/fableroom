@@ -111,8 +111,9 @@ with correct perspective, a 12 mm edge and a soft contact shadow.
   floor, so the rug slides under sofa legs, tables and beds) and a light map of the
   floor alone (so furniture shadows and window light fall across the rug).
   Furniture: FableRoom's own Alan coffee table, Belgrave table and Keaton chairs,
-  plus CC0 models/textures from Poly Haven. Phones get a portrait framing pulled
-  back so a whole 200×290 rug fits the screen.
+  plus CC0 models/textures from Poly Haven. The renders shipped now are half size
+  (1000 px) and landscape only; phones crop them until portrait framings (pulled back
+  so a whole 200×290 rug fits the screen) are rendered.
 - **The shopper's own photo:** focal length from EXIF where present; the tilt is read
   from the photo's vertical lines. A 50 cm floor grid, two sliders and a tape
   measure correct it. The photo never leaves the device.

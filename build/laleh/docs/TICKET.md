@@ -25,3 +25,36 @@
 - [ ] Real iPhone (Safari) and Android (Chrome): open, switch rooms, Compare, Before/After, Rotation, Fullscreen, take a photo with the camera, upload from the library, Save image.
 - [ ] `pdp_room_*` events arrive in GTM preview.
 - [ ] Confirm the rug's real total thickness and set `spec.thicknessMm` in the snippet (currently an estimate of 12).
+
+**Do not publish the theme.** Send the duplicate theme's preview link back on this ticket with the time log filled in.
+
+## Known limitations — please don't raise these as bugs
+
+These are deliberate stand-ins, already tracked on our side:
+
+- **The sample rooms are stand-ins.** They're path-traced 3D renders, not photos of FableRoom rooms, and they're
+  currently at **half size (1000 px wide)**, so they look a little soft on a large desktop screen. Full-size
+  renders are still owed and will replace the `room-*.webp` / `-mask.png` / `-shade.webp` files with the same names.
+- **No phone-portrait crops yet.** On a phone the rooms show a crop of the landscape render, so some of the room
+  sits outside the frame. Portrait versions will be added later and will use the same file-naming pattern.
+- **The 12 mm thickness is an estimate.** The product page only says *"medium pile 0.6–1.2 cm"*; there's no exact
+  figure. This drives the rug's edge and the door-gap check (see the checklist item above).
+- **Loop vs cut pile is inconsistent on the live page.** The bullets and photos say loop pile, but the Buying Guide tab
+  says the loops are sheared (cut pile). The overlay follows the bullets. This is a content question for FableRoom,
+  not a bug in the build.
+- **Not yet tested on a real iPhone or Android.** It has been checked in desktop browsers and phone emulation only.
+  Your device QA is the first real-device pass, so please do report anything that breaks there.
+
+## Time log
+
+Please log time against each stage. In **Notes**, say *what* conflicted while debugging (theme CSS, the variant
+picker, the cart drawer, apps, GTM), not just how long it took. That's what sizes the next rollout.
+
+| Stage | Time | Notes — what conflicted / what you had to change |
+|---|---:|---|
+| 1. Theme duplication + asset upload | | |
+| 2. Snippet + template placement | | |
+| 3. Wiring to the variant picker and cart | | |
+| 4. GTM (trigger, tag, variables, GA4 check) | | |
+| 5. QA: desktop + iOS + Android | | |
+| **Total** | | |
